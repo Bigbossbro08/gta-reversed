@@ -18,6 +18,7 @@ void InjectHooksMain(void)
     CPed::InjectHooks();
     CPedIntelligence::InjectHooks();
     CTrain::InjectHooks();
+    CEventDamage::InjectHooks();
     CTaskManager::InjectHooks();
     CTaskComplexUseSequence::InjectHooks();
     CTaskComplexSequence::InjectHooks();

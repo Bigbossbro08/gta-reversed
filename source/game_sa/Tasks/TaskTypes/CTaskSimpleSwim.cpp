@@ -262,8 +262,7 @@ bool CTaskSimpleSwim::ProcessPed_Reversed(CPed* pPed)
             CPedDamageResponseCalculator pedDamageResponseCalculator;
             pedDamageResponseCalculator.Constructor1(0, CTimer::ms_fTimeStep, weaponType, PED_PIECE_TORSO, false);
 
-            CEventDamage eventDamage;
-            eventDamage.Constructor(0, CTimer::m_snTimeInMilliseconds, weaponType, PED_PIECE_TORSO, 0, 0, pPed->bInVehicle);
+            CEventDamage eventDamage(0, CTimer::m_snTimeInMilliseconds, weaponType, PED_PIECE_TORSO, 0, 0, pPed->bInVehicle);
             CPedDamageResponse damageResponseInfo;
             if (eventDamage.AffectsPed(pPed))
             {
@@ -274,7 +273,6 @@ bool CTaskSimpleSwim::ProcessPed_Reversed(CPed* pPed)
                 damageResponseInfo.m_bDamageCalculated = true;
             }
             pPed->m_pIntelligence->m_eventGroup.Add((CEvent*)& eventDamage, false);
-            eventDamage.Destructor();
             pedDamageResponseCalculator.Destructor1();
         }
     }
@@ -1427,7 +1425,7 @@ void CTaskSimpleSwim::ProcessControlInput(CPlayerPed* pPed)
         fRotation = 0.95f;
     }
 
-    if (m_fTurningRotationY > 0.001f || m_fTurningRotationY < -0.001f)
+    if (m_fTurningRotationY > 0.01f || m_fTurningRotationY < -0.01f)
     {
         m_fTurningRotationY *= pow(fRotation, CTimer::ms_fTimeStep);
     }
@@ -1437,7 +1435,7 @@ void CTaskSimpleSwim::ProcessControlInput(CPlayerPed* pPed)
     }
     if (m_nSwimState != SWIM_UNDERWATER_SPRINTING && m_nSwimState != SWIM_SPRINTING)
     {
-        if (m_fRotationX > 0.001f || m_fRotationX < -0.001f)
+        if (m_fRotationX > 0.01f || m_fRotationX < -0.01f)
         {
             m_fRotationX *= pow(fRotation, CTimer::ms_fTimeStep);
         }
@@ -1452,10 +1450,10 @@ void CTaskSimpleSwim::ProcessControlInput(CPlayerPed* pPed)
     else
         fRotation = 0.92f;
 
-    if (m_fAimingRotation > 0.001f
-        || m_fAimingRotation < -0.001f
-        || m_fUpperTorsoRotationX > 0.001f
-        || m_fUpperTorsoRotationX < -0.001f)
+    if (m_fAimingRotation > 0.01f
+        || m_fAimingRotation < -0.01f
+        || m_fUpperTorsoRotationX > 0.01f
+        || m_fUpperTorsoRotationX < -0.01f)
     {
         float fTimeStepRotation = pow(fRotation, CTimer::ms_fTimeStep);
         m_fAimingRotation *= fTimeStepRotation;
