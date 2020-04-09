@@ -27,6 +27,9 @@ public:
 	// count: 8
 	static struct RwD3D9Vertex *maVertices;
 	// class functions
+
+	static void InjectHooks();
+
 	CSprite2d();
 	~CSprite2d();
 	// delete this sprite (similar to destructor)

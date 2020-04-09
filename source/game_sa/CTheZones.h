@@ -34,6 +34,25 @@ public:
 	// Count: 39
 	static CZone* MapZoneArray;
 
+	static short& TotalNumberOfZoneInfos;
+	static short& TotalNumberOfNavigationZones;
+
+	// Unknown variables
+
+	static unsigned int* dword_BA379C; // Probably an array
+	static unsigned int& dword_BA37A0;
+	static unsigned int& dword_BA37A4;
+	static unsigned short& word_BA37A8;
+	static unsigned short& word_BA37AA;
+	static unsigned short& word_BA37AC;
+	static unsigned short& word_BA37AE;
+	static unsigned short& word_BA37B0;
+	static unsigned short& word_BA37B2;
+	static unsigned short* word_BA37B4; // Probably an array
+	static unsigned char& byte_BA37B6;
+	static unsigned char& byte_BA37B7;
+	static signed short& unk_BA37CA;
+
 	// Functions
 	
 	static void InjectHooks();
@@ -62,7 +81,7 @@ public:
 	static void FillZonesWithGangColours(bool DisableRadarGangColors);
 	
 	// Returns pointer to zone by index
-	static CZone* GetInfoZone(short index);
+	static CZone* GetNavigationZone(short index);
 	
 	// Returns pointer to zone by index
 	static CZone* GetMapZone(short index);

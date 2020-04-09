@@ -36,7 +36,9 @@ void InjectHooksMain(void)
     CStats::InjectHooks();
     CCarCtrl::InjectHooks();
     CTheZones::InjectHooks();
-    
+    CMenuManager::InjectHooks();
+    CSprite2d::InjectHooks();
+
     /*
      DetourRestoreAfterWith();
      DetourTransactionBegin();
