@@ -7,15 +7,6 @@
 	Do not delete this comment block. Respect others' work!
 */
 
-#define VAR_CTheZones__m_CurrLevel 0xBA6718
-#define VAR_CTheZones__ExploredTerritoriesArray 0xBA3730
-#define VAR_CTheZones__TotalNumberExploredTerritories 0xBA372C
-#define VAR_CTheZones__TotalNumberOfInfoZones 0x572A5A
-#define VAR_CTheZones__ZoneInfoArray 0xBA3798
-#define VAR_CTheZones__TotalNumberOfMapZones 0xBA3794
-#define VAR_CTheZones__MapZoneArray 0xBA1908
-#define VAR_CTheZones__TotalNumberOfZoneInfos 0xBA1DE8
-
 #define FUNC_CTheZones__InitZonesPopulationSettings 0x5720D0
 #define FUNC_CTheZones__ResetZonesRevealed 0x572110
 #define FUNC_CTheZones__GetCurrentZoneLockedOrUnlocked 0x572130
@@ -40,19 +31,19 @@
 #define FUNC_CTheZones__Load 0x5D2F40
 
 // Variables
-eLevelName& CTheZones::m_CurrLevel = *(eLevelName*)VAR_CTheZones__m_CurrLevel;
+eLevelName& CTheZones::m_CurrLevel = *(eLevelName*)0xBA6718;
 
-char* CTheZones::ExploredTerritoriesArray = (char*)VAR_CTheZones__ExploredTerritoriesArray;
-int& CTheZones::TotalNumberExploredTerritories = *(int*)VAR_CTheZones__TotalNumberExploredTerritories;
+char* CTheZones::ZonesVisited = (char*)0xBA3730;
+int& CTheZones::ZonesRevealed = *(int*)0xBA372C;
 
-short& CTheZones::TotalNumberOfMapZones = *(short*)VAR_CTheZones__TotalNumberOfInfoZones;
-CZone* CTheZones::ZoneInfoArray = (CZone*)VAR_CTheZones__ZoneInfoArray;
+short& CTheZones::TotalNumberOfMapZones = *(short*)0xBA1900;
+CZone* CTheZones::NavigationZoneArray = (CZone*)0xBA3798;
 
-short& CTheZones::TotalNumberOfInfoZones = *(short*)VAR_CTheZones__TotalNumberOfMapZones;
-CZone* CTheZones::MapZoneArray = (CZone*)VAR_CTheZones__MapZoneArray;
+short& CTheZones::TotalNumberOfNavigationZones = *(short*)0xBA3794;
+CZone* CTheZones::MapZoneArray = (CZone*)0xBA1908;
 
-short& CTheZones::TotalNumberOfZoneInfos = *(short*)VAR_CTheZones__TotalNumberOfZoneInfos;
-short& CTheZones::TotalNumberOfNavigationZones = *(short*)0xBA1900;
+short& CTheZones::TotalNumberOfZoneInfos = *(short*)0xBA1DE8;
+char* CTheZones::ZoneInfoArray = (char*)0xBA1DF0;
 
 // Unknowns
 
@@ -76,16 +67,16 @@ void CTheZones::InjectHooks()
 	HookInstall(FUNC_CTheZones__ResetZonesRevealed, &CTheZones::ResetZonesRevealed, 7);
 	HookInstall(FUNC_CTheZones__GetCurrentZoneLockedOrUnlocked, &CTheZones::GetCurrentZoneLockedOrUnlocked, 7);
 	HookInstall(FUNC_CTheZones__PointLiesWithinZone, &CTheZones::PointLiesWithinZone, 7);
-	HookInstall(FUNC_CTheZones__GetZoneInfo, &CTheZones::GetZoneInfo, 7); 
+	//HookInstall(FUNC_CTheZones__GetZoneInfo, &CTheZones::GetZoneInfo, 7); 
 	HookInstall(FUNC_CTheZones__GetInfoZone, &CTheZones::GetNavigationZone, 7);
 	HookInstall(FUNC_CTheZones__GetMapZone, &CTheZones::GetMapZone, 7);
-	//HookInstall(FUNC_CTheZones__Save, &CTheZones::Save, 7);
-	//HookInstall(FUNC_CTheZones__Load, &CTheZones::Load, 7);
+	HookInstall(FUNC_CTheZones__Save, &CTheZones::Save, 7);
+	HookInstall(FUNC_CTheZones__Load, &CTheZones::Load, 7);
 }
 // Functions
 void CTheZones::InitZonesPopulationSettings()
 {
-	((void(__cdecl*)()) FUNC_CTheZones__InitZonesPopulationSettings) ();
+	((void(__cdecl*)()) FUNC_CTheZones__InitZonesPopulationSettings)();
 }
 
 void CTheZones::ResetZonesRevealed()
@@ -93,8 +84,8 @@ void CTheZones::ResetZonesRevealed()
 #ifdef USE_DEFAULT_FUNCTIONS
 	((void(__cdecl*)()) FUNC_CTheZones__ResetZonesRevealed) ();
 #else
-	memset(ExploredTerritoriesArray, 0, 100); // TODO: sizeof(CTheZones::ExploredTerritoriesArray)
-	TotalNumberExploredTerritories = 0;
+	memset(ZonesVisited, 0, 100); // TODO: sizeof(CTheZones::ExploredTerritoriesArray)
+	ZonesRevealed = 0;
 #endif
 }
 
@@ -103,7 +94,8 @@ bool CTheZones::GetCurrentZoneLockedOrUnlocked(float posx, float posy)
 #ifdef USE_DEFAULT_FUNCTIONS
 	return ((bool(__cdecl*)(float, float)) FUNC_CTheZones__GetCurrentZoneLockedOrUnlocked) (posx, posy);
 #else
-	return CTheZones::ExploredTerritoriesArray[10 * (unsigned int)((posx + 3000.0f) * 0.0016666667f) - (unsigned int)((posy + 3000.0f) * 0.0016666667f) + 9] != 0;
+	return CTheZones::ZonesVisited[10 *	(unsigned __int8)((posx + 3000.0) * 0.0016666667) -
+										(unsigned __int8)((posy + 3000.0) * 0.0016666667) + 9] != 0;
 #endif
 }
 
@@ -169,13 +161,13 @@ CZoneExtraInfo* CTheZones::GetZoneInfo(CVector* point, CZone** outzone)
 	{
 		if (outzone)
 			*outzone = findSmallestZoneForPosition;
-		return (CZoneExtraInfo*)&ZoneInfoArray[17 * (unsigned)findSmallestZoneForPosition->m_nZoneExtraIndexInfo];
+		return (CZoneExtraInfo*)&NavigationZoneArray[17 * (unsigned)findSmallestZoneForPosition->m_nZoneExtraIndexInfo];
 	}
 	else
 	{
 		if (outzone)
-			*outzone = (CZone*)ZoneInfoArray;
-		return (CZoneExtraInfo*)ZoneInfoArray;
+			*outzone = (CZone*)NavigationZoneArray;
+		return (CZoneExtraInfo*)NavigationZoneArray;
 	}
 #endif
 }
@@ -187,22 +179,22 @@ void CTheZones::FillZonesWithGangColours(bool DisableRadarGangColors)
 
 // Returns pointer to zone by index
 // 572590
-CZone* CTheZones::GetNavigationZone(short index)
+CZone* CTheZones::GetNavigationZone(unsigned short index)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
 	return ((CZone * (__cdecl*)(short)) FUNC_CTheZones__GetInfoZone)(index);
 #else
-	return &CTheZones::ZoneInfoArray[8 * index];
+	return &CTheZones::NavigationZoneArray[index];
 #endif
 }
 
 // Returns pointer to zone by index
-CZone* CTheZones::GetMapZone(short index)
+CZone* CTheZones::GetMapZone(unsigned short index)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
 	return ((CZone * (__cdecl*)(short)) FUNC_CTheZones__GetMapZone)(index);
 #else
-	return &CTheZones::MapZoneArray[8 * (unsigned __int16)index];
+	return &CTheZones::MapZoneArray[index];
 #endif
 }
 
@@ -264,74 +256,62 @@ void CTheZones::Update()
 // Save CTheZones info
 void CTheZones::Save()
 {
-////#ifdef USE_DEFAULT_FUNCTIONS
+#ifdef USE_DEFAULT_FUNCTIONS
 	((void(__cdecl*)()) FUNC_CTheZones__Save) ();
-//#else
-//	CGenericGameStorage::SaveDataToWorkBuffer(&m_CurrLevel, 4);
-//	CGenericGameStorage::SaveDataToWorkBuffer(&TotalNumberOfMapZones, 2);
-//	CGenericGameStorage::SaveDataToWorkBuffer(&TotalNumberOfZoneInfos, 2);
-//	CGenericGameStorage::SaveDataToWorkBuffer(&TotalNumberOfNavigationZones, 2);
-//	int i = 0;
-//	if (TotalNumberOfMapZones)
-//	{
-//		do
-//			CGenericGameStorage::SaveDataToWorkBuffer(&CTheZones::ZoneInfoArray[8 * i++], 32);
-//		while (i < TotalNumberOfMapZones);
-//	}
-//	i = 0;
-//	if (TotalNumberOfZoneInfos)
-//	{
-//		do
-//			CGenericGameStorage::SaveDataToWorkBuffer(&CTheZones::ZoneInfoArray[17 * i++], 17);
-//		while (i < TotalNumberOfZoneInfos);
-//	}
-//	i = 0;
-//	if (TotalNumberOfMapZones)
-//	{
-//		do
-//			CGenericGameStorage::SaveDataToWorkBuffer(&MapZoneArray[8 * i++], 32);
-//		while (i < TotalNumberOfMapZones);
-//	}
-//	CGenericGameStorage::SaveDataToWorkBuffer(CTheZones::ExploredTerritoriesArray, 100);
-//	CGenericGameStorage::SaveDataToWorkBuffer(&CTheZones::TotalNumberExploredTerritories, 4);
-//#endif
+#else
+	CGenericGameStorage::SaveDataToWorkBuffer(&m_CurrLevel, 4);
+	CGenericGameStorage::SaveDataToWorkBuffer(&TotalNumberOfMapZones, 2);
+	CGenericGameStorage::SaveDataToWorkBuffer(&TotalNumberOfZoneInfos, 2);
+	CGenericGameStorage::SaveDataToWorkBuffer(&TotalNumberOfNavigationZones, 2);
+
+	for (int i = 0; i < TotalNumberOfNavigationZones; i++)
+	{
+		CGenericGameStorage::SaveDataToWorkBuffer(&NavigationZoneArray[i], 0x20);
+	}
+
+	for (int i = 0; i < TotalNumberOfZoneInfos; i++)
+	{
+		CGenericGameStorage::SaveDataToWorkBuffer(&ZoneInfoArray[17 * i], 0x11);
+	}
+
+	for (int i = 0; i < TotalNumberOfMapZones; i++)
+	{
+		CGenericGameStorage::SaveDataToWorkBuffer(&MapZoneArray[8 * i], 0x20);
+	}
+
+	CGenericGameStorage::SaveDataToWorkBuffer(ZonesVisited, 100);
+	CGenericGameStorage::SaveDataToWorkBuffer(&ZonesRevealed, 4);
+
+#endif
 }
 
 // Load CTheZones info
 void CTheZones::Load()
 {
-//#ifdef USE_DEFAULT_FUNCTIONS
-	((void(__cdecl*)()) FUNC_CTheZones__Load) ();
-//#else
-//	Init(); 
-//	CGenericGameStorage::LoadDataFromWorkBuffer(&m_CurrLevel, 4);
-//	CGenericGameStorage::LoadDataFromWorkBuffer(&TotalNumberOfMapZones, 2);
-//	CGenericGameStorage::LoadDataFromWorkBuffer(&TotalNumberOfZoneInfos, 2);
-//	CGenericGameStorage::LoadDataFromWorkBuffer(&TotalNumberOfNavigationZones, 2);
-//	int i = 0;
-//	if (TotalNumberOfMapZones)
-//	{
-//		do
-//			CGenericGameStorage::LoadDataFromWorkBuffer(&ZoneInfoArray[8 * i++], 32);
-//		while (i < TotalNumberOfMapZones);
-//	}
-//
-//	i = 0;
-//	if (TotalNumberOfZoneInfos)
-//	{
-//		do
-//			CGenericGameStorage::LoadDataFromWorkBuffer(&ZoneInfoArray[17 * i++], 17);
-//		while (i < TotalNumberOfZoneInfos);
-//	}
-//
-//	i = 0;
-//	if (TotalNumberOfMapZones)
-//	{
-//		do
-//			CGenericGameStorage::LoadDataFromWorkBuffer(&MapZoneArray[8 * i++], 32);
-//		while (i < TotalNumberOfMapZones);
-//	}
-//	CGenericGameStorage::LoadDataFromWorkBuffer(ExploredTerritoriesArray, 100);
-//	CGenericGameStorage::LoadDataFromWorkBuffer(&TotalNumberExploredTerritories, 4u);
-//#endif
+#ifdef USE_DEFAULT_FUNCTIONS
+	((void(__cdecl*)()) FUNC_CTheZones__Load)();
+#else
+	Init(); 
+	CGenericGameStorage::LoadDataFromWorkBuffer(&m_CurrLevel, 4);
+	CGenericGameStorage::LoadDataFromWorkBuffer(&TotalNumberOfNavigationZones, 2);
+	CGenericGameStorage::LoadDataFromWorkBuffer(&TotalNumberOfZoneInfos, 2);
+	CGenericGameStorage::LoadDataFromWorkBuffer(&TotalNumberOfMapZones, 2);
+
+	for (int i = 0; i < TotalNumberOfNavigationZones; i++)
+	{
+		CGenericGameStorage::LoadDataFromWorkBuffer(&NavigationZoneArray[i], 0x20u);
+	}
+
+	for (int i = 0; i < TotalNumberOfZoneInfos; i++)
+	{
+		CGenericGameStorage::LoadDataFromWorkBuffer(&ZoneInfoArray[17 * i], 0x11u);
+	}
+
+	for (int i = 0; i < TotalNumberOfMapZones; i++)
+	{
+		CGenericGameStorage::LoadDataFromWorkBuffer(&MapZoneArray[8 * i], 0x20u);
+	}
+	CGenericGameStorage::LoadDataFromWorkBuffer(ZonesVisited, 100);
+	CGenericGameStorage::LoadDataFromWorkBuffer(&ZonesRevealed, 4u);
+#endif
 }
