@@ -255,12 +255,12 @@ void CTheZones::Save()
 
 	for (int i = 0; i < TotalNumberOfZoneInfos; i++)
 	{
-		CGenericGameStorage::SaveDataToWorkBuffer(&ZoneInfoArray[17 * i], 0x11);
+		CGenericGameStorage::SaveDataToWorkBuffer(&ZoneInfoArray[i], 0x11);
 	}
 
 	for (int i = 0; i < TotalNumberOfMapZones; i++)
 	{
-		CGenericGameStorage::SaveDataToWorkBuffer(&MapZoneArray[8 * i], 0x20);
+		CGenericGameStorage::SaveDataToWorkBuffer(&MapZoneArray[i], 0x20);
 	}
 
 	CGenericGameStorage::SaveDataToWorkBuffer(ZonesVisited, 100);
@@ -288,12 +288,12 @@ void CTheZones::Load()
 
 	for (int i = 0; i < TotalNumberOfZoneInfos; i++)
 	{
-		CGenericGameStorage::LoadDataFromWorkBuffer(&ZoneInfoArray[17 * i], 0x11u);
+		CGenericGameStorage::LoadDataFromWorkBuffer(&ZoneInfoArray[i], 0x11u);
 	}
 
 	for (int i = 0; i < TotalNumberOfMapZones; i++)
 	{
-		CGenericGameStorage::LoadDataFromWorkBuffer(&MapZoneArray[8 * i], 0x20u);
+		CGenericGameStorage::LoadDataFromWorkBuffer(&MapZoneArray[i], 0x20u);
 	}
 	CGenericGameStorage::LoadDataFromWorkBuffer(ZonesVisited, 100);
 	CGenericGameStorage::LoadDataFromWorkBuffer(&ZonesRevealed, 4u);
