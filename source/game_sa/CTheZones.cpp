@@ -37,29 +37,13 @@ char* CTheZones::ZonesVisited = (char*)0xBA3730;
 int& CTheZones::ZonesRevealed = *(int*)0xBA372C;
 
 short& CTheZones::TotalNumberOfMapZones = *(short*)0xBA1900;
-CZone* CTheZones::NavigationZoneArray = (CZone*)0xBA3798;
+CZone* CTheZones::NavigationZoneArray = (CZone*)0xBA3798; 
 
 short& CTheZones::TotalNumberOfNavigationZones = *(short*)0xBA3794;
 CZone* CTheZones::MapZoneArray = (CZone*)0xBA1908;
 
 short& CTheZones::TotalNumberOfZoneInfos = *(short*)0xBA1DE8;
-char* CTheZones::ZoneInfoArray = (char*)0xBA1DF0;
-
-// Unknowns
-
-unsigned int* CTheZones::dword_BA379C = (unsigned int*)0xBA379C; // Probably an array
-unsigned int& CTheZones::dword_BA37A0 = *(unsigned int*)0xBA37A0;
-unsigned int& CTheZones::dword_BA37A4 = *(unsigned int*)0xBA37A4;
-unsigned short& CTheZones::word_BA37A8 = *(unsigned short*)0xBA37A8;
-unsigned short& CTheZones::word_BA37AA = *(unsigned short*)0xBA37AA;
-unsigned short& CTheZones::word_BA37AC = *(unsigned short*)0xBA37AC;
-unsigned short& CTheZones::word_BA37AE = *(unsigned short*)0xBA37AE;
-unsigned short& CTheZones::word_BA37B0 = *(unsigned short*)0xBA37B0;
-unsigned short& CTheZones::word_BA37B2 = *(unsigned short*)0xBA37B2;
-unsigned short* CTheZones::word_BA37B4 = (unsigned short*)0xBA37B4; // Probably an array
-unsigned char& CTheZones::byte_BA37B7 = *(unsigned char*)0xBA37B7;
-unsigned char& CTheZones::byte_BA37B6 = *(unsigned char*)0xBA37B6;
-signed short& CTheZones::unk_BA37CA = *(signed short*)0xBA37CA;
+CZoneInfo* CTheZones::ZoneInfoArray = (CZoneInfo*)0xBA1DF0;
 
 
 void CTheZones::InjectHooks()
