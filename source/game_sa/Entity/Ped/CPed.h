@@ -204,8 +204,6 @@ public:
             unsigned int bDeathPickupsPersist : 1;
             unsigned int bTestForShotInVehicle : 1;
             unsigned int bUsedForReplay : 1; // This ped is controlled by replay and should be removed when replay is done.
-            unsigned int bPedFourthFlags31 : 1; // unknown
-            unsigned int bPedFourthFlags32 : 1; // unknown
         };
         unsigned int m_nPedFlags;
         unsigned int m_nSecondPedFlags;
@@ -217,7 +215,7 @@ public:
     unsigned char       m_nCreatedBy;
     char                field_485[3];
     AnimBlendFrameData *m_apBones[19];
-    unsigned int        m_nAnimGroup;
+    int        m_nAnimGroup;
     CVector2D           m_vecAnimMovingShiftLocal;
     CPedAcquaintance    m_acquaintance;
     RwObject           *m_pWeaponObject;
@@ -300,11 +298,11 @@ public:
     // class virtual functions
 
     // Process applied anim
-    void SetMoveAnim();
+    virtual void SetMoveAnim();
     // always returns true
-    bool Save();
+    virtual bool Save();
     // always returns true
-    bool Load();
+    virtual bool Load();
 
     // class functions
     static void InjectHooks();
