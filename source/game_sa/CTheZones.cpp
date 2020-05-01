@@ -51,7 +51,6 @@ void CTheZones::InjectHooks()
 	HookInstall(FUNC_CTheZones__ResetZonesRevealed, &CTheZones::ResetZonesRevealed, 7);
 	HookInstall(FUNC_CTheZones__GetCurrentZoneLockedOrUnlocked, &CTheZones::GetCurrentZoneLockedOrUnlocked, 7);
 	HookInstall(FUNC_CTheZones__PointLiesWithinZone, &CTheZones::PointLiesWithinZone, 7);
-	//HookInstall(FUNC_CTheZones__GetZoneInfo, &CTheZones::GetZoneInfo, 7); 
 	HookInstall(FUNC_CTheZones__GetInfoZone, &CTheZones::GetNavigationZone, 7);
 	HookInstall(FUNC_CTheZones__GetMapZone, &CTheZones::GetMapZone, 7);
 	HookInstall(FUNC_CTheZones__Save, &CTheZones::Save, 7);
@@ -112,20 +111,7 @@ bool CTheZones::PointLiesWithinZone(CVector const* pPoint, CZone* pZone)
 // Returns eLevelName from position
 eLevelName CTheZones::GetLevelFromPosition(CVector const* pPoint)
 {
-//#ifdef USE_DEFAULT_FUNCTIONS
 	return ((eLevelName(__cdecl*)(CVector const*)) FUNC_CTheZones__GetLevelFromPosition)(pPoint);
-//#else
-//	if ( (unsigned __int16)TotalNumberOfMapZones <= 1u )
-//		return eLevelName(MapZoneArray[7]);
-//
-//	int i = 1;
-//	while ( !CTheZones::PointLiesWithinZone(pPoint, &MapZoneArray[8 * i]) )
-//	{
-//		if ( ++i >= TotalNumberOfMapZones )
-//			return HIBYTE(MapZoneArray[7]);
-//	}
-//	return eLevelName(MapZoneArray[8 * i + 7]);
-//#endif
 }
 
 // Returns pointer to zone by a point
@@ -137,23 +123,7 @@ CZone* CTheZones::FindSmallestZoneForPosition(const CVector& point, bool FindOnl
 // 572400
 CZoneExtraInfo* CTheZones::GetZoneInfo(CVector* point, CZone** outzone)
 {
-#ifdef USE_DEFAULT_FUNCTIONS
 	return ((CZoneExtraInfo * (__cdecl*)(CVector*, CZone**)) FUNC_CTheZones__GetZoneInfo) (point, outzone);
-#else
-	CZone* findSmallestZoneForPosition = (CZone*)CTheZones::FindSmallestZoneForPosition(*point, 0);
-	if (findSmallestZoneForPosition)
-	{
-		if (outzone)
-			*outzone = findSmallestZoneForPosition;
-		return (CZoneExtraInfo*)&NavigationZoneArray[17 * (unsigned)findSmallestZoneForPosition->m_nZoneExtraIndexInfo];
-	}
-	else
-	{
-		if (outzone)
-			*outzone = (CZone*)NavigationZoneArray;
-		return (CZoneExtraInfo*)NavigationZoneArray;
-	}
-#endif
 }
 
 void CTheZones::FillZonesWithGangColours(bool DisableRadarGangColors)
@@ -220,15 +190,7 @@ short CTheZones::FindZoneByLabel(const char* name, eZoneType type)
 
 void CTheZones::SetZoneRadarColours(short index, char flag, unsigned char red, unsigned char green, unsigned char blue)
 {
-//#ifdef USE_DEFAULT_FUNCTIONS
 	((void(__cdecl*)(short, char, unsigned char, unsigned char, unsigned char)) FUNC_CTheZones__SetZoneRadarColours) (index, flag, red, green, blue);
-//#else
-//	CZoneExtraInfo* result = &CTheZones::ZoneInfoArray[CTheZones::ZoneInfoArray[index].m_nZoneExtraIndexInfo];
-//	result->m_nFlags ^= (result->m_nFlags ^ 32 * flag) & 0x60;
-//	result->ZoneColor.red = red;
-//	result->ZoneColor.green = green;
-//	result->ZoneColor.blue = blue;
-//#endif
 }
 
 // Updates CTheZones info
