@@ -13,6 +13,7 @@ void InjectHooksMain(void)
     CStreaming::InjectHooks();
     CVehicleModelInfo::InjectHooks();
     CFileLoader::InjectHooks();
+    CFileMgr::InjectHooks();
     CPhysical::InjectHooks();
     CRenderer::InjectHooks();
     CPed::InjectHooks();
@@ -31,6 +32,10 @@ void InjectHooksMain(void)
     CTaskSimpleGoTo::InjectHooks();
     CTaskSimpleGoToPoint::InjectHooks();
     CTaskSimpleGoToPointFine::InjectHooks();
+    CTaskSimpleStandStill::InjectHooks();
+    CTaskComplexGoToPointAndStandStill::InjectHooks();
+    CTaskComplexGoToPointAndStandStillTimed::InjectHooks();
+    CTaskSimplePause::InjectHooks();
     CTaskSimpleHoldEntity::InjectHooks();
     CTaskSimplePutDownEntity::InjectHooks();
     CTaskSimplePickUpEntity::InjectHooks();
@@ -44,7 +49,7 @@ void InjectHooksMain(void)
     CTheZones::InjectHooks();
     CMenuManager::InjectHooks();
     CSprite2d::InjectHooks();
-
+    CVisibilityPlugins::InjectHooks();
     /*
      DetourRestoreAfterWith();
      DetourTransactionBegin();

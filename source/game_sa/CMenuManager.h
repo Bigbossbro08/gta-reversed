@@ -351,10 +351,10 @@ public:
     static bool& bInvertMouseY;
 
 public:
+    static void InjectHooks();
     CMenuManager();
     ~CMenuManager();
 
-    static void InjectHooks();
     void CheckForMenuClosing();
     void ProcessFileActions();
     void ProcessStreaming(char bImmediately);

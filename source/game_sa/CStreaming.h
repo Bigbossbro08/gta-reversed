@@ -54,7 +54,7 @@ VALIDATE_SIZE(tRwStreamInitializeData, 0x8);
 struct tStreamingFileDesc
 {
   char m_szName[40];
-  bool bNotPlayerImg;
+  bool m_bNotPlayerImg;
   char __pad[3];
   int m_StreamHandle;
 };
@@ -69,7 +69,7 @@ struct tStreamingChannel
     int iLoadingLevel;
     int iBlockOffset;
     int iBlockCount;
-    int OnBeginRead; // not sure if this one is correct, the rest are okay.
+    int totalTries;
     int m_nCdStreamStatus;
 };
 
@@ -102,8 +102,8 @@ public:
      static int &ms_lastCullZone;
      static unsigned short &ms_loadedGangCars;
      static unsigned short &ms_loadedGangs;
-     static unsigned int &ms_numPedsLoaded;
-     static unsigned int **ms_pedsLoaded; // static unsigned int* ms_pedsLoaded[8]
+     static int &ms_numPedsLoaded;
+     static int *ms_pedsLoaded; // static unsigned int* ms_pedsLoaded[8]
      static int &ms_currentZoneType;
      static CLoadedCarGroup &ms_vehiclesLoaded;
      static CStreamingInfo *&ms_pEndRequestedList;
@@ -118,7 +118,7 @@ public:
      static unsigned int &ms_streamingBufferSize;
      static char **ms_pStreamingBuffer;
      static unsigned int &ms_memoryUsed;
-     static unsigned int &ms_numModelsRequested;
+     static int &ms_numModelsRequested;
      static CStreamingInfo *ms_aInfoForModel; // static CStreamingInfo ms_aInfoForModel[26316]
      static bool &ms_disableStreaming;
      static int &ms_bIsInitialised;
@@ -131,26 +131,17 @@ public:
      static bool &m_bModelStreamNotLoaded;
      static unsigned int &ms_numberOfBytesRead; 
      
-     // Unknown for now
-     static bool& byte_8E6E2C;
-     static bool& byte_8E6314;
-     static bool& byte_8E7318;
-     static bool& byte_8E6328;
-     static bool& byte_8E6E90;
-     static bool& byte_8E6EA4;
-     static bool& byte_8E633C;
-
      static void InjectHooks();
 
 
-     static void *AddEntity(CEntity *a2);
+     static void *AddEntity(CEntity * pEntity);
     //! return StreamingFile Index in CStreaming::ms_files
      static int AddImageToList(char const *lpFileName, bool bNotPlayerImg);
      static void AddLodsToRequestList(CVector const *Posn, unsigned int Streamingflags);
      static void AddModelsToRequestList(CVector const *posn, unsigned int StreamingFlags);
      static bool AddToLoadedVehiclesList(int modelIndex);
-     static bool AreAnimsUsedByRequestedModels(int AnimFileIndex);
-     static bool AreTexturesUsedByRequestedModels(int txdIndex);
+     static bool AreAnimsUsedByRequestedModels(int animModelId);
+     static bool AreTexturesUsedByRequestedModels(int txdModelId);
      static void ClearFlagForAll(unsigned int eStreamingFlag);
      static void ClearSlots(int NumOfSlots);
     //! ChanndelIndex is unused
@@ -178,7 +169,7 @@ public:
     //! unused
      static signed int GetDiscInDrive();
     //! return modelIndex
-     static int GetNextFileOnCd(int pos, bool bNotPriority);
+     static int GetNextFileOnCd(unsigned int streamLastPosn, bool bNotPriority);
      static bool HasSpecialCharLoaded(int slot);
      static bool HasVehicleUpgradeLoaded(int ModelIndex);
     //! does nothing (NOP)
@@ -227,13 +218,13 @@ public:
      static bool RemoveLeastUsedModel(unsigned int StreamingFlags);
      static bool RemoveLoadedVehicle();
      static bool RemoveLoadedZoneModel();
-     static void RemoveModel(int Modelindex);
-     static void RemoveTxdModel(int Modelindex);
+     static void RemoveModel(int modelId);
+     static void RemoveTxdModel(int modelId);
     //! does nothing (NOP)
      static unsigned int RemoveUnusedModelsInLoadedList();
      static void RenderEntity(CLink<CEntity*> *streamingLink);
      static void RequestBigBuildings(CVector const *posn);
-     static void RequestFile(int index, int offset, int size, int imgId, int streamingFlags);
+     static void RequestFile(int modelId, int posn, int size, int imgId, int streamingFlags);
     //! unused
      static void RequestFilesInChannel(int channelId);
      static void RequestModel(int dwModelId, unsigned int Streamingflags);
@@ -244,7 +235,7 @@ public:
      static void RequestSpecialModel(int modelId, char const* name, int flags);
      static void RequestTxdModel(int TxdModelID, int flags);
      static void RequestVehicleUpgrade(int modelIndex, int flags);
-     static void RetryLoadFile(int streamNum);
+     static void RetryLoadFile(int channelId);
      static void Save();
      static void SetLoadVehiclesInLoadScene(bool bEnable);
      static void SetMissionDoesntRequireAnim(int slot);

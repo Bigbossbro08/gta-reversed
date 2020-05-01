@@ -15,6 +15,7 @@
 #include <iostream>
 #include <cassert>
 
+#include "game_sa\CPostEffects.h"
 #include "game_sa\CMemoryMgr.h"
 #include "game_sa\CCullZones.h"
 #include "game_sa\CGlass.h"
@@ -441,6 +442,8 @@
 #include "game_sa\Tasks\TaskTypes\CTaskComplexUseMobilePhone.h"
 #include "game_sa\Tasks\TaskTypes\CTaskComplexWander.h"
 #include "game_sa\Tasks\TaskTypes\CTaskComplexWanderStandard.h"
+#include "game_sa\Tasks\TaskTypes\CTaskComplexGoToPointAndStandStill.h"
+#include "game_sa\Tasks\TaskTypes\CTaskComplexGoToPointAndStandStillTimed.h"
 #include "game_sa\Tasks\TaskTypes\CTaskSimpleAnim.h"
 #include "game_sa\Tasks\TaskTypes\CTaskSimpleCarSetPedInAsDriver.h"
 #include "game_sa\Tasks\TaskTypes\CTaskSimpleCarSetPedInAsPassenger.h"
@@ -477,6 +480,7 @@
 #include "game_sa\Tasks\TaskTypes\CTaskSimpleGoToPointFine.h"
 #include "game_sa\Tasks\TaskTypes\CTaskSimpleGoToPoint.h"
 #include "game_sa\Tasks\TaskTypes\CTaskSimpleGoTo.h"
+#include "game_sa\Tasks\TaskTypes\CTaskSimplePause.h"
 #include "game_sa\Tasks\TaskTypes\CTaskComplexBeCop.h"
 #include "game_sa\Tasks\TaskTypes\CTaskComplexWanderCop.h"
 #include "game_sa\Tasks\TaskTypes\CTaskComplexPolicePursuit.h"
