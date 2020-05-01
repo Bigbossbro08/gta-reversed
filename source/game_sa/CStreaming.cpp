@@ -1,56 +1,56 @@
 #include "StdInc.h"
 
-unsigned int& CStreaming::ms_memoryAvailable = *reinterpret_cast<unsigned int*>(0x8A5A80);
-unsigned int& CStreaming::desiredNumVehiclesLoaded = *reinterpret_cast<unsigned int*>(0x8A5A84);
-bool& CStreaming::ms_bLoadVehiclesInLoadScene = *reinterpret_cast<bool*>(0x8A5A88);
-int* CStreaming::ms_aDefaultCopCarModel = reinterpret_cast<int*>(0x8A5A8C);
-int& CStreaming::ms_DefaultCopBikeModel = *reinterpret_cast<int*>(0x8A5A9C);
-int* CStreaming::ms_aDefaultCopModel = reinterpret_cast<int*>(0x8A5AA0);
-int& CStreaming::ms_DefaultCopBikerModel = *reinterpret_cast<int*>(0x8A5AB0);
-signed int* CStreaming::ms_aDefaultAmbulanceModel = reinterpret_cast<signed int*>(0x8A5AB4);
-signed int* CStreaming::ms_aDefaultMedicModel = reinterpret_cast<signed int*>(0x8A5AC4);
-signed int* CStreaming::ms_aDefaultFireEngineModel = reinterpret_cast<signed int*>(0x8A5AD4);
-signed int* CStreaming::ms_aDefaultFiremanModel = reinterpret_cast<signed int*>(0x8A5AE4);
-signed int* CStreaming::ms_aDefaultCabDriverModel = reinterpret_cast<signed int*>(0x8A5AF4);
-CDirectory*& CStreaming::ms_pExtraObjectsDir = *reinterpret_cast<CDirectory**>(0x8E48D0);
-tStreamingFileDesc* CStreaming::ms_files = reinterpret_cast<tStreamingFileDesc*>(0x8E48D8);
-bool& CStreaming::ms_bLoadingBigModel = *reinterpret_cast<bool*>(0x8E4A58);
+unsigned int &CStreaming::ms_memoryAvailable = *reinterpret_cast<unsigned int *>(0x8A5A80);
+unsigned int &CStreaming::desiredNumVehiclesLoaded = *reinterpret_cast<unsigned int *>(0x8A5A84);
+bool &CStreaming::ms_bLoadVehiclesInLoadScene = *reinterpret_cast<bool *>(0x8A5A88);
+int *CStreaming::ms_aDefaultCopCarModel = reinterpret_cast<int *>(0x8A5A8C);
+int &CStreaming::ms_DefaultCopBikeModel = *reinterpret_cast<int *>(0x8A5A9C);
+int *CStreaming::ms_aDefaultCopModel = reinterpret_cast<int *>(0x8A5AA0);
+int &CStreaming::ms_DefaultCopBikerModel = *reinterpret_cast<int *>(0x8A5AB0);
+signed int *CStreaming::ms_aDefaultAmbulanceModel = reinterpret_cast<signed int *>(0x8A5AB4);
+signed int *CStreaming::ms_aDefaultMedicModel = reinterpret_cast<signed int *>(0x8A5AC4);
+signed int *CStreaming::ms_aDefaultFireEngineModel = reinterpret_cast<signed int *>(0x8A5AD4);
+signed int *CStreaming::ms_aDefaultFiremanModel = reinterpret_cast<signed int *>(0x8A5AE4);
+signed int *CStreaming::ms_aDefaultCabDriverModel = reinterpret_cast<signed int *>(0x8A5AF4);
+CDirectory *&CStreaming::ms_pExtraObjectsDir = *reinterpret_cast<CDirectory **>(0x8E48D0);
+tStreamingFileDesc *CStreaming::ms_files = reinterpret_cast<tStreamingFileDesc *>(0x8E48D8);
+bool &CStreaming::ms_bLoadingBigModel = *reinterpret_cast<bool *>(0x8E4A58);
 // There are only two channels within CStreaming::ms_channel
-tStreamingChannel* CStreaming::ms_channel = reinterpret_cast<tStreamingChannel*>(0x8E4A60);
-signed int& CStreaming::ms_channelError = *reinterpret_cast<signed int*>(0x8E4B90);
-bool& CStreaming::m_bHarvesterModelsRequested = *reinterpret_cast<bool*>(0x8E4B9C);
-bool& CStreaming::m_bStreamHarvesterModelsThisFrame = *reinterpret_cast<bool*>(0x8E4B9D);
-unsigned int& CStreaming::ms_numPriorityRequests = *reinterpret_cast<unsigned int*>(0x8E4BA0);
-int& CStreaming::ms_lastCullZone = *reinterpret_cast<int*>(0x8E4BA4);
-unsigned short& CStreaming::ms_loadedGangCars = *reinterpret_cast<unsigned short*>(0x8E4BA8);
-unsigned short& CStreaming::ms_loadedGangs = *reinterpret_cast<unsigned short*>(0x8E4BAC);
-int& CStreaming::ms_numPedsLoaded = *reinterpret_cast<int*>(0x8E4BB0);
-int* CStreaming::ms_pedsLoaded = reinterpret_cast<int*>(0x8E4C00);
-int& CStreaming::ms_currentZoneType = *reinterpret_cast<int*>(0x8E4C20);
-CLoadedCarGroup& CStreaming::ms_vehiclesLoaded = *reinterpret_cast<CLoadedCarGroup*>(0x8E4C24);
-CStreamingInfo*& CStreaming::ms_pEndRequestedList = *reinterpret_cast<CStreamingInfo**>(0x8E4C54);
-CStreamingInfo*& CStreaming::ms_pStartRequestedList = *reinterpret_cast<CStreamingInfo**>(0x8E4C58);
-CStreamingInfo*& CStreaming::ms_pEndLoadedList = *reinterpret_cast<CStreamingInfo**>(0x8E4C5C);
-CStreamingInfo*& CStreaming::ms_startLoadedList = *reinterpret_cast<CStreamingInfo**>(0x8E4C60);
-int& CStreaming::ms_lastImageRead = *reinterpret_cast<int*>(0x8E4C64);
-signed int* CStreaming::ms_imageOffsets = reinterpret_cast<signed int*>(0x8E4C8C);
-bool& CStreaming::ms_bEnableRequestListPurge = *reinterpret_cast<bool*>(0x8E4CA4);
-unsigned int& CStreaming::ms_streamingBufferSize = *reinterpret_cast<unsigned int*>(0x8E4CA8);
-char** CStreaming::ms_pStreamingBuffer = reinterpret_cast<char**>(0x8E4CAC);
-unsigned int& CStreaming::ms_memoryUsed = *reinterpret_cast<unsigned int*>(0x8E4CB4);
-int& CStreaming::ms_numModelsRequested = *reinterpret_cast<int*>(0x8E4CB8);
-CStreamingInfo* CStreaming::ms_aInfoForModel = reinterpret_cast<CStreamingInfo*>(0x8E4CC0);
-bool& CStreaming::ms_disableStreaming = *reinterpret_cast<bool*>(0x9654B0);
-int& CStreaming::ms_bIsInitialised = *reinterpret_cast<int*>(0x9654B8);
-bool& CStreaming::m_bBoatsNeeded = *reinterpret_cast<bool*>(0x9654BC);
-bool& CStreaming::m_bLoadingScene = *reinterpret_cast<bool*>(0x9654BD);
-bool& CStreaming::m_bCopBikeLoaded = *reinterpret_cast<bool*>(0x9654BE);
-bool& CStreaming::m_bDisableCopBikes = *reinterpret_cast<bool*>(0x9654BF);
-CLinkList<CEntity*>& CStreaming::ms_rwObjectInstances = *reinterpret_cast<CLinkList<CEntity*>*>(0x9654F0);
-RwStream& gRwStream = *reinterpret_cast<RwStream*>(0x8E48AC);
-bool& CStreaming::m_bLoadingAllRequestedModels = *reinterpret_cast<bool*>(0x965538);
-bool& CStreaming::m_bModelStreamNotLoaded = *reinterpret_cast<bool*>(0x9654C4);
-unsigned int& CStreaming::ms_numberOfBytesRead = *reinterpret_cast<unsigned int*>(0x965534);
+tStreamingChannel *CStreaming::ms_channel = reinterpret_cast<tStreamingChannel *>(0x8E4A60);
+signed int &CStreaming::ms_channelError = *reinterpret_cast<signed int *>(0x8E4B90);
+bool &CStreaming::m_bHarvesterModelsRequested = *reinterpret_cast<bool *>(0x8E4B9C);
+bool &CStreaming::m_bStreamHarvesterModelsThisFrame = *reinterpret_cast<bool *>(0x8E4B9D);
+unsigned int &CStreaming::ms_numPriorityRequests = *reinterpret_cast<unsigned int *>(0x8E4BA0);
+int &CStreaming::ms_lastCullZone = *reinterpret_cast<int *>(0x8E4BA4);
+unsigned short &CStreaming::ms_loadedGangCars = *reinterpret_cast<unsigned short *>(0x8E4BA8);
+unsigned short &CStreaming::ms_loadedGangs = *reinterpret_cast<unsigned short *>(0x8E4BAC);
+int &CStreaming::ms_numPedsLoaded = *reinterpret_cast<int *>(0x8E4BB0);
+int *CStreaming::ms_pedsLoaded = reinterpret_cast<int *>(0x8E4C00);
+int &CStreaming::ms_currentZoneType = *reinterpret_cast<int *>(0x8E4C20);
+CLoadedCarGroup &CStreaming::ms_vehiclesLoaded = *reinterpret_cast<CLoadedCarGroup *>(0x8E4C24);
+CStreamingInfo *&CStreaming::ms_pEndRequestedList = *reinterpret_cast<CStreamingInfo **>(0x8E4C54);
+CStreamingInfo *&CStreaming::ms_pStartRequestedList = *reinterpret_cast<CStreamingInfo **>(0x8E4C58);
+CStreamingInfo *&CStreaming::ms_pEndLoadedList = *reinterpret_cast<CStreamingInfo **>(0x8E4C5C);
+CStreamingInfo *&CStreaming::ms_startLoadedList = *reinterpret_cast<CStreamingInfo **>(0x8E4C60);
+int &CStreaming::ms_lastImageRead = *reinterpret_cast<int *>(0x8E4C64);
+signed int *CStreaming::ms_imageOffsets = reinterpret_cast<signed int *>(0x8E4C8C);
+bool &CStreaming::ms_bEnableRequestListPurge = *reinterpret_cast<bool *>(0x8E4CA4);
+unsigned int &CStreaming::ms_streamingBufferSize = *reinterpret_cast<unsigned int *>(0x8E4CA8);
+char **CStreaming::ms_pStreamingBuffer = reinterpret_cast<char **>(0x8E4CAC);
+unsigned int &CStreaming::ms_memoryUsed = *reinterpret_cast<unsigned int *>(0x8E4CB4);
+int &CStreaming::ms_numModelsRequested = *reinterpret_cast<int *>(0x8E4CB8);
+CStreamingInfo *CStreaming::ms_aInfoForModel = reinterpret_cast<CStreamingInfo *>(0x8E4CC0);
+bool &CStreaming::ms_disableStreaming = *reinterpret_cast<bool *>(0x9654B0);
+int &CStreaming::ms_bIsInitialised = *reinterpret_cast<int *>(0x9654B8);
+bool &CStreaming::m_bBoatsNeeded = *reinterpret_cast<bool *>(0x9654BC);
+bool &CStreaming::m_bLoadingScene = *reinterpret_cast<bool *>(0x9654BD);
+bool &CStreaming::m_bCopBikeLoaded = *reinterpret_cast<bool *>(0x9654BE);
+bool &CStreaming::m_bDisableCopBikes = *reinterpret_cast<bool *>(0x9654BF);
+CLinkList<CEntity*> &CStreaming::ms_rwObjectInstances = *reinterpret_cast<CLinkList<CEntity*> *>(0x9654F0);
+RwStream &gRwStream = *reinterpret_cast<RwStream *>(0x8E48AC);
+bool &CStreaming::m_bLoadingAllRequestedModels = *reinterpret_cast<bool *>(0x965538);
+bool &CStreaming::m_bModelStreamNotLoaded = *reinterpret_cast<bool *>(0x9654C4);
+unsigned int &CStreaming::ms_numberOfBytesRead = *reinterpret_cast<unsigned int *>(0x965534); 
 
 void CStreaming::InjectHooks()
 {
@@ -75,7 +75,7 @@ void CStreaming::InjectHooks()
     HookInstall(0x40E120, &CStreaming::MakeSpaceFor, 7);
     HookInstall(0x4076C0, &CStreaming::RetryLoadFile, 7);
     HookInstall(0x40E3A0, &CStreaming::LoadRequestedModels, 7);
-    HookInstall(0x40E4E0, &CStreaming::FlushRequestList, 7);
+    HookInstall(0x40E4E0, &CStreaming::FlushRequestList, 7); 
     HookInstall(0x156CD70, &CStreaming::GetDefaultFiremanModel, 7);
     HookInstall(0x1563A50, &CStreaming::GetDefaultMedicModel, 7);
     HookInstall(0x407C50, &CStreaming::GetDefaultCopCarModel, 7);
@@ -105,16 +105,16 @@ void* CStreaming::AddEntity(CEntity* pEntity) {
 #endif
 }
 
-int CStreaming::AddImageToList(char const* lpFileName, bool bNotPlayerImg) {
-    return plugin::CallAndReturnDynGlobal<int, char const*, bool>(0x407610, lpFileName, bNotPlayerImg);
+int CStreaming::AddImageToList(char const *lpFileName, bool bNotPlayerImg) {
+    return plugin::CallAndReturnDynGlobal<int, char const *, bool>(0x407610, lpFileName, bNotPlayerImg);
 }
 
-void CStreaming::AddLodsToRequestList(CVector const* Posn, unsigned int Streamingflags) {
-    plugin::CallDynGlobal<CVector const*, unsigned int>(0x40C520, Posn, Streamingflags);
+void CStreaming::AddLodsToRequestList(CVector const *Posn, unsigned int Streamingflags) {
+    plugin::CallDynGlobal<CVector const *, unsigned int>(0x40C520, Posn, Streamingflags);
 }
 
-void CStreaming::AddModelsToRequestList(CVector const* posn, unsigned int StreamingFlags) {
-    plugin::CallDynGlobal<CVector const*, unsigned int>(0x40D3F0, posn, StreamingFlags);
+void CStreaming::AddModelsToRequestList(CVector const *posn, unsigned int StreamingFlags) {
+    plugin::CallDynGlobal<CVector const *, unsigned int>(0x40D3F0, posn, StreamingFlags);
 }
 
 bool CStreaming::AreAnimsUsedByRequestedModels(int animModelId) {
@@ -131,7 +131,7 @@ bool CStreaming::AreAnimsUsedByRequestedModels(int animModelId) {
         for (int i = 0; i < 16; i++) {
             for (int channelId = 0; channelId < 2; channelId++) {
                 int modelId = CStreaming::ms_channel[channelId].modelIds[i];
-                if (modelId != -1 && modelId < RESOURCE_ID_TXD &&
+                if (modelId != -1 && modelId < RESOURCE_ID_TXD  && 
                     CModelInfo::ms_modelInfoPtrs[modelId]->GetAnimFileIndex() == animModelId)
                 {
                     return true;
@@ -254,9 +254,9 @@ bool CStreaming::ConvertBufferToObject(unsigned char* pFileBuffer, int modelId)
 #ifdef USE_DEFAULT_FUNCTIONS
     return plugin::CallAndReturnDynGlobal<bool, unsigned char*, int >(0x40C6B0, pFileBuffer, modelId);
 #else
-    CStreamingInfo* pStartLoadedListStreamingInfo = ms_startLoadedList;;
-    CBaseModelInfo* pBaseModelInfo = CModelInfo::ms_modelInfoPtrs[modelId];
-    CStreamingInfo* pModelStreamingInfo = &ms_aInfoForModel[modelId];
+    CStreamingInfo *pStartLoadedListStreamingInfo = ms_startLoadedList;;
+    CBaseModelInfo *pBaseModelInfo = CModelInfo::ms_modelInfoPtrs[modelId];
+    CStreamingInfo *pModelStreamingInfo = &ms_aInfoForModel[modelId];
 
     unsigned int bufferSize = pModelStreamingInfo->m_nCdSize * 2048;
     tRwStreamInitializeData rwStreamInitializationData = { pFileBuffer, bufferSize };
@@ -275,7 +275,7 @@ bool CStreaming::ConvertBufferToObject(unsigned char* pFileBuffer, int modelId)
                         if (modelId >= RESOURCE_ID_RRR)
                         {
                             if (modelId >= RESOURCE_ID_SCM) {
-                                CStreamedScripts& pStreamedScripts = CTheScripts::StreamedScripts;
+                                CStreamedScripts & pStreamedScripts = CTheScripts::StreamedScripts;
                                 pStreamedScripts.LoadStreamedScript(pRwStream, modelId - RESOURCE_ID_SCM);
                             }
                             else {
@@ -284,7 +284,7 @@ bool CStreaming::ConvertBufferToObject(unsigned char* pFileBuffer, int modelId)
                         }
                         else {
                             if (!(pModelStreamingInfo->m_nFlags & (KEEP_IN_MEMORY | MISSION_REQUIRED | GAME_REQUIRED))
-                                && !AreAnimsUsedByRequestedModels(modelId - RESOURCE_ID_IFP)) {
+                                && !AreAnimsUsedByRequestedModels(modelId - RESOURCE_ID_IFP))  {
                                 RemoveModel(modelId);
                                 RwStreamClose(pRwStream, &rwStreamInitializationData);
                                 return false;
@@ -316,7 +316,7 @@ bool CStreaming::ConvertBufferToObject(unsigned char* pFileBuffer, int modelId)
         }
         else {
             int modelTxdIndex = modelId - RESOURCE_ID_TXD;
-            TxdDef* pTxdDef = CTxdStore::ms_pTxdPool->GetAt(modelTxdIndex);
+            TxdDef *pTxdDef = CTxdStore::ms_pTxdPool->GetAt(modelTxdIndex);
             if (pTxdDef) {
                 int txdIndex = pTxdDef->m_wParentIndex;
                 if (txdIndex != -1 && !CTxdStore::GetTxd(txdIndex)) {
@@ -420,14 +420,14 @@ bool CStreaming::ConvertBufferToObject(unsigned char* pFileBuffer, int modelId)
 
     RwStreamClose(pRwStream, &rwStreamInitializationData);
     if (modelId >= RESOURCE_ID_TXD) {
-        if (!(modelId >= RESOURCE_ID_COL && (modelId < RESOURCE_ID_IFP || modelId >= RESOURCE_ID_RRR)
+        if (!(modelId >= RESOURCE_ID_COL && (modelId < RESOURCE_ID_IFP || modelId >= RESOURCE_ID_RRR) 
             && modelId < RESOURCE_ID_SCM || pModelStreamingInfo->m_nFlags & (MISSION_REQUIRED | GAME_REQUIRED))) {
             pModelStreamingInfo->AddToList(pStartLoadedListStreamingInfo);
         }
     }
     else {
         if (pBaseModelInfo->GetModelType() != MODEL_INFO_VEHICLE && pBaseModelInfo->GetModelType() != MODEL_INFO_PED) {
-            CBaseModelInfo* pAsAtomicModelInfo = pBaseModelInfo->AsAtomicModelInfoPtr();
+            CBaseModelInfo * pAsAtomicModelInfo = pBaseModelInfo->AsAtomicModelInfoPtr();
             if (pAsAtomicModelInfo)
                 pAsAtomicModelInfo->m_nAlpha = -((pModelStreamingInfo->m_nFlags & 0x24) != 0);
             if (!(pModelStreamingInfo->m_nFlags & (MISSION_REQUIRED | GAME_REQUIRED)))
@@ -478,7 +478,7 @@ void CStreaming::LoadAllRequestedModels(bool bOnlyPriorityRequests)
             tStreamingChannel& secondStreamingChannel = ms_channel[1];
 
             short endRequestPreviousIndex = ms_pEndRequestedList->m_nPrevIndex;
-            CStreamingInfo* pStreamingInfo = endRequestPreviousIndex == -1 ? 0 : &CStreamingInfo::ms_pArrayBase[endRequestPreviousIndex];
+            CStreamingInfo * pStreamingInfo = endRequestPreviousIndex == -1 ? 0 : &CStreamingInfo::ms_pArrayBase[endRequestPreviousIndex];
 
             if (pStreamingInfo == ms_pStartRequestedList
                 && !firstStreamingChannel.LoadStatus
@@ -582,7 +582,7 @@ void CStreaming::RequestModel(int modelId, unsigned int streamingFlags)
 #ifdef USE_DEFAULT_FUNCTIONS
     plugin::CallDynGlobal<int, unsigned int>(0x4087E0, modelId, streamingFlags);
 #else
-    CStreamingInfo& modelStreamingInfo = ms_aInfoForModel[modelId];
+    CStreamingInfo & modelStreamingInfo = ms_aInfoForModel[modelId];
     char loadState = modelStreamingInfo.m_nLoadState;
     if (loadState == LOADSTATE_Requested)
     {
@@ -650,20 +650,20 @@ void CStreaming::RequestTxdModel(int txdModelID, int streamingFlags) {
 #endif
 }
 
-void CStreaming::FinishLoadingLargeFile(unsigned char* pFileBuffer, int modelId)
+void CStreaming::FinishLoadingLargeFile(unsigned char * pFileBuffer, int modelId)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
-    plugin::Call<0x408CB0, unsigned char*, int>(pFileBuffer, modelId);
+    plugin::Call<0x408CB0, unsigned char *, int>(pFileBuffer, modelId);
 #else
     bool bFinishedLoadingLargeFile = 0;
-    CBaseModelInfo* pBaseModelInfo = CModelInfo::ms_modelInfoPtrs[modelId];
+    CBaseModelInfo *pBaseModelInfo = CModelInfo::ms_modelInfoPtrs[modelId];
     CStreamingInfo& streamingInfo = CStreaming::ms_aInfoForModel[modelId];
     if (streamingInfo.m_nLoadState == LOADSTATE_Finishing)
     {
 
         unsigned int bufferSize = streamingInfo.m_nCdSize << 11;
         tRwStreamInitializeData rwStreamInitializationData = { pFileBuffer, bufferSize };
-        RwStream* pRwStream = _rwStreamInitialize(&gRwStream, 0, rwSTREAMMEMORY, rwSTREAMREAD, &rwStreamInitializationData);
+        RwStream * pRwStream = _rwStreamInitialize(&gRwStream, 0, rwSTREAMMEMORY, rwSTREAMREAD, &rwStreamInitializationData);
         bool bLoaded = false;
         if (modelId >= RESOURCE_ID_TXD) {
             if (modelId >= RESOURCE_ID_COL) {
@@ -744,7 +744,7 @@ void CStreaming::RequestModelStream(int channelIndex)
     int32_t blockOffsetMimg = 0;
     unsigned int blockCount = 0;
 
-    CStreamingInfo* streamingInfo = &ms_aInfoForModel[modelId];
+    CStreamingInfo * streamingInfo = &ms_aInfoForModel[modelId];
     while (!(streamingInfo->m_nFlags & (KEEP_IN_MEMORY | MISSION_REQUIRED | GAME_REQUIRED)))
     {
         if (modelId < RESOURCE_ID_TXD || modelId >= RESOURCE_ID_COL || AreTexturesUsedByRequestedModels(modelId - RESOURCE_ID_TXD))
@@ -821,7 +821,7 @@ void CStreaming::RequestModelStream(int channelIndex)
         }
         else
         {
-            CBaseModelInfo* pBaseModelInfo = CModelInfo::ms_modelInfoPtrs[modelId];
+            CBaseModelInfo * pBaseModelInfo = CModelInfo::ms_modelInfoPtrs[modelId];
             ModelInfoType modelType = pBaseModelInfo->GetModelType();
             if (isModelTypePed && modelType == MODEL_INFO_PED)
             {
@@ -845,7 +845,7 @@ void CStreaming::RequestModelStream(int channelIndex)
             }
         }
 
-        tStreamingChannel& streamingChannel = ms_channel[channelIndex];
+        tStreamingChannel & streamingChannel = ms_channel[channelIndex];
         streamingChannel.modelStreamingBufferOffsets[modelIndex] = sectorCount;
         streamingChannel.modelIds[modelIndex] = modelId;
 
@@ -857,7 +857,7 @@ void CStreaming::RequestModelStream(int channelIndex)
         }
 
 
-        CBaseModelInfo* pBaseModelInfo = CModelInfo::ms_modelInfoPtrs[modelId];
+        CBaseModelInfo *  pBaseModelInfo = CModelInfo::ms_modelInfoPtrs[modelId];
         if (modelId >= RESOURCE_ID_TXD)
         {
             if (blockCount > 200)
@@ -894,13 +894,13 @@ void CStreaming::RequestModelStream(int channelIndex)
 
     if (modelIndex < numberOfModelIds)
     {
-        tStreamingChannel& streamingChannel = ms_channel[channelIndex];
+        tStreamingChannel & streamingChannel = ms_channel[channelIndex];
         memset(&streamingChannel.modelIds[modelIndex], 0xFFu, 4 * (numberOfModelIds - modelIndex)); // 0xFFu = -1
     }
 
     CdStreamRead(channelIndex, ms_pStreamingBuffer[channelIndex], blockOffsetMimg, sectorCount);
 
-    tStreamingChannel& streamingChannel = ms_channel[channelIndex];
+    tStreamingChannel & streamingChannel = ms_channel[channelIndex];
     streamingChannel.LoadStatus = LOADSTATE_LOADED;
     streamingChannel.iLoadingLevel = 0;
     streamingChannel.iBlockCount = sectorCount;
@@ -946,7 +946,7 @@ void CStreaming::RequestSpecialModel(int modelId, char const* name, int flags)
             if (pModelInfo->m_nRefCount <= 0)
                 break;
             CObject* pObject = CPools::ms_pObjectPool->GetAt(i);
-            if (pObject && pObject->m_nModelIndex == modelId && pObject->CanBeDeleted()) {
+            if (pObject && pObject->m_nModelIndex == modelId &&  pObject->CanBeDeleted()) {
                 CWorld::Remove(pObject);
                 CWorld::RemoveReferencesToDeletedObject(pObject);
                 pObject->DeletingDestructor(1); // TODO: Use delete
@@ -1033,7 +1033,7 @@ bool CStreaming::ProcessLoadingChannel(int channelIndex)
                         MakeSpaceFor(nCdSize << 11); // MakeSpaceFor(nCdSize * (2^11))
 
                     int bufferOffset = streamingChannel.modelStreamingBufferOffsets[modelIndex];
-                    unsigned char* pFileBuffer = reinterpret_cast <unsigned char*> (&ms_pStreamingBuffer[channelIndex][2048 * bufferOffset]);
+                    unsigned char * pFileBuffer = reinterpret_cast <unsigned char*> (&ms_pStreamingBuffer[channelIndex][2048 * bufferOffset]);
 
                     ConvertBufferToObject(pFileBuffer, modelId);
 
@@ -1060,7 +1060,7 @@ bool CStreaming::ProcessLoadingChannel(int channelIndex)
     else
     {
         int bufferOffset = streamingChannel.modelStreamingBufferOffsets[0];
-        unsigned char* pFileContents = reinterpret_cast<unsigned char*>(&ms_pStreamingBuffer[channelIndex][2048 * bufferOffset]);
+        unsigned char * pFileContents = reinterpret_cast<unsigned char*>(&ms_pStreamingBuffer[channelIndex][2048 * bufferOffset]);
         FinishLoadingLargeFile(pFileContents, streamingChannel.modelIds[0]);
         streamingChannel.modelIds[0] = -1;
     }
@@ -1273,7 +1273,7 @@ void CStreaming::RetryLoadFile(int channelId) {
 #ifdef USE_DEFAULT_FUNCTIONS
     plugin::CallDynGlobal<int>(0x4076C0, channelId);
 #else
-    if (CStreaming::ms_channelError == -1)
+    if (CStreaming::ms_channelError == -1) 
         return CLoadingScreen::Continue();
     // CLoadingScreen::Pause(); // empty function
     if (CStreaming::ms_channelError == -1)
@@ -1361,8 +1361,8 @@ void CStreaming::FlushRequestList()
 #ifdef USE_DEFAULT_FUNCTIONS
     plugin::Call<0x40E4E0>();
 #else
-    CStreamingInfo* streamingInfo = nullptr;
-    CStreamingInfo* nextStreamingInfo = nullptr;
+    CStreamingInfo *streamingInfo = nullptr;
+    CStreamingInfo *nextStreamingInfo = nullptr;
 
     if (ms_pStartRequestedList->m_nNextIndex == -1)
     {
