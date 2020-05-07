@@ -9,10 +9,13 @@
 #include "PluginBase.h"
 
 enum eStreamingFlags {
+    STREAMING_UNKNOWN_1 = 0x1,
     GAME_REQUIRED = 0x2,
     MISSION_REQUIRED = 0x4,
     KEEP_IN_MEMORY = 0x8,
-    PRIORITY_REQUEST = 0x10
+    PRIORITY_REQUEST = 0x10,
+    STREAMING_UNKNOWN_2 = 0x20,
+    STREAMING_DONTREMOVE_IN_LOADSCENE = STREAMING_UNKNOWN_2 | PRIORITY_REQUEST | KEEP_IN_MEMORY | MISSION_REQUIRED | GAME_REQUIRED,
 };
 
 enum eStreamingLoadState {
@@ -41,6 +44,7 @@ public:
 
      static void InjectHooks();
      int GetIndexFromBase(CStreamingInfo * pThis, CStreamingInfo * ArrayBase);
+     void Init();
      int AddToList(CStreamingInfo *listStart);
      unsigned int GetCdPosn();
      bool GetCdPosnAndSize(unsigned int *CdPosn, unsigned int *CdSize);
@@ -50,7 +54,6 @@ public:
      CStreamingInfo *GetPrev() { return m_nPrevIndex == -1 ? nullptr : &ms_pArrayBase[m_nPrevIndex]; }
     //! unused
      bool InList();
-     void Init();
      void RemoveFromList();
      void SetCdPosnAndSize(unsigned int CdPosn, unsigned int CdSize);
 };

@@ -1,7 +1,4 @@
-#include "StdInc.h"
-#include "detours.h"
-
-#pragma comment(lib, "detours.lib")
+﻿#include "StdInc.h"
 
 auto OLD_CPhysical_ProcessEntityCollision = (int(__thiscall*) (CPhysical * pThis, CPhysical * entity, CColPoint * colpoint))0x546D00;
 int __fastcall CPhysical_ProcessEntityCollision(CPhysical* pThis, void* padding, CPhysical* entity, CColPoint* colpoint);
@@ -50,16 +47,6 @@ void InjectHooksMain(void)
     CMenuManager::InjectHooks();
     CSprite2d::InjectHooks();
     CVisibilityPlugins::InjectHooks();
-    CFont::InjectHooks();
-    /*
-     DetourRestoreAfterWith();
-     DetourTransactionBegin();
-     DetourUpdateThread(GetCurrentThread());
-
-     std::printf("GOING TO HOOK FUNC NOW\n");
-     DetourAttach(&(PVOID&)OLD_CPhysical_ProcessEntityCollision, CPhysical_ProcessEntityCollision);
-     DetourTransactionCommit();
-     */
 }
 
 int __fastcall CPhysical_ProcessEntityCollision(CPhysical* pThis, void* padding, CPhysical* entity, CColPoint* colpoint)
