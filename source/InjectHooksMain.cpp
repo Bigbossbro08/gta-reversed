@@ -1,4 +1,4 @@
-﻿#include "StdInc.h"
+#include "StdInc.h"
 #include "detours.h"
 
 #pragma comment(lib, "detours.lib")
@@ -50,6 +50,7 @@ void InjectHooksMain(void)
     CMenuManager::InjectHooks();
     CSprite2d::InjectHooks();
     CVisibilityPlugins::InjectHooks();
+    CFont::InjectHooks();
     /*
      DetourRestoreAfterWith();
      DetourTransactionBegin();

@@ -12,6 +12,7 @@ unsigned int& CSprite2d::nextBufferVertex = *(unsigned int*)0xC8045C;
 float& CSprite2d::NearScreenZ = *(float*)0xC80460;
 float& CSprite2d::RecipNearClip = *(float*)0xC80464;
 RwD3D9Vertex* CSprite2d::maVertices = (RwD3D9Vertex*)0xC80468;
+CSprite2d* CSprite2d::PS2Sprite = (CSprite2d*)0xC71ADC;
 
 void CSprite2d::InjectHooks()
 {

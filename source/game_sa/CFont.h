@@ -27,6 +27,39 @@ enum  eFontStyle : unsigned char {
     FONT_PRICEDOWN
 };
 
+class CFontDetails
+{
+public:
+    char m_cLetter;
+    char _pad0[3];
+    CVector2D m_vPosn;
+    int m_fWidth;
+    int m_fHeigth;
+    RwRGBA m_color;
+    int m_fWrap;
+    int m_fSlant;
+    CVector2D m_vSlanRefPoint;
+    char m_bContainImages;
+    char m_nFontStyle;
+    char m_bPropOn;
+    char _pad1;
+    short m_wFontTexture;
+    char m_nOutline;
+    char _pad2;
+};
+
+VALIDATE_SIZE(CFontDetails, 0x30);
+
+class tFontData
+{
+public:
+    char m_propValues[208];
+    char m_spaceValue;
+    char m_unpropValue;
+};
+
+VALIDATE_SIZE(tFontData, 0xD2);
+
 class  CFont {
 public:
     // static variables
@@ -37,7 +70,7 @@ public:
     static CSprite2d *ButtonSprite;
     static unsigned char& m_nExtraFontSymbolId;
     static bool& m_bNewLine;
-    static CRGBA *m_Color;
+    static CRGBA& m_Color;
     static CVector2D *m_Scale;
     static float& m_fSlant;
     static CVector2D *m_fSlantRefPoint;
@@ -49,18 +82,23 @@ public:
     static bool& m_bFontPropOn;
     static bool& m_bFontIsBlip;
     static unsigned int m_dwFontAlpha;
-    static CRGBA *m_FontBackgroundColor;
+    static CRGBA& m_FontBackgroundColor;
     static float& m_fWrapx;
     static float& m_fFontCentreSize;
     static float& m_fRightJustifyWrap;
     static unsigned char& m_FontTextureId;
     static unsigned char& m_FontStyle;
     static unsigned char& m_nFontShadow;
-    static CRGBA *m_FontDropColor;
+    static CRGBA& m_FontDropColor;
     static unsigned char& m_nFontOutlineSize;
     static unsigned char& m_nFontOutline;
+    static CFontDetails& RenderState;
+    static CFontDetails*& pEmptyChar;
+    static CFontDetails& setup;
 
     // static functions
+
+    static void InjectHooks();
 
     // CFont initialisation
     static void Initialise();
@@ -107,7 +145,7 @@ public:
     // sets background color
     static void SetBackgroundColor(CRGBA color);
     static void SetJustify(bool on);
-    static void SetOrientation(eFontAlignment alignment);
+    static void SetAllignment(eFontAlignment alignment);
     // need to call this each frame
     static void InitPerFrame();
     // draw text we have in buffer
@@ -121,4 +159,6 @@ public:
     static void GetTextRect(CRect *rect, float x, float y, char *text);
     static void PrintString(float x, float y, char *text);
     static void PrintStringFromBottom(float x, float y, char *text);
+    static void LoadFontValue();
+    static long double GetLetterIdPropValue(char letterId);
 };

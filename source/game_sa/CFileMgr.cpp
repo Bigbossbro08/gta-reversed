@@ -15,6 +15,7 @@
 
 char *CFileMgr::ms_dirName = (char *) 0xb71a60;
 char *CFileMgr::ms_rootDirName = (char *) 0xb71ae0;
+char* CFileMgr::gta_empty_string = (char*)0x858B54; // Saw this function quite a time in file loadings and I guess this is the right place for them?
 
 /*
 static char
