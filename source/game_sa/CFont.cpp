@@ -805,7 +805,7 @@ void CFont::PrintStringFromBottom(float x, float y, char* text)
 #endif
 }
 
-#define USE_DEFAULT_FUNCTIONS
+//#define USE_DEFAULT_FUNCTIONS
 
 //7187C0
 void CFont::LoadFontValue()
@@ -825,7 +825,7 @@ void CFont::LoadFontValue()
     int attribute;
 
     fontId = 0;
-    CFileMgr::SetDir(CFileMgr::gta_empty_string);
+    CFileMgr::SetDir(gta_empty_string);
     fontDatFile = CFileMgr::OpenFile("DATA\\FONTS.DAT", "rb");
     for (line = CFileLoader::LoadLine(fontDatFile); line; line = CFileLoader::LoadLine(fontDatFile))
     {
@@ -888,7 +888,7 @@ void CFont::LoadFontValue()
 #endif
 }
 
-#undef USE_DEFAULT_FUNCTIONS
+//#undef USE_DEFAULT_FUNCTIONS
 
 long double CFont::GetLetterIdPropValue(char letterId)
 {

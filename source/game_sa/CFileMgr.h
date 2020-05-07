@@ -22,8 +22,6 @@ public:
     static char *ms_dirName;
     // length: 128
     static char *ms_rootDirName;
-    // length: 4?
-    static char* gta_empty_string;
     // functions
     static void Initialise();
     static int ChangeDir(const char *path);
