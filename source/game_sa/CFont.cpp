@@ -37,7 +37,8 @@ CFontDetails& CFont::RenderState = *(CFontDetails*)0xC71AA0;
 CFontDetails*& CFont::pEmptyChar = *(CFontDetails**)0xC716A8;
 CFontDetails& CFont::setup = *(CFontDetails*)0xC716B0;
 
-tFontData* gFontData = (tFontData*)0xC718B0;
+tFontData* CFont::gFontData = (tFontData*)0xC718B0;
+
 
 void CFont::InjectHooks()
 {
@@ -67,9 +68,10 @@ void CFont::InjectHooks()
     HookInstall(0x71A820, &CFont::PrintStringFromBottom, 7);
     HookInstall(0x71A600, &CFont::ProcessStringToDisplay, 7);
     HookInstall(0x71A700, &CFont::PrintString, 7);
-    //HookInstall(0x7187C0, &CFont::LoadFontValue, 7);
-    HookInstall(0x718770, &CFont::GetLetterIdPropValue, 7);
-    //HookInstall(0x718A10, &CFont::PrintChar, 7);
+    HookInstall(0x7187C0, &CFont::LoadFontValue, 7);
+    HookInstall(0x718770, (int(*)(char))&CFont::GetLetterIdPropValue, 7);
+    HookInstall(0x7192C0, (int(*)(char, char))&CFont::GetLetterIdPropValue, 7);
+    HookInstall(0x718A10, &CFont::PrintChar, 7);
     HookInstall(0x71A5E0, &CFont::GetNumberLines, 7);
 }
 
@@ -135,17 +137,15 @@ void CFont::Shutdown()
 #endif
 }
 
-#define USE_DEFAULT_FUNCTIONS
-
 void CFont::PrintChar(float x, float y, char character)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(float, float, char))0x718A10)(x, y, character);
 #else
-    CRect rect;
-
     if (y >= 0.0 && RsGlobal.maximumHeight >= y && x >= 0.0 && RsGlobal.maximumWidth >= x)
     {
+        CRect rect;
+
         if (CFont::m_nExtraFontSymbolId)
         {
             rect.left = x;
@@ -166,51 +166,51 @@ void CFont::PrintChar(float x, float y, char character)
             float letterIdPropValue = (float)GetLetterIdPropValue(character) * 0.03125f;
             if (RenderState.m_nFontStyle == 1 && character == 0xD0u)
                 character = 0;
-            int ratio = (character >> 4);
-            float u1 = (character & 0xF) * 0.0625f;         // 1 : 16
+            int ratio = (character >> 4); // dunno what should I call it and got directly from IDA
+            float u1 = (character & 0xF) * (float)(1 / 16);         // 1 : 16
             if (RenderState.m_wFontTexture && RenderState.m_wFontTexture != 1)
             {
-                float yRatio = ratio * 0.0625f;
                 if (!isLetter)
                 {
+                    float v1 = ratio * (float)(1 / 16);
                     rect.top = y;
                     rect.left = x;
                     rect.right = RenderState.m_fWidth * 32.0f * letterIdPropValue + x;
                     rect.bottom = RenderState.m_fHeigth * 32.0f * 0.5f + y;
-                    y = yRatio + 0.0625f;
-                    float u2 = letterIdPropValue * 0.0625f + u1;
-                    float v4 = y - 0.000099999997f;
-                    float u4 = u2 - 0.000099999997f;
-                    CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, yRatio, u2, yRatio, u1, y, u4, v4);
+                    y = v1 + (1 / 16);
+                    float u2 = letterIdPropValue * (1 / 16) + u1;
+                    float v4 = y - 0.0001f;
+                    float u4 = u2 - 0.0001f;
+                    CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, u2, v1 /*v2*/, u1, y/*v3*/, u4, v4);
                 }
             }
             else
             {
-                float v1a = ratio * 0.078125f;
                 if (!isLetter)
                 {
+                    float v1a = ratio * 0.078125f; // dunno what should I call it and got directly from IDA
                     rect.left = x;
                     if (RenderState.m_fSlant == 0.0f)
                     {
                         rect.top = y;
                         rect.right = RenderState.m_fWidth * 32.0f + x;
-                        if (character < 0xC0u)
+                        if (character < 192)
                         {
                             rect.bottom = RenderState.m_fHeigth * 40.0f * 0.5f + y;
-                            float v3 = v1a + 0.078125f - 0.0020999999f;
-                            y = u1 + 0.0625f - 0.001f;
-                            float v1 = v1a + 0.0020999999f;
-                            CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, y, v1, u1, v3, y, v3);
+                            float v3 = v1a + 0.078125f - 0.0021f;
+                            y = u1 + (1 / 16) - 0.001f;
+                            float v1 = v1a + 0.0021f;
+                            CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, y /*u2*/ , v1 /*v2*/ , u1 /*u3*/, v3, y, v3);
                         }
                         else
                         {
                             rect.bottom = RenderState.m_fHeigth * 32.0f * 0.5f + y;
                             float offset = v1a + 0.078125f;
-                            y = u1 + 0.0625f - 0.001f;
-                            float v1 = v1a + 0.0020999999f;
+                            y = u1 + (1 / 16) - 0.001f;
+                            float v1 = v1a + 0.0021f;
                             float v4 = offset - 0.015f;
-                            float v3 = offset - 0.016000001f;
-                            CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, y, v1, u1, v3, y, v4);
+                            float v3 = offset - 0.016f;
+                            CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, y /*u2*/ , v1 /*v2*/, u1 /*u2*/, v3, y /*v4*/, v4);
                         }
                     }
                     else
@@ -219,12 +219,12 @@ void CFont::PrintChar(float x, float y, char character)
                         rect.right = RenderState.m_fWidth * 32.0f + x;
                         rect.bottom = RenderState.m_fHeigth * 40.0f * 0.5f + y + 0.015f;
                         float offset = v1a + 0.078125f;
-                        y = u1 + 0.0625f - 0.001f;
-                        float v4 = offset - 0.0020999999f + 0.0099999998f;
-                        float v3 = offset - 0.0089999996f;
+                        y = u1 + (1 / 16) - 0.001f;
+                        float v4 = offset - 0.0021f + 0.01f;
+                        float v3 = offset - 0.009f;
                         float v2 = v1a + 0.0121f;
                         float v1 = v1a + 0.00055f;
-                        CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, y, v2, u1, v3, y, v4);
+                        CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, y/*u2*/, v2, u1/*u3*/, v3, y/*u4*/, v4);
                     }
                 }
             }
@@ -233,6 +233,7 @@ void CFont::PrintChar(float x, float y, char character)
 #endif
 }
 
+#define USE_DEFAULT_FUNCTIONS
 
 char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
 {
@@ -281,7 +282,10 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
     case 'B':
     case 'b':
         if (isBlip)
-            goto LABEL_5;
+        {
+            if (tag)
+                *tag = *v4;
+        }
         pRGBA = a2;
         a = a2->alpha;
         index = 2;
@@ -298,7 +302,10 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
     case 'G':
     case 'g':
         if (isBlip)
-            goto LABEL_5;
+        {
+            if (tag)
+                *tag = *v4;
+        }
         pRGBA = a2;
         a = a2->alpha;
         index = 1;
@@ -319,10 +326,11 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
             v12 = (unsigned __int64)v11;
             v13 = (double)(signed int)text * 1.5;
             v14 = (unsigned __int64)min(v13, 255.0);
-            v15 = CRGBA::CRGBA((CRGBA*)&v24, v9, v12, v14, v7->alpha);
-            RGBA__copy((int)v7, &v15->rgba);
+            *v15 = CRGBA(v9, v12, v14, v7->alpha);
+            RGBA__copy((int)v7, &v15.rgba);
         }
-        goto LABEL_5;
+        if (tag)
+            *tag = *v4;
     case 'J':
     case 'j':
         m_nExtraFontSymbolId = 12;
@@ -346,7 +354,10 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
     case 'P':
     case 'p':
         if (isBlip)
-            goto LABEL_5;
+        {
+            if (tag)
+                *tag = *v4;
+        }
         pRGBA = a2;
         a = a2->alpha;
         index = 7;
@@ -359,7 +370,10 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
     case 'R':
     case 'r':
         if (isBlip)
-            goto LABEL_5;
+        {
+            if (tag)
+                *tag = *v4;
+        }
         pRGBA = a2;
         a = a2->alpha;
         index = 0;
@@ -368,7 +382,10 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
     case 'S':
     case 's':
         if (isBlip)
-            goto LABEL_5;
+        {
+            if (tag)
+                *tag = *v4;
+        }
         pRGBA = a2;
         a = a2->alpha;
         index = 4;
@@ -389,7 +406,10 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
     case 'W':
     case 'w':
         if (isBlip)
-            goto LABEL_5;
+        {
+            if (tag)
+                *tag = *v4;
+        }
         pRGBA = a2;
         a = a2->alpha;
         index = 4;
@@ -402,7 +422,10 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
     case 'Y':
     case 'y':
         if (isBlip)
-            goto LABEL_5;
+        {
+            if (tag)
+                *tag = *v4;
+        }
         pRGBA = a2;
         a = a2->alpha;
         index = 11;
@@ -419,9 +442,6 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
             v6 = CHudColours::GetRGBA(HudColour, (CRGBA*)color, index, a);
             RGBA__copy((int)pRGBA, &v6->rgba);
         }
-    LABEL_5:
-        if (tag)
-            *tag = *v4;
         break;
     default:
         break;
@@ -595,10 +615,12 @@ void CFont::SetEdge(short value)
 #endif
 }
 
-#ifdef SetProp
-#define SET_PROP_USED
-#undef SetProp
-#endif
+// Do we really need them?
+//#ifdef SetProp
+//#define SET_PROP_USED
+//#undef SetProp
+//#endif
+
 void CFont::SetProportional(bool on)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
@@ -607,10 +629,12 @@ void CFont::SetProportional(bool on)
     m_bFontPropOn = on;
 #endif
 }
-#ifdef SET_PROP_USED
-#undef SET_PROP_USED
-#define SetProp SetPropA
-#endif
+
+// Question still comes around
+//#ifdef SET_PROP_USED
+//#undef SET_PROP_USED
+//#define SetProp SetPropA
+//#endif
 
 void CFont::SetBackground(bool enable, bool includeWrap)
 {
@@ -682,15 +706,143 @@ void CFont::InitPerFrame()
 #endif
 }
 
-void CFont::RenderFontBuffer()
-{
-    ((void(__cdecl*)())0x719840)();
-}
-
 float CFont::GetStringWidth(char* string, bool unk1, bool unk2)
 {
     return ((float(__cdecl*)(char*, bool, bool))0x71A0E0)(string, unk1, unk2);
 }
+
+#define USE_DEFAULT_FUNCTIONS
+void CFont::RenderFontBuffer()
+{
+#ifdef USE_DEFAULT_FUNCTIONS
+    ((void(__cdecl*)())0x719840)();
+#else
+    CFontChar* v3; // eax
+    char* i; // ebx
+    CFontChar* j; // ebx
+    char v6; // dl
+    unsigned __int8 v7; // al
+    unsigned __int8 v8; // cl
+    unsigned __int8 v9; // al
+    double v10; // st7
+    CSprite2d* v11; // ST14_4
+    CSprite2d* v12; // [esp-4h] [ebp-1Ch]
+    CRGBA a2; // [esp+0h] [ebp-18h]
+    float x; // [esp+4h] [ebp-14h]
+    unsigned __int8 letterId[4]; // [esp+8h] [ebp-10h]
+    float y; // [esp+Ch] [ebp-Ch]
+    unsigned __int8 v17; // [esp+12h] [ebp-6h]
+    int v18; // [esp+14h] [ebp-4h]
+
+    //result = pEmptyChar;
+    if (CFont::pEmptyChar != &CFont::setup)
+    {
+        v12 = a1;
+        Sprite[RenderState.m_wFontTexture].SetRenderState();
+        RwEngineInstance->dOpenDevice.fpRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, 1u);
+        CTextRender::Set(&RenderState, &setup);
+        a2 = RenderState.m_color;
+        v3 = pEmptyChar;
+        x = RenderState.m_vPosn.x;
+        y = RenderState.m_vPosn.y;
+        for (i = &setup[1]; i < CFont::pEmptyChar; v3 = pEmptyChar)
+        {
+            if (!*i)
+            {
+                for (j = (i + 1); j & 3; j = (j + 1))
+                    ;
+                if (j >= v3)
+                    break;
+                CTextRender::Set(&RenderState, j);
+                y = RenderState.m_vPosn.y;
+                v17 = RenderState.m_color.blue;
+                x = RenderState.m_vPosn.x;
+                a2 = RenderState.m_color;
+                i = &j[1].m_cLetter;
+            }
+            v6 = 0;
+            for (m_nExtraFontSymbolId = 0; *i == '~'; v6 = CFont::m_nExtraFontSymbolId)
+            {
+                if (v6)
+                    break;
+                i = ParseToken(i, &a2, CFont::RenderState.m_bContainImages, 0);
+                if (!RenderState.m_bContainImages)
+                    RenderState.m_color = a2;
+            }
+            v7 = *i - 32;
+            letterId[0] = *i - 32;
+            if (RenderState.m_nFontStyle)
+            {
+                v8 = GetLetterIdPropValue(letterId[0], RenderState.m_nFontStyle);
+                letterId[0] = v8;
+            }
+            else
+            {
+                if (v7 == -111)
+                {
+                    v7 = 64;
+                }
+                else if (v7 > 0x9Bu)
+                {
+                    v7 = 0;
+                }
+                letterId[0] = v7;
+                v8 = v7;
+            }
+            if (RenderState.m_fSlant != 0.0)
+                y = (RenderState.m_vSlanRefPoint.x - x) * RenderState.m_fSlant
+                + RenderState.m_vSlanRefPoint.y;
+            if (!v6 || !RenderState.m_bContainImages)
+            {
+                PrintChar(x, y, letterId[0]);
+                v6 = m_nExtraFontSymbolId;
+                v8 = letterId[0];
+            }
+            if (v6)
+            {
+                v18 = RenderState.m_nOutline;
+                x = RenderState.m_fHeigth * 17.0 + RenderState.m_nOutline + x;
+            }
+            else
+            {
+                v9 = v8;
+                if (v8 == 63)
+                    v9 = 0;
+                if (CFont::RenderState.m_bPropOn == 1)
+                    v18 = gFontData[RenderState.m_wFontTexture].m_propValues[v9];
+                else
+                    v18 = gFontData[RenderState.m_wFontTexture].m_unpropValue;
+                v10 = v18;
+                v18 = RenderState.m_nOutline;
+                x = (RenderState.m_nOutline + v10) * *&RenderState.m_fWidth + x;
+            }
+            if (!v8)
+                x = RenderState.m_fWrap + x;
+            if (*i)
+            {
+                if (v6)
+                {
+
+                    m_nExtraFontSymbolId = 0;
+                    Sprite[RenderState.m_wFontTexture].SetRenderState();
+                    continue;
+                }
+                ++i;
+            }
+            else if (v6)
+            {
+                m_nExtraFontSymbolId = 0;
+                Sprite[RenderState.m_wFontTexture].SetRenderState();
+                continue;
+            }
+        }
+        CSprite::FlushSpriteBuffer();
+        CSprite2d::RenderVertexBuffer();
+        pEmptyChar = &setup;
+    }
+#endif
+}
+#undef USE_DEFAULT_FUNCTIONS
 
 void CFont::DrawFonts()
 {
@@ -805,32 +957,21 @@ void CFont::PrintStringFromBottom(float x, float y, char* text)
 #endif
 }
 
-//#define USE_DEFAULT_FUNCTIONS
-
 //7187C0
 void CFont::LoadFontValue()
 {
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)())0x7187C0)();
 #else
-    unsigned __int8 fontId; // bl
-    FILE* fontDatFile;
-    char* line;
-    tFontData* gFontData;
-    signed int fontDataIndex;
-    tFontData* pFontData0;
-    unsigned int* propValue;
-    char propValue0;
-    unsigned int propValues[8];
-    int attribute;
-
-    fontId = 0;
     CFileMgr::SetDir(gta_empty_string);
-    fontDatFile = CFileMgr::OpenFile("DATA\\FONTS.DAT", "rb");
+    FILE* fontDatFile = CFileMgr::OpenFile("DATA\\FONTS.DAT", "rb");
+    char* line;
     for (line = CFileLoader::LoadLine(fontDatFile); line; line = CFileLoader::LoadLine(fontDatFile))
     {
         if (*line != '#' && *line)
         {
+            unsigned int fontId = 0, propValues[8];
+            char attribute;
             sscanf(line, "%s", &attribute);
             if (!memcmp(&attribute, "[TOTAL_FONTS]", 0xEu))
             {
@@ -843,44 +984,35 @@ void CFont::LoadFontValue()
             else if (!memcmp(&attribute, "[REPLACEMENT_SPACE_CHAR]", 0x19u))
             {
                 sscanf(CFileLoader::LoadLine(fontDatFile), "%d", propValues);
-                ::gFontData[fontId].m_spaceValue = propValues[0];
+                gFontData[fontId].m_spaceValue = propValues[0];
             }
             else if (!memcmp(&attribute, "[PROP]", 7u))
             {
-                gFontData = &::gFontData[fontId];
-                fontDataIndex = 26;
-                do
+                gFontData = &gFontData[fontId];
+                for (int fontDataIndex = 26; fontDataIndex; --fontDataIndex)
                 {
                     sscanf(
-                        CFileLoader::LoadLine(fontDatFile),
-                        "%d  %d  %d  %d  %d  %d  %d  %d",
-                        propValues,
-                        &propValues[1],
-                        &propValues[2],
-                        &propValues[3],
-                        &propValues[4],
-                        &propValues[5],
-                        &propValues[6],
-                        &propValues[7]);
-                    pFontData0 = gFontData;
-                    propValue = propValues;
-                    int i = 8;
-                    do
+                            CFileLoader::LoadLine(fontDatFile),
+                            "%d  %d  %d  %d  %d  %d  %d  %d",
+                            &propValues[0],
+                            &propValues[1],
+                            &propValues[2],
+                            &propValues[3],
+                            &propValues[4],
+                            &propValues[5],
+                            &propValues[6],
+                            &propValues[7]);
+                    for (int i = 8; i; --i)
                     {
-                        propValue0 = *propValue;
-                        ++propValue;
-                        pFontData0->m_propValues[0] = propValue0;
-                        pFontData0 = (pFontData0 + 1);
-                        --i;
-                    } while (i);
-                    --fontDataIndex;
-                    gFontData = pFontData0;
-                } while (fontDataIndex);
+                        gFontData->m_propValues[0] = propValues[0];
+                        gFontData = (gFontData + 1);
+                    }
+                }
             }
             else if (!memcmp(&attribute, "[UNPROP]", 9u))
             {
                 sscanf(CFileLoader::LoadLine(fontDatFile), "%d", propValues);
-                ::gFontData[fontId].m_unpropValue = propValues[0];
+                gFontData[fontId].m_unpropValue = propValues[0];
             }
         }
     }
@@ -888,12 +1020,10 @@ void CFont::LoadFontValue()
 #endif
 }
 
-//#undef USE_DEFAULT_FUNCTIONS
-
-long double CFont::GetLetterIdPropValue(char letterId)
+int CFont::GetLetterIdPropValue(char letterId)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
-    return ((double(__cdecl*)(char))0x718770)(letterId);
+    return ((int(__cdecl*)(char))0x718770)(letterId);
 #else
     if (letterId == 63)
         letterId = 0;
@@ -901,5 +1031,59 @@ long double CFont::GetLetterIdPropValue(char letterId)
         return gFontData[RenderState.m_wFontTexture].m_propValues[letterId];
     else
         return gFontData[RenderState.m_wFontTexture].m_unpropValue;
+#endif
+}
+
+//7192C0
+int CFont::GetLetterIdPropValue(char letterId, char fontType)
+{
+#ifdef USE_DEFAULT_FUNCTIONS
+    return ((int(__cdecl*)(char, char))0x7192C0)(letterId, fontType);
+#else
+    unsigned __int8 result; // al
+
+    result = letterId;
+    if (fontType != 1)
+        goto LABEL_43;
+    if (letterId == 26)
+        return -102;
+    if (letterId >= 8u && letterId <= 9u)
+        return letterId + 86;
+    switch (letterId)
+    {
+    case 4u:
+        return 93;
+    case 7u:
+        return -50;
+    case 0xEu:
+        return -49;
+    case 1u:
+        return -48;
+    }
+LABEL_43:
+    switch (letterId)
+    {
+    case 143u:
+        return -51;
+    case 31u:
+        return 91;
+    case 6u:
+        return 10;
+    case 62u:
+        return 32;
+    }
+    if (letterId >= 16u && letterId <= 25u)
+        return letterId + -128;
+    if (letterId >= 33u && letterId <= 58u)
+        return letterId + 122;
+    if (letterId >= 65u && letterId <= 90u)
+        return letterId + 90;
+    if (letterId >= 96u && letterId <= 118u)
+        return letterId + 85;
+    if (letterId >= 119u && letterId <= 140u)
+        return letterId + 62;
+    if (letterId >= 141u && letterId <= 142u)
+        result = -52;
+    return result;
 #endif
 }

@@ -30,7 +30,6 @@ public:
 	// count: 8
 	static struct RwD3D9Vertex *maVertices;
     static CSprite2d* PS2Sprite;
-
 	// class functions
 
 	static void InjectHooks();

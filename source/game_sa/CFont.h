@@ -96,6 +96,8 @@ public:
     static CFontDetails*& pEmptyChar;
     static CFontDetails& setup;
 
+    static tFontData* gFontData;
+
     // static functions
 
     static void InjectHooks();
@@ -160,5 +162,6 @@ public:
     static void PrintString(float x, float y, char *text);
     static void PrintStringFromBottom(float x, float y, char *text);
     static void LoadFontValue();
-    static long double GetLetterIdPropValue(char letterId);
+    static int GetLetterIdPropValue(char letterId);
+    static int GetLetterIdPropValue(char letterId, char fontType);
 };
