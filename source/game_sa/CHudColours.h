@@ -39,7 +39,7 @@ public:
 VALIDATE_SIZE(CHudColour, 4);
 
 
-class  CHudColours
+class CHudColours
 {
 public:
 	CHudColour m_aColours[15];

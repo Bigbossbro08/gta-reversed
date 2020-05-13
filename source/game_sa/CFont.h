@@ -46,6 +46,8 @@ public:
     short m_wFontTexture;
     char m_nOutline;
     char _pad2;
+
+    CFontDetails* operator=(CFontDetails const* rhs);
 };
 
 VALIDATE_SIZE(CFontDetails, 0x30);
@@ -111,7 +113,7 @@ public:
     // get next ' ' character in a string
     static char *GetNextSpace(char *string);
     // tags processing
-    static char *ParseToken(char *text, CRGBA & color, bool isBlip, char *tag);
+    static char* ParseToken(char *text, CRGBA & color, bool isBlip, char *tag);
     // text scaling
     static void SetScale(float w, float h);
     // text scaling depends on current language
@@ -152,7 +154,9 @@ public:
     static void InitPerFrame();
     // draw text we have in buffer
     static void RenderFontBuffer();
-    static float GetStringWidth(char *string, bool unk1, bool unk2);
+    static int GetCharacterSize(char letterId);
+    static float GetStringWidth(char *string, bool bFull, bool bScriptText);
+    static double SetCharacterOutline(char letterId);
     // same as RenderFontBuffer()
     static void DrawFonts();
     static short ProcessCurrentString(bool print, float x, float y, char *text);
@@ -161,6 +165,7 @@ public:
     static void GetTextRect(CRect *rect, float x, float y, char *text);
     static void PrintString(float x, float y, char *text);
     static void PrintStringFromBottom(float x, float y, char *text);
+
     static void LoadFontValue();
     static int GetLetterIdPropValue(char letterId);
     static int GetLetterIdPropValue(char letterId, char fontType);

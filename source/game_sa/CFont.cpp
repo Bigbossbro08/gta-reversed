@@ -73,6 +73,9 @@ void CFont::InjectHooks()
     HookInstall(0x7192C0, (int(*)(char, char))&CFont::GetLetterIdPropValue, 7);
     HookInstall(0x718A10, &CFont::PrintChar, 7);
     HookInstall(0x71A5E0, &CFont::GetNumberLines, 7);
+    HookInstall(0x71A0E0, &CFont::GetStringWidth, 7);
+    HookInstall(0x719750, &CFont::GetCharacterSize, 7);
+    HookInstall(0x719670, &CFont::SetCharacterOutline, 7);
 }
 
 void CFont::Initialise()
@@ -167,12 +170,12 @@ void CFont::PrintChar(float x, float y, char character)
             if (RenderState.m_nFontStyle == 1 && character == 0xD0u)
                 character = 0;
             int ratio = (character >> 4); // dunno what should I call it and got directly from IDA
-            float u1 = (character & 0xF) * (float)(1 / 16);         // 1 : 16
+            float u1 = (float)(character & 0xF) * (1 / 16);         // 1 : 16
             if (RenderState.m_wFontTexture && RenderState.m_wFontTexture != 1)
             {
                 if (!isLetter)
                 {
-                    float v1 = ratio * (float)(1 / 16);
+                    float v1 = (float)ratio * (1 / 16);
                     rect.top = y;
                     rect.left = x;
                     rect.right = RenderState.m_fWidth * 32.0f * letterIdPropValue + x;
@@ -240,33 +243,24 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
 #ifdef USE_DEFAULT_FUNCTIONS
     return ((char* (__cdecl*)(char*, CRGBA&, bool, char*))0x718F00)(text, color, isBlip, tag);
 #else
-    char* v4; // edi
-    RwRGBA* pRGBA; // esi
-    CRGBA* v6; // eax
-    RwRGBA* v7; // esi
-    float v8; // ST08_4
-    int v9; // ebx
-    float v10; // ST08_4
-    double v11; // st7
-    int v12; // ebp
-    float v13; // ST08_4
-    unsigned __int64 v14; // rax
-    CRGBA* v15; // eax
-    char v16; // al
+    char* pTag; // edi
+    //CRGBA* pRGBA; // esi
+    CRGBA* hudColor; // eax
+    CRGBA* color_3; // esi
+    float a; // ST08_4
+    int red; // ebx
+    float greenColorMultiplier; // ST08_4
+    double greenColorLimit; // st7
+    int green; // ebp
+    float blueColorMultiplier; // ST08_4
+    unsigned __int64 blue; // rax
+    CRGBA* color_4; // eax
+    char characters; // al
     char* result; // eax
-    int* color; // [esp+4h] [ebp-34h]
     unsigned __int8 index; // [esp+8h] [ebp-30h]
-    unsigned __int8 a; // [esp+Ch] [ebp-2Ch]
-    int v21; // [esp+18h] [ebp-20h]
-    int v22; // [esp+1Ch] [ebp-1Ch]
-    int v23; // [esp+20h] [ebp-18h]
-    int v24; // [esp+24h] [ebp-14h]
-    int v25; // [esp+28h] [ebp-10h]
-    int v26; // [esp+2Ch] [ebp-Ch]
-    int v27; // [esp+30h] [ebp-8h]
-    int v28; // [esp+34h] [ebp-4h]
+    unsigned __int8 alpha; // [esp+Ch] [ebp-2Ch]
 
-    v4 = text + 1;
+    tag = text + 1;
     switch (text[1])
     {
     case '<':
@@ -282,15 +276,11 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
     case 'B':
     case 'b':
         if (isBlip)
-        {
-            if (tag)
-                *tag = *v4;
-        }
-        pRGBA = a2;
-        a = a2->alpha;
+            goto LABEL_5;
+        //pRGBA = &color;
+        alpha = color.a;
         index = 2;
-        color = &v22;
-        goto @@SetColor;
+        //goto SetColor;
     case 'C':
     case 'c':
         m_nExtraFontSymbolId = 14;
@@ -302,35 +292,30 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
     case 'G':
     case 'g':
         if (isBlip)
-        {
-            if (tag)
-                *tag = *v4;
-        }
-        pRGBA = a2;
-        a = a2->alpha;
+            //goto LABEL_5;
+        //pRGBA = &color;
+        alpha = color.a;
         index = 1;
-        color = &v21;
-        goto @@SetColor;
+        //goto SetColor;
     case 'H':
     case 'h':
         if (!isBlip)
         {
-            v7 = a2;
-            text = (char*)a2->red;
-            v8 = (double)(signed int)text * 1.5;
-            v9 = (unsigned __int64)min(v8, 255.0);
-            text = (char*)v7->green;
-            v10 = (double)(signed int)text * 1.5;
-            v11 = min(v10, 255.0);
-            text = (char*)v7->blue;
-            v12 = (unsigned __int64)v11;
-            v13 = (double)(signed int)text * 1.5;
-            v14 = (unsigned __int64)min(v13, 255.0);
-            *v15 = CRGBA(v9, v12, v14, v7->alpha);
-            RGBA__copy((int)v7, &v15.rgba);
+            color_3 = &color;
+            *text = color.r;
+            a = *text * 1.5;
+            red = std::min<int>(red, a, 255.0);
+            *text = color_3->g;
+            greenColorMultiplier = *text * 1.5;
+            greenColorLimit = std::min<int>(greenColorLimit, greenColorMultiplier, 255.0);
+            *text = color_3->b;
+            green = greenColorLimit;
+            blueColorMultiplier = *text * 1.5;
+            blue = std::min<int>(blue, blueColorMultiplier, 255.0);
+            color_4 = &CRGBA(red, green, blue, color_3->a);
+            color_3 = color_4; // RGBA__copy(color_3, &color_4);
         }
-        if (tag)
-            *tag = *v4;
+        goto LABEL_5;
     case 'J':
     case 'j':
         m_nExtraFontSymbolId = 12;
@@ -354,15 +339,11 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
     case 'P':
     case 'p':
         if (isBlip)
-        {
-            if (tag)
-                *tag = *v4;
-        }
-        pRGBA = a2;
-        a = a2->alpha;
+            goto LABEL_5;
+        //pRGBA = &color;
+        alpha = color.a;
         index = 7;
-        color = &v26;
-        goto @@SetColor;
+        //goto SetColor;
     case 'Q':
     case 'q':
         m_nExtraFontSymbolId = 7;
@@ -370,27 +351,20 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
     case 'R':
     case 'r':
         if (isBlip)
-        {
-            if (tag)
-                *tag = *v4;
-        }
-        pRGBA = a2;
-        a = a2->alpha;
+            goto LABEL_5;
+        //pRGBA = &color;
+        alpha = color.a;
         index = 0;
-        color = (int*)&text;
-        goto @@SetColor;
+        //hudColor = text;
+        //goto SetColor;
     case 'S':
     case 's':
         if (isBlip)
-        {
-            if (tag)
-                *tag = *v4;
-        }
-        pRGBA = a2;
-        a = a2->alpha;
+            goto LABEL_5;
+        //pRGBA = &color;
+        alpha = color.a;
         index = 4;
-        color = &v28;
-        goto @@SetColor;
+        //goto SetColor;
     case 'T':
     case 't':
         m_nExtraFontSymbolId = 8;
@@ -406,15 +380,11 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
     case 'W':
     case 'w':
         if (isBlip)
-        {
-            if (tag)
-                *tag = *v4;
-        }
-        pRGBA = a2;
-        a = a2->alpha;
+            goto LABEL_5;
+        //pRGBA = &color;
+        alpha = color.a;
         index = 4;
-        color = &v23;
-        goto @@SetColor;
+        //goto SetColor;
     case 'X':
     case 'x':
         m_nExtraFontSymbolId = 5;
@@ -422,39 +392,38 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
     case 'Y':
     case 'y':
         if (isBlip)
-        {
-            if (tag)
-                *tag = *v4;
-        }
-        pRGBA = a2;
-        a = a2->alpha;
+            goto LABEL_5;
+        //pRGBA = &color;
+        alpha = color.a;
         index = 11;
-        color = &v25;
-        goto @@SetColor;
+        //goto SetColor;
     case 'l':
-        if (!color)
+        if (!isBlip)
         {
-            pRGBA = a2;
-            a = a2->alpha;
+            //pRGBA = &color;
+            alpha = color.a;
             index = 5;
-            color = &v27;
-            @@SetColor:
-            v6 = CHudColours::GetRGBA(HudColour, (CRGBA*)color, index, a);
-            RGBA__copy((int)pRGBA, &v6->rgba);
+        //SetColor:
+            //CHudColours hudColors;
+            //hudColor = CHudColours::GetRGB(HudColour, color_6, index, alpha);
+            //pRGBA = &hudColors.GetRGB(index, alpha);
         }
+    LABEL_5:
+        if (pTag)
+            *pTag = *tag;
         break;
     default:
         break;
     }
-    if (*v4 != '~')
+    if (*tag != '~')
     {
         do
-            v16 = (v4++)[1];
-        while (v16 != '~');
+            characters = (tag++)[1];
+        while (characters != '~');
     }
-    result = v4 + 2;
-    if (*v4)
-        result = v4 + 1;
+    result = tag + 2;
+    if (*tag)
+        result = tag + 1;
     return result;
 #endif
 }
@@ -706,133 +675,287 @@ void CFont::InitPerFrame()
 #endif
 }
 
-float CFont::GetStringWidth(char* string, bool unk1, bool unk2)
+float CFont::GetStringWidth(char* str, bool bFull, bool bScriptText)
 {
-    return ((float(__cdecl*)(char*, bool, bool))0x71A0E0)(string, unk1, unk2);
+#ifdef USE_DEFAULT_FUNCTIONS
+    return ((float(__cdecl*)(char*, bool, bool))0x71A0E0)(str, bFull, bScriptText);
+#else
+    char bLastWasLetter; // bl
+    signed int stringLength; // edx
+    signed int i; // eax
+    signed int stringLength_1; // ecx
+    char* curr; // esi
+    char pCurr; // al
+    char v9; // al
+    char* j; // esi
+    char v11; // al
+    char letterId; // al
+    char bLastWasTag; // [esp+Bh] [ebp-195h]
+    float width; // [esp+Ch] [ebp-194h]
+    char string[400]; // [esp+10h] [ebp-190h]
+    memset(string, 0, 400);
+
+    width = 0.0;
+    bLastWasTag = 0;
+    bLastWasLetter = 0;
+    stringLength = CMessages::GetStringLength(str);
+    for (i = 0; ; ++i)
+    {
+        stringLength_1 = 399;
+        if (stringLength <= 0x18F)
+            stringLength_1 = stringLength;
+        if (i >= stringLength_1)
+            break;
+        string[i] = string[str - string + i];
+    }
+    string[i] = 0;
+    CMessages::InsertPlayerControlKeysInString(string);
+    curr = string;
+    while (1)
+    {
+        pCurr = *curr;
+        if (*curr == ' ' && !bFull)
+            break;
+        if (!pCurr)
+            break;
+        if (pCurr == '~')
+        {
+            if (!bFull && (bLastWasTag || bLastWasLetter))
+                return width;
+            v9 = curr[1];
+            j = curr + 1;
+            if (v9 != '~')
+            {
+                do
+                    v11 = (j++)[1];
+                while (v11 != '~');
+            }
+            curr = j + 1;
+            if (bLastWasLetter || *curr == '~')
+                bLastWasTag = 1;
+        }
+        else
+        {
+            if (!bFull && pCurr == ' ' && bLastWasTag)
+                return width;
+            letterId = pCurr - 32;
+            if (bScriptText)
+            {
+                ++curr;
+                width = SetCharacterOutline(letterId) + width;
+            }
+            else
+            {
+                ++curr;
+                width = GetCharacterSize(letterId) + width;
+            }
+            bLastWasLetter = 1;
+        }
+    }
+    return width;
+#endif
+}
+
+int CFont::GetCharacterSize(char letterId)
+{
+#ifdef USE_DEFAULT_FUNCTIONS
+    return ((char(__cdecl*)(char))0x719750)(letterId);
+#else
+    unsigned __int8 letterIdPropValue;
+    int result;
+
+    letterIdPropValue = letterId;
+    if (letterId == '?')
+    {
+        letterIdPropValue = 0;
+        letterId = 0;
+    }
+    if (m_FontStyle)
+    {
+        letterIdPropValue = GetLetterIdPropValue(letterId, m_FontStyle);
+    }
+    else if (letterIdPropValue == -111)
+    {
+        letterIdPropValue = 64;
+    }
+    else if (letterIdPropValue > 0x9Bu)
+    {
+        letterIdPropValue = 0;
+    }
+    if (m_bFontPropOn)
+        result = gFontData[m_FontTextureId].m_propValues[letterIdPropValue];
+    else
+        result = gFontData[m_FontTextureId].m_unpropValue;
+    return result;
+#endif
+}
+
+double CFont::SetCharacterOutline(char letterId)
+{
+#ifdef USE_DEFAULT_FUNCTIONS
+    return ((char(__cdecl*)(char))0x719670)(letterId);
+#else
+    char font = 0;
+    char idForPropValue;
+    float totalOutlineValue;
+
+    char prevLetterId = letterId;
+    if (letterId == 63)
+    {
+        prevLetterId = 0;
+        letterId = 0;
+    }
+    char proportional = CTheScripts::IntroTextLines[CTheScripts::NumberOfIntroTextLinesThisFrame].proportional;
+    float letterWidth = CTheScripts::IntroTextLines[CTheScripts::NumberOfIntroTextLinesThisFrame].letterWidth;
+    char outlineType = CTheScripts::IntroTextLines[CTheScripts::NumberOfIntroTextLinesThisFrame].outlineType;
+    if (CTheScripts::IntroTextLines[CTheScripts::NumberOfIntroTextLinesThisFrame].font == 2)
+    {
+        idForPropValue = GetLetterIdPropValue(letterId, 2);
+    }
+    else if (CTheScripts::IntroTextLines[CTheScripts::NumberOfIntroTextLinesThisFrame].font == 3)
+    {
+        idForPropValue = GetLetterIdPropValue(letterId, 1);
+    }
+    else
+    {
+        font = CTheScripts::IntroTextLines[CTheScripts::NumberOfIntroTextLinesThisFrame].font;
+        idForPropValue = prevLetterId;
+        if (prevLetterId == -111)
+        {
+            idForPropValue = 64;
+        }
+        else if (prevLetterId > 0x9Bu)
+        {
+            idForPropValue = 0;
+        }
+    }
+    if (proportional)
+        totalOutlineValue = gFontData[font].m_propValues[idForPropValue] + outlineType;
+    else
+        totalOutlineValue = gFontData[font].m_unpropValue + outlineType;
+    return letterWidth * totalOutlineValue;
+#endif
 }
 
 #define USE_DEFAULT_FUNCTIONS
+
 void CFont::RenderFontBuffer()
 {
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)())0x719840)();
 #else
-    CFontChar* v3; // eax
-    char* i; // ebx
-    CFontChar* j; // ebx
-    char v6; // dl
-    unsigned __int8 v7; // al
-    unsigned __int8 v8; // cl
-    unsigned __int8 v9; // al
-    double v10; // st7
-    CSprite2d* v11; // ST14_4
-    CSprite2d* v12; // [esp-4h] [ebp-1Ch]
-    CRGBA a2; // [esp+0h] [ebp-18h]
-    float x; // [esp+4h] [ebp-14h]
-    unsigned __int8 letterId[4]; // [esp+8h] [ebp-10h]
-    float y; // [esp+Ch] [ebp-Ch]
-    unsigned __int8 v17; // [esp+12h] [ebp-6h]
-    int v18; // [esp+14h] [ebp-4h]
+    CFontDetails* v0; // eax
+    CFontDetails* i; // ebx
+    int j; // ebx
+    char m_nExtraFontSymbolId; // dl
+    char letterIndex; // al
+    unsigned __int8 getLetterIdPropValue; // cl
+    unsigned __int8 getLetterIdPropValueIndex; // al
+    double v7; // st7
+    CRGBA col; // [esp+8h] [ebp-18h]
+    float x; // [esp+Ch] [ebp-14h]
+    char letterId; // [esp+10h] [ebp-10h]
+    float y; // [esp+14h] [ebp-Ch]
+    unsigned __int8 v12; // [esp+1Ah] [ebp-6h]
+    int propValue; // [esp+1Ch] [ebp-4h]
 
-    //result = pEmptyChar;
-    if (CFont::pEmptyChar != &CFont::setup)
+    if (pEmptyChar != &setup)
     {
-        v12 = a1;
         Sprite[RenderState.m_wFontTexture].SetRenderState();
         RwEngineInstance->dOpenDevice.fpRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, 1u);
-        CTextRender::Set(&RenderState, &setup);
-        a2 = RenderState.m_color;
-        v3 = pEmptyChar;
+
+        RenderState = setup;
+        //&RenderState = setup;
+        col = RenderState.m_color;
+        v0 = pEmptyChar;
         x = RenderState.m_vPosn.x;
         y = RenderState.m_vPosn.y;
-        for (i = &setup[1]; i < CFont::pEmptyChar; v3 = pEmptyChar)
+        for (i = &setup[1]; i < pEmptyChar; v0 = pEmptyChar)
         {
-            if (!*i)
+            if (!i->m_cLetter)
             {
                 for (j = (i + 1); j & 3; j = (j + 1))
                     ;
-                if (j >= v3)
+                if (j >= v0)
                     break;
-                CTextRender::Set(&RenderState, j);
+                RenderState = *j;
+                //&RenderState = j;
+                //CTextRender::Set(&CFont::RenderState, j);
                 y = RenderState.m_vPosn.y;
-                v17 = RenderState.m_color.blue;
+                v12 = RenderState.m_color.blue;
                 x = RenderState.m_vPosn.x;
-                a2 = RenderState.m_color;
-                i = &j[1].m_cLetter;
+                col = RenderState.m_color;
+                i = j + 1;
             }
-            v6 = 0;
-            for (m_nExtraFontSymbolId = 0; *i == '~'; v6 = CFont::m_nExtraFontSymbolId)
+            m_nExtraFontSymbolId = 0;
+            for (m_nExtraFontSymbolId = 0; i->m_cLetter == '~'; m_nExtraFontSymbolId = m_nExtraFontSymbolId)
             {
-                if (v6)
+                if (m_nExtraFontSymbolId)
                     break;
-                i = ParseToken(i, &a2, CFont::RenderState.m_bContainImages, 0);
+                i = ParseToken(&i->m_cLetter, col, RenderState.m_bContainImages, 0);
                 if (!RenderState.m_bContainImages)
-                    RenderState.m_color = a2;
+                    RenderState.m_color = col.ToRwRGBA();
             }
-            v7 = *i - 32;
-            letterId[0] = *i - 32;
+            letterIndex = i->m_cLetter - 32;
+            letterId = i->m_cLetter - 32;
             if (RenderState.m_nFontStyle)
             {
-                v8 = GetLetterIdPropValue(letterId[0], RenderState.m_nFontStyle);
-                letterId[0] = v8;
+                getLetterIdPropValue = GetLetterIdPropValue(letterId, RenderState.m_nFontStyle);
+                letterId = getLetterIdPropValue;
             }
             else
             {
-                if (v7 == -111)
+                if (letterIndex == 0x91u)
                 {
-                    v7 = 64;
+                    letterIndex = 0x40;
                 }
-                else if (v7 > 0x9Bu)
+                else if (letterIndex > 155u)
                 {
-                    v7 = 0;
+                    letterIndex = 0;
                 }
-                letterId[0] = v7;
-                v8 = v7;
+                letterId = letterIndex;
+                getLetterIdPropValue = letterIndex;
             }
-            if (RenderState.m_fSlant != 0.0)
-                y = (RenderState.m_vSlanRefPoint.x - x) * RenderState.m_fSlant
-                + RenderState.m_vSlanRefPoint.y;
-            if (!v6 || !RenderState.m_bContainImages)
+            if (CFont::RenderState.m_fSlant != 0.0)
+                y = (CFont::RenderState.m_vSlanRefPoint.x - x) * CFont::RenderState.m_fSlant
+                + CFont::RenderState.m_vSlanRefPoint.y;
+            if (!m_nExtraFontSymbolId || !CFont::RenderState.m_bContainImages)
             {
-                PrintChar(x, y, letterId[0]);
-                v6 = m_nExtraFontSymbolId;
-                v8 = letterId[0];
+                CFont::PrintChar(x, y, letterId);
+                m_nExtraFontSymbolId = CFont::m_nExtraFontSymbolId;
+                getLetterIdPropValue = letterId;
             }
-            if (v6)
+            if (m_nExtraFontSymbolId)
             {
-                v18 = RenderState.m_nOutline;
-                x = RenderState.m_fHeigth * 17.0 + RenderState.m_nOutline + x;
+                propValue = CFont::RenderState.m_nOutline;
+                x = CFont::RenderState.m_fHeigth * 17.0 + CFont::RenderState.m_nOutline + x;
             }
             else
             {
-                v9 = v8;
-                if (v8 == 63)
-                    v9 = 0;
+                getLetterIdPropValueIndex = getLetterIdPropValue;
+                if (getLetterIdPropValue == '?')
+                    getLetterIdPropValueIndex = 0;
                 if (CFont::RenderState.m_bPropOn == 1)
-                    v18 = gFontData[RenderState.m_wFontTexture].m_propValues[v9];
+                    propValue = gFontData[CFont::RenderState.m_wFontTexture].m_propValues[getLetterIdPropValueIndex];
                 else
-                    v18 = gFontData[RenderState.m_wFontTexture].m_unpropValue;
-                v10 = v18;
-                v18 = RenderState.m_nOutline;
-                x = (RenderState.m_nOutline + v10) * *&RenderState.m_fWidth + x;
+                    propValue = gFontData[CFont::RenderState.m_wFontTexture].m_unpropValue;
+                v7 = propValue;
+                propValue = CFont::RenderState.m_nOutline;
+                x = (CFont::RenderState.m_nOutline + v7) * *&CFont::RenderState.m_fWidth + x;
             }
-            if (!v8)
-                x = RenderState.m_fWrap + x;
-            if (*i)
+            if (!getLetterIdPropValue)
+                x = CFont::RenderState.m_fWrap + x;
+            if (i->m_cLetter)
             {
-                if (v6)
-                {
-
-                    m_nExtraFontSymbolId = 0;
-                    Sprite[RenderState.m_wFontTexture].SetRenderState();
-                    continue;
-                }
-                ++i;
+                if (m_nExtraFontSymbolId)
+                    goto LABEL_39;
+                i = (i + 1);
             }
-            else if (v6)
+            else if (m_nExtraFontSymbolId)
             {
-                m_nExtraFontSymbolId = 0;
-                Sprite[RenderState.m_wFontTexture].SetRenderState();
+            LABEL_39:
+                CFont::m_nExtraFontSymbolId = 0;
+                Sprite[CFont::RenderState.m_wFontTexture].SetRenderState();
                 continue;
             }
         }
@@ -988,24 +1111,15 @@ void CFont::LoadFontValue()
             }
             else if (!memcmp(&attribute, "[PROP]", 7u))
             {
-                gFontData = &gFontData[fontId];
-                for (int fontDataIndex = 26; fontDataIndex; --fontDataIndex)
+                tFontData* pFontData = &gFontData[fontId];
+                for (int propIndex = 0; propIndex < 26; propIndex++)
                 {
-                    sscanf(
-                            CFileLoader::LoadLine(fontDatFile),
-                            "%d  %d  %d  %d  %d  %d  %d  %d",
-                            &propValues[0],
-                            &propValues[1],
-                            &propValues[2],
-                            &propValues[3],
-                            &propValues[4],
-                            &propValues[5],
-                            &propValues[6],
-                            &propValues[7]);
-                    for (int i = 8; i; --i)
+                    char* line = CFileLoader::LoadLine(fontDatFile);
+                    sscanf(line, "%d  %d  %d  %d  %d  %d  %d  %d", &propValues[0], &propValues[1], &propValues[2],
+                        &propValues[3], &propValues[4], &propValues[5], &propValues[6], &propValues[7]);
+                    for (int i = 0; i < 8; i++)
                     {
-                        gFontData->m_propValues[0] = propValues[0];
-                        gFontData = (gFontData + 1);
+                        pFontData->m_propValues[propIndex + i] = propValues[i];
                     }
                 }
             }
@@ -1040,7 +1154,7 @@ int CFont::GetLetterIdPropValue(char letterId, char fontType)
 #ifdef USE_DEFAULT_FUNCTIONS
     return ((int(__cdecl*)(char, char))0x7192C0)(letterId, fontType);
 #else
-    unsigned __int8 result; // al
+    short result;
 
     result = letterId;
     if (fontType != 1)
@@ -1086,4 +1200,28 @@ LABEL_43:
         result = -52;
     return result;
 #endif
+}
+
+CFontDetails* CFontDetails::operator=(CFontDetails const* rhs)
+{
+    *&this->m_cLetter = *&rhs->m_cLetter;
+    this->m_vPosn.x = rhs->m_vPosn.x;
+    this->m_vPosn.y = rhs->m_vPosn.y;
+    this->m_fWidth = rhs->m_fWidth;
+    this->m_fHeigth = rhs->m_fHeigth;
+    this->m_color.red = rhs->m_color.red;
+    this->m_color.green = rhs->m_color.green;
+    this->m_color.blue = rhs->m_color.blue;
+    this->m_color.alpha = rhs->m_color.alpha;
+    this->m_fWrap = rhs->m_fWrap;
+    this->m_fSlant = rhs->m_fSlant;
+    this->m_vSlanRefPoint.x = rhs->m_vSlanRefPoint.x;
+    this->m_vSlanRefPoint.y = rhs->m_vSlanRefPoint.y;
+    this->m_bContainImages = rhs->m_bContainImages;
+    this->m_nFontStyle = rhs->m_nFontStyle;
+    this->m_bPropOn = rhs->m_bPropOn;
+    this->m_wFontTexture = rhs->m_wFontTexture;
+    this->m_nOutline = rhs->m_nOutline;
+
+    return this;
 }
