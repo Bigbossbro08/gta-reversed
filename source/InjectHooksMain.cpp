@@ -2,7 +2,9 @@
 
 void InjectHooksMain(void)
 {
+    CRunningScript::InjectHooks();
     CStreaming::InjectHooks();
+    InjectCdStreamHooks();
     CVehicleModelInfo::InjectHooks();
     CFileLoader::InjectHooks();
     CFileMgr::InjectHooks();
@@ -14,6 +16,9 @@ void InjectHooksMain(void)
     CAnimBlendAssociation::InjectHooks();
     CEventEditableResponse::InjectHooks();
     CEventDamage::InjectHooks();
+    CPedScriptedTaskRecord::InjectHooks();
+    CPedScriptedTaskRecordData::InjectHooks();
+    CScriptedBrainTaskStore::InjectHooks();
     CTaskManager::InjectHooks();
     CTaskComplexUseSequence::InjectHooks();
     CTaskComplexSequence::InjectHooks();

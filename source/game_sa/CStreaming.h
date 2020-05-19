@@ -16,16 +16,7 @@
 #include "CLinkList.h"
 #include "CLoadedCarGroup.h"
 #include "CDirectory.h"
-
-const std::uint32_t TOTAL_DFF_MODEL_IDS = 20000;
-const std::uint32_t TOTAL_TXD_MODEL_IDS = 5000;
-const std::uint32_t TOTAL_COL_MODEL_IDS = 255;
-const std::uint32_t TOTAL_IPL_MODEL_IDS = 256;
-const std::uint32_t TOTAL_DAT_MODEL_IDS = 64;
-const std::uint32_t TOTAL_IFP_MODEL_IDS = 180;
-const std::uint32_t TOTAL_RRR_MODEL_IDS = 475;
-const std::uint32_t TOTAL_SCM_MODEL_IDS = 82;
-const std::uint32_t TOTAL_INTERNAL_MODEL_IDS = 4; // internal use?
+#include "constants.h"
 
 enum eResourceFirstID
 {
@@ -73,7 +64,7 @@ struct tStreamingChannel
     int iBlockOffset;
     int iBlockCount;
     int totalTries;
-    int m_nCdStreamStatus;
+    eCdStreamStatus m_nCdStreamStatus;
 };
 
 VALIDATE_SIZE(tStreamingChannel, 0x98);
@@ -133,8 +124,7 @@ public:
      static CLinkList<CEntity*> &ms_rwObjectInstances;
      static CLink<CEntity*>*& ms_renderEntityLink;
      static bool &m_bLoadingAllRequestedModels;
-     static bool &m_bModelStreamNotLoaded;
-     static unsigned int &ms_numberOfBytesRead; 
+     static bool &m_bModelStreamNotLoaded; 
      
      static void InjectHooks();
 
