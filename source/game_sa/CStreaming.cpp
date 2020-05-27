@@ -204,10 +204,10 @@ void CStreaming::AddLodsToRequestList(CVector const& point, unsigned int streami
     float maxX = point.x + CRenderer::ms_fFarClipPlane;
     float minY = point.y - CRenderer::ms_fFarClipPlane;
     float maxY = point.y + CRenderer::ms_fFarClipPlane;
-    std::int32_t startSectorX = std::max(CWorld::SectorFloor((minX / 200.0f) + 15.0f), 0);
-    std::int32_t startSectorY = std::max(CWorld::SectorFloor((minY / 200.0f) + 15.0f), 0);
-    std::int32_t endSectorX = std::min(CWorld::SectorFloor((maxX / 200.0f) + 15.0f), MAX_LOD_PTR_LISTS_X - 1);
-    std::int32_t endSectorY = std::min(CWorld::SectorFloor((maxY / 200.0f) + 15.0f), MAX_LOD_PTR_LISTS_Y - 1);
+    std::int32_t startSectorX = std::max(CWorld::GetLodSectorX(minX), 0);
+    std::int32_t startSectorY = std::max(CWorld::GetLodSectorY(minY), 0);
+    std::int32_t endSectorX = std::min(CWorld::GetLodSectorX(maxX), MAX_LOD_PTR_LISTS_X - 1);
+    std::int32_t endSectorY = std::min(CWorld::GetLodSectorY(maxY), MAX_LOD_PTR_LISTS_Y - 1);
     for (std::int32_t sectorY = startSectorY; sectorY <= endSectorY; ++sectorY) {
         for (std::int32_t sectorX = startSectorX; sectorX <= endSectorX; ++sectorX) {
             CPtrList& lodList = CWorld::GetLodPtrList(sectorX, sectorY);
@@ -229,15 +229,15 @@ void CStreaming::AddModelsToRequestList(CVector const& point, unsigned int strea
     const float maxX = point.x + fRadius;
     const float minY = point.y - fRadius;
     const float maxY = point.y + fRadius;
-    const std::int32_t radius = static_cast<std::int32_t>(fRadius * 0.02f);
+    const std::int32_t radius = static_cast<std::int32_t>(CWorld::GetHalfMapSectorX(fRadius));
     const std::int32_t squaredRadius1 = (radius - 1) * (radius - 1);
     const std::int32_t squaredRadius2 = (radius + 2) * (radius + 2);
-    const std::int32_t pointX = CWorld::SectorFloor((point.x / 50.0f) + 60.0f);
-    const std::int32_t pointY = CWorld::SectorFloor((point.y / 50.0f) + 60.0f);
-    std::int32_t startSectorX = std::max(CWorld::SectorFloor((minX / 50.0f) + 60.0f), 0);
-    std::int32_t startSectorY = std::max(CWorld::SectorFloor((minY / 50.0f) + 60.0f), 0);
-    std::int32_t endSectorX = std::min(CWorld::SectorFloor((maxX / 50.0f) + 60.0f), MAX_SECTORS_X - 1);
-    std::int32_t endSectorY = std::min(CWorld::SectorFloor((maxY / 50.0f) + 60.0f), MAX_SECTORS_Y - 1);
+    const std::int32_t pointX = CWorld::GetSectorX(point.x);
+    const std::int32_t pointY = CWorld::GetSectorY(point.y);
+    std::int32_t startSectorX = std::max(CWorld::GetSectorX(minX), 0);
+    std::int32_t startSectorY = std::max(CWorld::GetSectorY(minY), 0);
+    std::int32_t endSectorX = std::min(CWorld::GetSectorX(maxX), MAX_SECTORS_X - 1);
+    std::int32_t endSectorY = std::min(CWorld::GetSectorY(maxY), MAX_SECTORS_Y - 1);
     for (std::int32_t sectorY = startSectorY; sectorY <= endSectorY; ++sectorY) {
         const std::int32_t distanceY = sectorY - pointY;
         const std::int32_t squaredDistanceY = distanceY * distanceY;
@@ -692,8 +692,8 @@ void CStreaming::DeleteRwObjectsAfterDeath(CVector const& point) {
 #ifdef USE_DEFAULT_FUNCTIONS
     plugin::CallDynGlobal<CVector const&>(0x409210, point);
 #else
-    std::int32_t pointX = CWorld::SectorFloor((point.x / 50.0f) + 60.0f);
-    std::int32_t pointY = CWorld::SectorFloor((point.y / 50.0f) + 60.0f);
+    std::int32_t pointX = CWorld::GetSectorX(point.x);
+    std::int32_t pointY = CWorld::GetSectorY(point.y);
     for (std::int32_t sectorX = 0; sectorX < MAX_SECTORS_X; ++sectorX) {
         if (fabs(pointX - sectorX) > 3.0f) {
             for (std::int32_t sectorY = 0; sectorY < MAX_SECTORS_Y; ++sectorY) {
@@ -717,8 +717,8 @@ void CStreaming::DeleteRwObjectsBehindCamera(std::int32_t memoryToCleanInBytes) 
     if (static_cast<std::int32_t>(CStreaming::ms_memoryUsed) < memoryToCleanInBytes)
         return;
     const CVector& cameraPos = TheCamera.GetPosition();
-    std::int32_t pointX = CWorld::SectorFloor(cameraPos.x / 50.0f + 60.0f);
-    std::int32_t pointY = CWorld::SectorFloor(cameraPos.y / 50.0f + 60.0f);
+    std::int32_t pointX = CWorld::GetSectorX(cameraPos.x);
+    std::int32_t pointY = CWorld::GetSectorY(cameraPos.y);
     const CVector2D& cameraUp = TheCamera.GetMatrix()->up;
     if (fabs(cameraUp.y) < fabs(cameraUp.x)) {
         std::int32_t sectorStartY = std::max(pointY - 10, 0);
@@ -1506,21 +1506,19 @@ void CStreaming::FlushChannels()
 #endif
 }
 
-void CStreaming::RequestModelStream(int channelIndex)
+void CStreaming::RequestModelStream(int channelId)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
-    plugin::CallDynGlobal<int>(0x40CBA0, channelIndex);
+    plugin::CallDynGlobal<int>(0x40CBA0, channelId);
 #else
     int CdStreamLastPosn = CdStreamGetLastPosn();
     int modelId = GetNextFileOnCd(CdStreamLastPosn, 1);
     if (modelId == -1)
-    {
         return;
-    }
 
-    int32_t blockOffsetMimg = 0;
-    unsigned int blockCount = 0;
-
+    tStreamingChannel& channel = ms_channel[channelId];
+    int32_t offsetAndHandle = 0;
+    unsigned int sectorcount = 0;
     CStreamingInfo* streamingInfo = &ms_aInfoForModel[modelId];
     while (!(streamingInfo->m_nFlags & (STREAMING_KEEP_IN_MEMORY | STREAMING_MISSION_REQUIRED | STREAMING_GAME_REQUIRED)))
     {
@@ -1532,11 +1530,11 @@ void CStreaming::RequestModelStream(int channelIndex)
         RemoveModel(modelId);
         if (streamingInfo->m_nCdSize)
         {
-            blockOffsetMimg = streamingInfo->m_nCdPosn + ms_files[streamingInfo->m_nImgId].m_StreamHandle;
-            blockCount = streamingInfo->m_nCdSize;
+            offsetAndHandle = streamingInfo->m_nCdPosn + ms_files[streamingInfo->m_nImgId].m_StreamHandle;
+            sectorcount = streamingInfo->m_nCdSize;
         }
 
-        modelId = GetNextFileOnCd(blockCount + blockOffsetMimg, 1);
+        modelId = GetNextFileOnCd(sectorcount + offsetAndHandle, 1);
         if (modelId == -1)
         {
             return;
@@ -1549,36 +1547,34 @@ void CStreaming::RequestModelStream(int channelIndex)
     }
     if (streamingInfo->m_nCdSize)
     {
-        blockOffsetMimg = streamingInfo->m_nCdPosn + ms_files[streamingInfo->m_nImgId].m_StreamHandle;
-        blockCount = streamingInfo->m_nCdSize;
+        offsetAndHandle = streamingInfo->m_nCdPosn + ms_files[streamingInfo->m_nImgId].m_StreamHandle;
+        sectorcount = streamingInfo->m_nCdSize;
     }
-    if (blockCount > ms_streamingBufferSize)
+    if (sectorcount > ms_streamingBufferSize)
     {
-        if (channelIndex == 1 || ms_channel[1].LoadStatus)
+        if (channelId == 1 || ms_channel[1].LoadStatus)
         {
             return;
         }
         ms_bLoadingBigModel = 1;
     }
 
-    unsigned int sectorCount = 0;
+    unsigned int sectorCountSum = 0;
     bool isPreviousModelBig = false;
     bool isPreviousModelPed = false;
-
-    int modelIndex = 0;
     const int numberOfModelIds = sizeof(tStreamingChannel::modelIds) / sizeof(tStreamingChannel::modelIds[0]);
-    while (modelIndex < numberOfModelIds)
-    {
+    std::int32_t modelIndex = 0;
+    for (; modelIndex < numberOfModelIds; modelIndex++) {
         streamingInfo = &ms_aInfoForModel[modelId];
         if (streamingInfo->m_nLoadState != LOADSTATE_REQUESTED)
             break;
         if (streamingInfo->m_nCdSize)
-            blockCount = streamingInfo->m_nCdSize;
+            sectorcount = streamingInfo->m_nCdSize;
         if (ms_numPriorityRequests && !(streamingInfo->m_nFlags & STREAMING_PRIORITY_REQUEST))
             break;
         if (modelId >= RESOURCE_ID_TXD) {
             if (modelId < RESOURCE_ID_IFP || modelId >= RESOURCE_ID_RRR) {
-                if (isPreviousModelBig && blockCount > 200)
+                if (isPreviousModelBig && sectorcount > 200)
                     break;
             }
             else if (CCutsceneMgr::ms_cutsceneProcessing || ms_aInfoForModel[MODEL_MALE01].m_nLoadState != LOADSTATE_LOADED)
@@ -1607,22 +1603,17 @@ void CStreaming::RequestModelStream(int channelIndex)
                     break;
             }
         }
+        channel.modelStreamingBufferOffsets[modelIndex] = sectorCountSum;
+        channel.modelIds[modelIndex] = modelId;
 
-        tStreamingChannel& streamingChannel = ms_channel[channelIndex];
-        streamingChannel.modelStreamingBufferOffsets[modelIndex] = sectorCount;
-        streamingChannel.modelIds[modelIndex] = modelId;
-
-        sectorCount += blockCount;
-        if (sectorCount > ms_streamingBufferSize&& modelIndex > 0)
-        {
-            sectorCount = sectorCount - blockCount;
+        sectorCountSum += sectorcount;
+        if (sectorCountSum > ms_streamingBufferSize&& modelIndex > 0) {
+            sectorCountSum -= sectorcount;
             break;
         }
-
-
         CBaseModelInfo* pBaseModelInfo = CModelInfo::ms_modelInfoPtrs[modelId];
         if (modelId >= RESOURCE_ID_TXD) {
-            if (blockCount > 200)
+            if (sectorcount > 200)
                 isPreviousModelBig = true;
         }
         else {
@@ -1631,37 +1622,24 @@ void CStreaming::RequestModelStream(int channelIndex)
             if (pBaseModelInfo->GetModelType() == MODEL_INFO_VEHICLE)
                 isPreviousModelBig = true;
         }
-
         streamingInfo->m_nLoadState = LOADSTATE_CHANNELED;
         streamingInfo->RemoveFromList();
-        --ms_numModelsRequested;
-
-        if (streamingInfo->m_nFlags & STREAMING_PRIORITY_REQUEST)
-        {
-            int numPriorityRequests = ms_numPriorityRequests - 1;
+        ms_numModelsRequested--;
+        if (streamingInfo->m_nFlags & STREAMING_PRIORITY_REQUEST) {
             streamingInfo->m_nFlags &= ~STREAMING_PRIORITY_REQUEST;
-            ms_numPriorityRequests = numPriorityRequests;
+            ms_numPriorityRequests--;
         }
-
         modelId = streamingInfo->m_nNextIndexOnCd;
-        modelIndex++;
     }
-
-    if (modelIndex < numberOfModelIds)
-    {
-        tStreamingChannel& streamingChannel = ms_channel[channelIndex];
-        memset(&streamingChannel.modelIds[modelIndex], 0xFFu, 4 * (numberOfModelIds - modelIndex)); // 0xFFu = -1
+    for (std::int32_t i = modelIndex; i < numberOfModelIds; i++) {
+        channel.modelIds[i] = -1;
     }
-
-    CdStreamRead(channelIndex, ms_pStreamingBuffer[channelIndex], blockOffsetMimg, sectorCount);
-
-    tStreamingChannel& streamingChannel = ms_channel[channelIndex];
-    streamingChannel.LoadStatus = LOADSTATE_LOADED;
-    streamingChannel.iLoadingLevel = 0;
-    streamingChannel.iBlockCount = sectorCount;
-    streamingChannel.iBlockOffset = blockOffsetMimg;
-    streamingChannel.totalTries = 0;
-
+    CdStreamRead(channelId, ms_pStreamingBuffer[channelId], offsetAndHandle, sectorCountSum);
+    channel.LoadStatus = LOADSTATE_LOADED;
+    channel.iLoadingLevel = 0;
+    channel.sectorCount = sectorCountSum;
+    channel.offsetAndHandle = offsetAndHandle;
+    channel.totalTries = 0;
     if (m_bModelStreamNotLoaded)
         m_bModelStreamNotLoaded = false;
 #endif
@@ -2512,7 +2490,7 @@ void CStreaming::RetryLoadFile(int channelId) {
         }
         if (bStreamRead) {
             std::uint8_t* pBuffer = CStreaming::ms_pStreamingBuffer[channelId];
-            CdStreamRead(channelId, pBuffer, streamingChannel.iBlockOffset, streamingChannel.iBlockCount);
+            CdStreamRead(channelId, pBuffer, streamingChannel.offsetAndHandle, streamingChannel.sectorCount);
             streamingChannel.LoadStatus = LOADSTATE_LOADED;
             streamingChannel.iLoadingLevel = -600;
         }
@@ -2825,10 +2803,10 @@ void CStreaming::InstanceLoadedModels(CVector const& point) {
     const float maxX = point.x + fRadius;
     const float minY = point.y - fRadius;
     const float maxY = point.y + fRadius;
-    std::int32_t startSectorX = std::max(CWorld::SectorFloor((minX / 50.0f) + 60.0f), 0);
-    std::int32_t startSectorY = std::max(CWorld::SectorFloor((minY / 50.0f) + 60.0f), 0);
-    std::int32_t endSectorX = std::min(CWorld::SectorFloor((maxX / 50.0f) + 60.0f), MAX_SECTORS_X - 1);
-    std::int32_t endSectorY = std::min(CWorld::SectorFloor((maxY / 50.0f) + 60.0f), MAX_SECTORS_Y - 1);
+    std::int32_t startSectorX = std::max(CWorld::GetSectorX(minX), 0);
+    std::int32_t startSectorY = std::max(CWorld::GetSectorY(minY), 0);
+    std::int32_t endSectorX = std::min(CWorld::GetSectorX(maxX), MAX_SECTORS_X - 1);
+    std::int32_t endSectorY = std::min(CWorld::GetSectorY(maxY), MAX_SECTORS_Y - 1);
     for (std::int32_t sectorY = startSectorY; sectorY <= endSectorY; ++sectorY) {
         for (std::int32_t sectorX = startSectorX; sectorX <= endSectorX; ++sectorX) {
             CRepeatSector* pRepeatSector = GetRepeatSector(sectorX, sectorY);
