@@ -1,5 +1,6 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "StdInc.h"
+#include <thread>
 
 void InjectHooksMain(void);
 
@@ -29,6 +30,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
         }
 
         DisplayConsole();
+        CDebug::ImguiInitialise();
         InjectHooksMain();
         break;
     }
@@ -37,6 +39,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
     case DLL_THREAD_DETACH:
         break;
     case DLL_PROCESS_DETACH:
+        CDebug::ImguiDestroy();
         break;
     }
     return TRUE;

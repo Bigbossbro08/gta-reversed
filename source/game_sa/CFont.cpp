@@ -683,10 +683,9 @@ float CFont::GetStringWidth(char* str, bool bFull, bool bScriptText)
     char bLastWasLetter; // bl
     signed int stringLength; // edx
     signed int i; // eax
-    signed int stringLength_1; // ecx
+    signed int stringLength_1;
     char* curr; // esi
     char pCurr; // al
-    char v9; // al
     char* j; // esi
     char v11; // al
     char letterId; // al
@@ -698,12 +697,12 @@ float CFont::GetStringWidth(char* str, bool bFull, bool bScriptText)
     width = 0.0;
     bLastWasTag = 0;
     bLastWasLetter = 0;
-    stringLength = CMessages::GetStringLength(str);
+    stringLength = CMessages::GetStringLength(str); // ?
     for (i = 0; ; ++i)
     {
         stringLength_1 = 399;
-        if (stringLength <= 0x18F)
-            stringLength_1 = stringLength;
+        if (stringLength <= 0x18F) // ?
+            stringLength_1 = stringLength; // ?
         if (i >= stringLength_1)
             break;
         string[i] = string[str - string + i];
@@ -722,9 +721,9 @@ float CFont::GetStringWidth(char* str, bool bFull, bool bScriptText)
         {
             if (!bFull && (bLastWasTag || bLastWasLetter))
                 return width;
-            v9 = curr[1];
+            char tagSymbol = curr[1];
             j = curr + 1;
-            if (v9 != '~')
+            if (tagSymbol != '~')
             {
                 do
                     v11 = (j++)[1];

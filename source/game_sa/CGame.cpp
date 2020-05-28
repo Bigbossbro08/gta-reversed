@@ -7,3 +7,8 @@ int &CGame::currArea = *reinterpret_cast<int *>(0xB72914);
 RwMatrix *&CGame::m_pWorkingMatrix1 = *reinterpret_cast<RwMatrix **>(0xB72920);
 RwMatrix *&CGame::m_pWorkingMatrix2 = *reinterpret_cast<RwMatrix **>(0xB72924);
 int &gameTxdSlot = *reinterpret_cast<int *>(0xB728E8);
+
+void CGame::Process()
+{
+    ((void(__cdecl*)())0x53BED0)();
+}
