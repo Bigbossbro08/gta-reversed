@@ -36,7 +36,6 @@ void CMenuManager::Process()
 #else
     if (m_bMenuActive)
     {
-        CDebug::ImguiLoop();
         ProcessStreaming(m_bAllStreamingStuffLoaded);
         UserInput();
         ProcessFileActions();

@@ -2,6 +2,22 @@
 
 #include <windows.h>
 
+int CDebug::counter = 0;
+
+void CDebug::InjectHooks()
+{
+    HookInstall(0x532260, CDebug::DebugDisplayTextBuffer, 7);
+}
+
+// It gets called from address 0x53E920 (Idle in compact idb)
+void CDebug::DebugDisplayTextBuffer()
+{
+    // Literally empty function. No need for original function call even.
+    ImguiLoop();
+}
+
+// Here begins the Imgui section
+
 // Data
 static LPDIRECT3D9              g_pD3D = NULL;
 static LPDIRECT3DDEVICE9        g_pd3dDevice = NULL;
@@ -151,7 +167,8 @@ LRESULT CALLBACK DebugWindowCallback(HWND handleforwindow, UINT msg, WPARAM wPar
 
 void CDebug::ImguiLoop()
 {
-    printf("NewFrame() called\n");
+    counter++;
+    printf("NewFrame() called %d times\n", counter);
     io->DeltaTime = 1.0f / 60.0f;
     ImGui::NewFrame();
 
