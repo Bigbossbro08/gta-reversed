@@ -27,6 +27,8 @@ enum  eFontStyle : unsigned char {
     FONT_PRICEDOWN
 };
 
+const int MAX_STRING_WIDTH = 400;
+
 class CFontDetails
 {
 public:
@@ -140,9 +142,6 @@ public:
     // set outline size
     static void SetEdge(short value);
     // toggles character proportions in text
-#ifdef SetProp
-#undef SetProp
-#endif
     static void SetProportional(bool on);
     // setups text background
     static void SetBackground(bool enable, bool includeWrap);

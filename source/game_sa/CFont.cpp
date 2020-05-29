@@ -166,16 +166,15 @@ void CFont::PrintChar(float x, float y, char character)
                 isLetter = 1;
                 character = 0;
             }
-            float letterIdPropValue = (float)GetLetterIdPropValue(character) * 0.03125f;
-            if (RenderState.m_nFontStyle == 1 && character == 0xD0u)
+            float letterIdPropValue = static_cast<float>(GetLetterIdPropValue(character)) * 0.03125f;
+            if (RenderState.m_nFontStyle == FONT_SUBTITLES && character == 0xD0u)
                 character = 0;
-            int ratio = (character >> 4); // dunno what should I call it and got directly from IDA
-            float u1 = (float)(character & 0xF) * (1 / 16);         // 1 : 16
+            float u1 = static_cast<float>(character & 0xF) / 16.0f;         // 1 : 16
             if (RenderState.m_wFontTexture && RenderState.m_wFontTexture != 1)
             {
                 if (!isLetter)
                 {
-                    float v1 = (float)ratio * (1 / 16);
+                    float v1 = static_cast<float>(character >> 4) / 16;
                     rect.top = y;
                     rect.left = x;
                     rect.right = RenderState.m_fWidth * 32.0f * letterIdPropValue + x;
@@ -191,7 +190,7 @@ void CFont::PrintChar(float x, float y, char character)
             {
                 if (!isLetter)
                 {
-                    float v1a = ratio * 0.078125f; // dunno what should I call it and got directly from IDA
+                    float ratio = (character >> 4) * 0.078125f;
                     rect.left = x;
                     if (RenderState.m_fSlant == 0.0f)
                     {
@@ -200,17 +199,17 @@ void CFont::PrintChar(float x, float y, char character)
                         if (character < 192)
                         {
                             rect.bottom = RenderState.m_fHeigth * 40.0f * 0.5f + y;
-                            float v3 = v1a + 0.078125f - 0.0021f;
+                            float v3 = ratio + 0.078125f - 0.0021f;
                             y = u1 + (1 / 16) - 0.001f;
-                            float v1 = v1a + 0.0021f;
+                            float v1 = ratio + 0.0021f;
                             CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, y /*u2*/ , v1 /*v2*/ , u1 /*u3*/, v3, y, v3);
                         }
                         else
                         {
                             rect.bottom = RenderState.m_fHeigth * 32.0f * 0.5f + y;
-                            float offset = v1a + 0.078125f;
+                            float offset = ratio + 0.078125f;
                             y = u1 + (1 / 16) - 0.001f;
-                            float v1 = v1a + 0.0021f;
+                            float v1 = ratio + 0.0021f;
                             float v4 = offset - 0.015f;
                             float v3 = offset - 0.016f;
                             CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, y /*u2*/ , v1 /*v2*/, u1 /*u2*/, v3, y /*v4*/, v4);
@@ -221,12 +220,12 @@ void CFont::PrintChar(float x, float y, char character)
                         rect.top = y + 0.015f;
                         rect.right = RenderState.m_fWidth * 32.0f + x;
                         rect.bottom = RenderState.m_fHeigth * 40.0f * 0.5f + y + 0.015f;
-                        float offset = v1a + 0.078125f;
+                        float offset = ratio + 0.078125f;
                         y = u1 + (1 / 16) - 0.001f;
                         float v4 = offset - 0.0021f + 0.01f;
                         float v3 = offset - 0.009f;
-                        float v2 = v1a + 0.0121f;
-                        float v1 = v1a + 0.00055f;
+                        float v2 = ratio + 0.0121f;
+                        float v1 = ratio + 0.00055f;
                         CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, y/*u2*/, v2, u1/*u3*/, v3, y/*u4*/, v4);
                     }
                 }
@@ -490,10 +489,10 @@ float CFont::GetStringWidth(char* str, bool bFull, bool bScriptText)
     int i = 0;
     for (i = 0; ; ++i)
     {
-        if (stringLength > 399) {
-            stringLength = 399;
+        if (stringLength > MAX_STRING_WIDTH - 1) {
+            stringLength = MAX_STRING_WIDTH - 1;
         }
-        if (i >= 399)
+        if (i >= MAX_STRING_WIDTH - 1)
             break;
         string[i] = string[str - string + i];
     }
@@ -758,12 +757,12 @@ void CFont::LoadFontValue()
     {
         if (*line != '#' && *line)
         {
-            unsigned int fontId = 0, propValues[8];
+            unsigned int fontId = 0, replacementSpaceChar[8];
             char attribute;
             sscanf(line, "%s", &attribute);
             if (!memcmp(&attribute, "[TOTAL_FONTS]", 0xEu))
             {
-                sscanf(CFileLoader::LoadLine(fontDatFile), "%d", &propValues);
+                sscanf(CFileLoader::LoadLine(fontDatFile), "%d", &replacementSpaceChar);
             }
             else if (!memcmp(&attribute, "[FONT_ID]", 0xAu))
             {
@@ -771,8 +770,8 @@ void CFont::LoadFontValue()
             }
             else if (!memcmp(&attribute, "[REPLACEMENT_SPACE_CHAR]", 0x19u))
             {
-                sscanf(CFileLoader::LoadLine(fontDatFile), "%d", propValues);
-                gFontData[fontId].m_spaceValue = propValues[0];
+                sscanf(CFileLoader::LoadLine(fontDatFile), "%d", replacementSpaceChar);
+                gFontData[fontId].m_spaceValue = replacementSpaceChar[0];
             }
             else if (!memcmp(&attribute, "[PROP]", 7u))
             {
@@ -780,18 +779,18 @@ void CFont::LoadFontValue()
                 for (int propIndex = 0; propIndex < 26; propIndex++)
                 {
                     char* line = CFileLoader::LoadLine(fontDatFile);
-                    sscanf(line, "%d  %d  %d  %d  %d  %d  %d  %d", &propValues[0], &propValues[1], &propValues[2],
-                        &propValues[3], &propValues[4], &propValues[5], &propValues[6], &propValues[7]);
+                    sscanf(line, "%d  %d  %d  %d  %d  %d  %d  %d", &replacementSpaceChar[0], &replacementSpaceChar[1], &replacementSpaceChar[2],
+                        &replacementSpaceChar[3], &replacementSpaceChar[4], &replacementSpaceChar[5], &replacementSpaceChar[6], &replacementSpaceChar[7]);
                     for (int i = 0; i < 8; i++)
                     {
-                        pFontData->m_propValues[propIndex + i] = propValues[i];
+                        pFontData->m_propValues[propIndex + i] = replacementSpaceChar[i];
                     }
                 }
             }
             else if (!memcmp(&attribute, "[UNPROP]", 9u))
             {
-                sscanf(CFileLoader::LoadLine(fontDatFile), "%d", propValues);
-                gFontData[fontId].m_unpropValue = propValues[0];
+                sscanf(CFileLoader::LoadLine(fontDatFile), "%d", replacementSpaceChar);
+                gFontData[fontId].m_unpropValue = replacementSpaceChar[0];
             }
         }
     }
