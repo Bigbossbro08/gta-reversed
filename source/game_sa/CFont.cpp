@@ -166,7 +166,7 @@ void CFont::PrintChar(float x, float y, char character)
                 isLetter = 1;
                 character = 0;
             }
-            float letterIdPropValue = static_cast<float>(GetLetterIdPropValue(character)) * 0.03125f;
+            float letterIdPropValue = GetLetterIdPropValue(character) / 32;
             if (RenderState.m_nFontStyle == FONT_SUBTITLES && character == 0xD0u)
                 character = 0;
             float u1 = static_cast<float>(character & 0xF) / 16.0f;         // 1 : 16
@@ -757,12 +757,12 @@ void CFont::LoadFontValue()
     {
         if (*line != '#' && *line)
         {
-            unsigned int fontId = 0, replacementSpaceChar[8];
+            unsigned int fontId = 0, propValues[8], replacementSpaceChar;
             char attribute;
             sscanf(line, "%s", &attribute);
             if (!memcmp(&attribute, "[TOTAL_FONTS]", 0xEu))
             {
-                sscanf(CFileLoader::LoadLine(fontDatFile), "%d", &replacementSpaceChar);
+                sscanf(CFileLoader::LoadLine(fontDatFile), "%d", &propValues);
             }
             else if (!memcmp(&attribute, "[FONT_ID]", 0xAu))
             {
@@ -770,8 +770,8 @@ void CFont::LoadFontValue()
             }
             else if (!memcmp(&attribute, "[REPLACEMENT_SPACE_CHAR]", 0x19u))
             {
-                sscanf(CFileLoader::LoadLine(fontDatFile), "%d", replacementSpaceChar);
-                gFontData[fontId].m_spaceValue = replacementSpaceChar[0];
+                sscanf(CFileLoader::LoadLine(fontDatFile), "%d", &replacementSpaceChar);
+                gFontData[fontId].m_spaceValue = replacementSpaceChar;
             }
             else if (!memcmp(&attribute, "[PROP]", 7u))
             {
@@ -779,18 +779,18 @@ void CFont::LoadFontValue()
                 for (int propIndex = 0; propIndex < 26; propIndex++)
                 {
                     char* line = CFileLoader::LoadLine(fontDatFile);
-                    sscanf(line, "%d  %d  %d  %d  %d  %d  %d  %d", &replacementSpaceChar[0], &replacementSpaceChar[1], &replacementSpaceChar[2],
-                        &replacementSpaceChar[3], &replacementSpaceChar[4], &replacementSpaceChar[5], &replacementSpaceChar[6], &replacementSpaceChar[7]);
+                    sscanf(line, "%d  %d  %d  %d  %d  %d  %d  %d", &propValues[0], &propValues[1], &propValues[2],
+                        &propValues[3], &propValues[4], &propValues[5], &propValues[6], &propValues[7]);
                     for (int i = 0; i < 8; i++)
                     {
-                        pFontData->m_propValues[propIndex + i] = replacementSpaceChar[i];
+                        pFontData->m_propValues[propIndex + i] = propValues[i];
                     }
                 }
             }
             else if (!memcmp(&attribute, "[UNPROP]", 9u))
             {
-                sscanf(CFileLoader::LoadLine(fontDatFile), "%d", replacementSpaceChar);
-                gFontData[fontId].m_unpropValue = replacementSpaceChar[0];
+                sscanf(CFileLoader::LoadLine(fontDatFile), "%d", propValues);
+                gFontData[fontId].m_unpropValue = propValues[0];
             }
         }
     }
