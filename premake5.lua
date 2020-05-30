@@ -82,6 +82,12 @@ solution "gta_reversed"
         "source/**.h*",
         "source/**.c*"
         }
+
+        libdirs { 
+            "libs/dxsdk" 
+        }
+
+        links { "d3d9", "dinput" }
         
         excludes{
         "source/**/errcom.def", --bugfix for premake5

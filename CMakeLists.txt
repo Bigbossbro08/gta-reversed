@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(GTASA C CXX)
 
-include_directories( source\\ source\\game_sa\\ source\\game_sa\\Animation\\ source\\game_sa\\Audio\\ source\\game_sa\\Collision\\ source\\game_sa\\Core\\ source\\game_sa\\Entity\\ source\\game_sa\\Entity\\Dummy\\ source\\game_sa\\Entity\\Object\\ source\\game_sa\\Entity\\Ped\\ source\\game_sa\\Entity\\Vehicle\\ source\\game_sa\\Enums\\ source\\game_sa\\Fx\\ source\\game_sa\\Models\\ source\\game_sa\\Plugins\\ source\\game_sa\\RenderWare\\ source\\game_sa\\RenderWare\\rw\\ source\\game_sa\\Scripts\\ source\\game_sa\\Tasks\\ source\\game_sa\\Tasks\\TaskTypes\\ ) 
+include_directories( source\\imgui\\ source\\game_sa\\Debug\\ source\\ source\\game_sa\\ source\\game_sa\\Animation\\ source\\game_sa\\Audio\\ source\\game_sa\\Collision\\ source\\game_sa\\Core\\ source\\game_sa\\Entity\\ source\\game_sa\\Entity\\Dummy\\ source\\game_sa\\Entity\\Object\\ source\\game_sa\\Entity\\Ped\\ source\\game_sa\\Entity\\Vehicle\\ source\\game_sa\\Enums\\ source\\game_sa\\Fx\\ source\\game_sa\\Models\\ source\\game_sa\\Plugins\\ source\\game_sa\\RenderWare\\ source\\game_sa\\RenderWare\\rw\\ source\\game_sa\\Scripts\\ source\\game_sa\\Tasks\\ source\\game_sa\\Tasks\\TaskTypes\\ ) 
 
 
 set(_src_root_path "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -25,6 +25,8 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT g
 
 add_library(gta_reversed MODULE ${_headerfiles_list} ${_sourcefiles_list} .editorconfig)
 set_target_properties(gta_reversed PROPERTIES SUFFIX ".asi")
+
+target_link_libraries(gta_reversed "${CMAKE_CURRENT_SOURCE_DIR}/libs/dxsdk/d3d9.lib" "${CMAKE_CURRENT_SOURCE_DIR}/libs/dxsdk/dinput.lib")
 
 target_compile_definitions(gta_reversed PRIVATE NOMINMAX _CRT_SECURE_NO_WARNINGS)
 
