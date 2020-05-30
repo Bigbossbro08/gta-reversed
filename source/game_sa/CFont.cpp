@@ -149,7 +149,7 @@ void CFont::PrintChar(float x, float y, char character)
     {
         CRect rect;
 
-        if (CFont::m_nExtraFontSymbolId)
+        if (m_nExtraFontSymbolId)
         {
             rect.left = x;
             rect.top = RenderState.m_fHeigth +RenderState.m_fHeigth + y;
@@ -169,20 +169,23 @@ void CFont::PrintChar(float x, float y, char character)
             float letterIdPropValue = GetLetterIdPropValue(character) / 32;
             if (RenderState.m_nFontStyle == FONT_SUBTITLES && character == 0xD0u)
                 character = 0;
-            float u1 = static_cast<float>(character & 0xF) / 16.0f;         // 1 : 16
+            const float xRatio = 1.0f / 16.0f;
+            const float yRatio = 1.0f / 12.8f;
+            const float widthOffset = 1.0f / 10000.0f;
+            float u1 = static_cast<float>(character & 0xF) * xRatio;
             if (RenderState.m_wFontTexture && RenderState.m_wFontTexture != 1)
             {
                 if (!isLetter)
                 {
-                    float v1 = (character >> 4) / 16;
+                    float v1 = (character >> 4) / 16.0f;
                     rect.top = y;
                     rect.left = x;
                     rect.right = RenderState.m_fWidth * 32.0f * letterIdPropValue + x;
                     rect.bottom = RenderState.m_fHeigth * 32.0f * 0.5f + y;
-                    float v3 = v1 + 0.0625f;
+                    float v3 = v1 + xRatio;
                     float u2 = letterIdPropValue / 16 + u1;
-                    float v4 = v3 - 0.0001f;
-                    float u4 = u2 - 0.0001f;
+                    float v4 = v3 - widthOffset;
+                    float u4 = u2 - widthOffset;
                     float v2 = v1;
                     CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, u2, v2, u1, v3, u4, v4);
                 }
@@ -193,8 +196,6 @@ void CFont::PrintChar(float x, float y, char character)
                 {
                     float characterRatio = (character >> 4) * 0.078125f;
                     rect.left = x;
-                    const float xRatio = 1.0f / 16.0f;
-                    const float yRatio = 1.0f / 12.8f;
                     if (RenderState.m_fSlant == 0.0f)
                     {
                         rect.top = y;
@@ -203,7 +204,7 @@ void CFont::PrintChar(float x, float y, char character)
                         {
                             rect.bottom = RenderState.m_fHeigth * 40.0f * 0.5f + y;
                             float v3 = characterRatio + yRatio - 0.0021f;
-                            float u2 = u1 + xRatio - 0.001f;
+                            float u2 = u1 + xRatio - (widthOffset * 10.0f);
                             float v1 = characterRatio + 0.0021f;
                             float v2 = v1;
                             float u3 = u1;
@@ -215,7 +216,7 @@ void CFont::PrintChar(float x, float y, char character)
                         {
                             rect.bottom = RenderState.m_fHeigth * 32.0f * 0.5f + y;
                             float offset = characterRatio + yRatio;
-                            float u2 = u1 + xRatio - 0.001f;
+                            float u2 = u1 + xRatio - (widthOffset * 10.0f);
                             float v1 = characterRatio + 0.0021f;
                             float v4 = offset - 0.015f;
                             float v3 = offset - 0.016f;
@@ -232,7 +233,7 @@ void CFont::PrintChar(float x, float y, char character)
                         rect.bottom = RenderState.m_fHeigth * 40.0f * 0.5f + y + 0.015f;
                         float offset = characterRatio + yRatio;
                         float u2 = u1 + xRatio - 0.001f;
-                        float v4 = offset - 0.0021f + 0.01f;
+                        float v4 = offset - 0.0021f + (widthOffset * 100.0f);
                         float v3 = offset - 0.009f;
                         float v2 = characterRatio + 0.0121f;
                         float v1 = characterRatio + 0.00055f;
