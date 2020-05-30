@@ -8,7 +8,7 @@
 #include "StdInc.h"
 
 CSprite2d* CFont::Sprite = (CSprite2d*)0xC71AD0;
-CSprite2d* CFont::ButtonSprite = (CSprite2d*)0xC71AD8;
+CSprite2d* CFont::PS2Sprite = (CSprite2d*)0xC71AD8;
 unsigned char& CFont::PS2Symbol = *(unsigned char*)0xC71A54;
 bool& CFont::m_bNewLine = *(bool*)0xC71A55;
 CRGBA& CFont::m_Color = *(CRGBA*)0xC71A60;
@@ -76,6 +76,8 @@ void CFont::InjectHooks()
     HookInstall(0x71A0E0, &CFont::GetStringWidth, 7);
     HookInstall(0x719750, &CFont::GetCharacterSize, 7);
     HookInstall(0x719670, &CFont::SetCharacterOutline, 7);
+    HookInstall(0x718ED0, &CFont::GetNextSpace, 7);
+    HookInstall(0x718ED0, &CFont::ParseToken, 7);
 }
 
 void CFont::Initialise()
@@ -156,7 +158,7 @@ void CFont::PrintChar(float x, float y, char character)
             rect.right = RenderState.m_fHeigth * 17.0f + x;
             rect.bottom = RenderState.m_fHeigth * 19.0f + y;
             CRGBA fontColor = CRGBA(255u, 255u, 255u, RenderState.m_color.alpha);
-            ButtonSprite[PS2Symbol].Draw(rect, fontColor);
+            PS2Sprite[PS2Symbol].Draw(rect, fontColor);
         }
         else
         {
@@ -248,10 +250,28 @@ void CFont::PrintChar(float x, float y, char character)
 #endif
 }
 
-char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
+char* __cdecl CFont::GetNextSpace(char* text)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
-    return ((char* (__cdecl*)(char*, CRGBA&, bool, char*))0x718F00)(text, color, isBlip, tag);
+    return ((char* (__cdecl*)(char*))0x718ED0)(text);
+#else
+    while (*text) {
+        if (*text == ' ')
+            break;
+        if (*text == '\0')
+            break;
+        if (*text == '~')
+            break;
+        ++text;
+    }
+    return text;
+#endif
+}
+
+char* CFont::ParseToken(char* text, CRGBA& colour, bool disableColor, char* colorCode)
+{
+#ifdef USE_DEFAULT_FUNCTIONS
+    return ((char* (__cdecl*)(char*, CRGBA&, bool, char*))0x718ED0)(text, colour, disableColor, colorCode);
 #else
     char nbColor;
 
@@ -373,6 +393,25 @@ char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
         assert("Unknown GXT token given: ~%c~", text[1]);
         break;
     }
+
+    if (PS2Symbol != PS2_NONE) {
+        assert(PS2Symbol < PS2_SPRITE_COUNT);
+        assert(PS2Sprite[PS2Symbol].IsTextureLoaded(), "Symbol %d for GXT token ~%c~ is not loaded", PS2Symbol, text[1]);
+    }
+
+    if (nbColor != -1) {
+        if (!disableColor) {
+            colour = HudColour.GetRGB(nbColor, colour.a);
+        }
+        if (colorCode) {
+            *colorCode = text[1];
+        }
+    }
+
+    do {
+        ++text;
+    } while (*text && *text != '~');
+    return text + 1;
 #endif
 }
 

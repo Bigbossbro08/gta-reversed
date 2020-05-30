@@ -55,6 +55,11 @@ CSprite2d::~CSprite2d()
     }
 }
 
+bool CSprite2d::IsTextureLoaded()
+{
+    return this->m_pTexture != nullptr;
+}
+
 // delete this sprite (similar to destructor)
 void CSprite2d::Delete()
 {

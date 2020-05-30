@@ -129,7 +129,7 @@ public:
     // font textures array. Num of elements: MAX_FONT_SPRITES (2)
     static CSprite2d *Sprite;
     // button textures array. Num of elements: MAX_FONT_BUTTON_SPRITES (15)
-    static CSprite2d *ButtonSprite;
+    static CSprite2d *PS2Sprite;
     static unsigned char& PS2Symbol;
     static bool& m_bNewLine;
 
@@ -174,7 +174,7 @@ public:
     // get next ' ' character in a string
     static char *GetNextSpace(char *string);
     // tags processing
-    static char* ParseToken(char *text, CRGBA & color, bool isBlip, char *tag);
+    static char* ParseToken(char* text, CRGBA& colour, bool disableColor, char* colorCode);
     // text scaling
     static void SetScale(float w, float h);
     // text scaling depends on current language

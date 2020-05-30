@@ -38,6 +38,8 @@ public:
 	~CSprite2d();
 	// delete this sprite (similar to destructor)
 	void Delete();
+    // This is not R* created. Just a check for ourselves. Thanks Nick007J for this.
+    bool IsTextureLoaded();
 	// set texture by name from current txd
 	void SetTexture(char *name);
 	// set texture by name from current txd (+alpha mask name)
