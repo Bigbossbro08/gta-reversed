@@ -13,6 +13,7 @@
 
 #define MAX_FONT_SPRITES 2
 #define MAX_FONT_BUTTON_SPRITES 15
+#define MAX_STRING_WIDTH 400
 
 enum  eFontAlignment : unsigned char {
     ALIGN_CENTER,
@@ -27,7 +28,64 @@ enum  eFontStyle : unsigned char {
     FONT_PRICEDOWN
 };
 
-const int MAX_STRING_WIDTH = 400;
+// Thanks Nick007J
+enum ePS2Sprites : unsigned char {
+    PS2_NONE,
+    PS2_UP,         ///<  1  ~U~
+    PS2_DOWN,       ///<  2  ~D~
+    PS2_LEFT,       ///<  3  ~<~  
+    PS2_RIGHT,      ///<  4  ~>~  
+    PS2_CROSS,      ///<  5  ~X~  PS2: cross    / XBOX: A
+    PS2_CIRCLE,     ///<  6  ~O~  PS2: circle   / XBOX: B
+    PS2_SQUARE,     ///<  7  ~Q~  PS2: square   / XBOX: X
+    PS2_TRIANGLE,   ///<  8  ~T~  PS2: triangle / XBOX: Y
+    PS2_L1,         ///<  9  ~K~  PS2: L1       /
+    PS2_L2,         ///< 10  ~M~  PS2: L2       /
+    PS2_L3,         ///< 11  ~A~  PS2: L3       / XBOX: LStick
+    PS2_R1,         ///< 12  ~J~  PS2: R1       /
+    PS2_R2,         ///< 13  ~V~  PS2: R2       /
+    PS2_R3,         ///< 14  ~C~  PS2: R3       / XBOX: RStick
+
+    PS2_SPRITE_COUNT,
+};
+
+// Thanks Nick007J
+enum eFontData : unsigned char {
+    SPRITE_FONT1 = 1,
+    SPRITE_FONT2 = 0,
+    SPRITE_FONT_SPECIAL = 2,
+
+    FONT_BUFFER_SIZE = 512, // in bytes
+    FONT_SPRITE_COUNT = 3,   // 2
+    FONT_SYMBOL_COUNT = 208,
+    FONT_CHAR_SPACE = 208,
+    FONT_CHAR_UNPROP = 209,
+    FONT_CHAR_COUNT = 210,
+};
+
+// Thanks Nick007J
+enum eFontSymbol : unsigned char {
+    FONT_TABLE_BASE     = 32,
+    FONT_TABLE_ROW      = 16,
+    FONT_TABLE_ROWS     = 13,
+    FONT_TABLE_SIZE     = FONT_TABLE_ROW * FONT_TABLE_ROWS,
+    CHAR_SPACE          = ' '   -     FONT_TABLE_BASE,  ///< 0
+    CHAR_EXCL           = '!'   -     FONT_TABLE_BASE,  ///< 1   !
+    CHAR_QUOT           = '"'   -     FONT_TABLE_BASE,  ///< 2   "
+    CHAR_POUND          = '#'   -     FONT_TABLE_BASE,  ///< 3   #
+    CHAR_DOLLAR         = '$'   -     FONT_TABLE_BASE,  ///< 4   $
+    CHAR_PERCENT        = '%'   -     FONT_TABLE_BASE,  ///< 5   %
+    CHAR_AMP            = '&'   -     FONT_TABLE_BASE,  ///< 6   &
+    CHAR_SINGLEQUOTE    = '\''  -     FONT_TABLE_BASE,  ///< 7   '
+    CHAR_LPARENTHESIS   = '('   -     FONT_TABLE_BASE,  ///< 8   (
+    CHAR_RPARENTHESIS   = ')'   -     FONT_TABLE_BASE,  ///< 9   )
+    CHAR_MINUS          = '-'   -     FONT_TABLE_BASE,  ///< 13  -
+    CHAR_DOT            = '.'   -     FONT_TABLE_BASE,  ///< 14  .
+    CHAR_SLASH          = '/'   -     FONT_TABLE_BASE,  ///< 15  /
+    CHAR_COLON          = ':'   -     FONT_TABLE_BASE,  ///< 26  :
+    CHAR_BACKSLASH      = '\\'  -     FONT_TABLE_BASE,  ///< 60  
+    CHAR_UNDERSCORE     = '_'   -     FONT_TABLE_BASE,  ///< 63  _
+};
 
 class CFontDetails
 {
@@ -72,8 +130,9 @@ public:
     static CSprite2d *Sprite;
     // button textures array. Num of elements: MAX_FONT_BUTTON_SPRITES (15)
     static CSprite2d *ButtonSprite;
-    static unsigned char& m_nExtraFontSymbolId;
+    static unsigned char& PS2Symbol;
     static bool& m_bNewLine;
+
     static CRGBA& m_Color;
     static CVector2D *m_Scale;
     static float& m_fSlant;

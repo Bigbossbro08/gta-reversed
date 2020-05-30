@@ -9,7 +9,7 @@
 
 CSprite2d* CFont::Sprite = (CSprite2d*)0xC71AD0;
 CSprite2d* CFont::ButtonSprite = (CSprite2d*)0xC71AD8;
-unsigned char& CFont::m_nExtraFontSymbolId = *(unsigned char*)0xC71A54;
+unsigned char& CFont::PS2Symbol = *(unsigned char*)0xC71A54;
 bool& CFont::m_bNewLine = *(bool*)0xC71A55;
 CRGBA& CFont::m_Color = *(CRGBA*)0xC71A60;
 CVector2D* CFont::m_Scale = (CVector2D*)0xC71A64;
@@ -88,8 +88,8 @@ void CFont::Initialise()
     CTxdStore::AddRef(fontsTxdIdSlot);
     CTxdStore::PushCurrentTxd();
     CTxdStore::SetCurrentTxd(fontsTxdIdSlot);
-    Sprite[0].SetTexture("font2", "font2m");
-    Sprite[1].SetTexture("font1", "font1m");
+    Sprite[SPRITE_FONT2].SetTexture("font2", "font2m");
+    Sprite[SPRITE_FONT1].SetTexture("font1", "font1m");
     CFont::LoadFontValue();
     CFont::SetScale(1.0, 1.0);
     CFont::SetSlantRefPoint((float)RsGlobal.maximumWidth, 0.0);
@@ -104,7 +104,7 @@ void CFont::Initialise()
     CRGBA fontBackgroundColor = CRGBA(0x80u, 0x80u, 0x80u, 0x80u);
     SetBackgroundColor(fontBackgroundColor);
     SetProportional(true);
-    SetFontStyle(0);
+    SetFontStyle(FONT_GOTHIC);
     SetRightJustifyWrap(0.0);
     SetAlphaFade(255.0);
     SetDropShadowPosition(0);
@@ -127,8 +127,8 @@ void CFont::Shutdown()
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)())0x7189B0)();
 #else
-    Sprite[0].Delete();
-    Sprite[1].Delete();
+    Sprite[SPRITE_FONT2].Delete();
+    Sprite[SPRITE_FONT1].Delete();
     int fontsTxdIdSlot = CTxdStore::FindTxdSlot("fonts");
     CTxdStore::RemoveTxdSlot(fontsTxdIdSlot);
     for (int i = 0; i < 4; i++)
@@ -149,14 +149,14 @@ void CFont::PrintChar(float x, float y, char character)
     {
         CRect rect;
 
-        if (m_nExtraFontSymbolId)
+        if (PS2Symbol)
         {
             rect.left = x;
             rect.top = RenderState.m_fHeigth +RenderState.m_fHeigth + y;
             rect.right = RenderState.m_fHeigth * 17.0f + x;
             rect.bottom = RenderState.m_fHeigth * 19.0f + y;
             CRGBA fontColor = CRGBA(255u, 255u, 255u, RenderState.m_color.alpha);
-            ButtonSprite[m_nExtraFontSymbolId].Draw(rect, fontColor);
+            ButtonSprite[PS2Symbol].Draw(rect, fontColor);
         }
         else
         {
@@ -250,10 +250,131 @@ void CFont::PrintChar(float x, float y, char character)
 
 char* CFont::ParseToken(char* text, CRGBA& color, bool isBlip, char* tag)
 {
+#ifdef USE_DEFAULT_FUNCTIONS
     return ((char* (__cdecl*)(char*, CRGBA&, bool, char*))0x718F00)(text, color, isBlip, tag);
-}
+#else
+    char nbColor;
 
-#undef USE_DEFAULT_FUNCTIONS
+    switch (text[1]) {
+        // symbols
+
+    case 'N':
+    case 'n':
+        m_bNewLine = true;
+        break;
+    case 'U':
+    case 'u':
+        PS2Symbol = PS2_UP; // 1
+        break;
+    case 'D':
+    case 'd':
+        PS2Symbol = PS2_DOWN;  // 2
+        break;
+    case '<':
+        PS2Symbol = PS2_LEFT;  // 3
+        break;
+    case '>':
+        PS2Symbol = PS2_RIGHT; // 4
+        break;
+    case 'x':
+    case 'X':
+        PS2Symbol = PS2_CROSS; // 5
+        break;
+    case 'o':
+    case 'O':
+        PS2Symbol = PS2_CIRCLE; // 6
+        break;
+    case 'q':
+    case 'Q':
+        PS2Symbol = PS2_SQUARE; // 7
+        break;
+    case 'T':
+    case 't':
+        PS2Symbol = PS2_TRIANGLE; // 8
+        break;
+    case 'K':
+    case 'k':
+        PS2Symbol = PS2_L1;
+        break;
+    case 'M':
+    case 'm':
+        PS2Symbol = PS2_L2;
+        break;
+    case 'A':
+    case 'a':
+        PS2Symbol = PS2_L3;
+        break;
+    case 'J':
+    case 'j':
+        PS2Symbol = PS2_R1;
+        break;
+    case 'v':
+    case 'V':
+        PS2Symbol = PS2_R2;
+        break;
+    case 'C':
+    case 'c':
+        PS2Symbol = PS2_R3;
+        break;
+
+        // colors
+
+    case 'B':
+    case 'b':
+        nbColor = TEXT_COLOUR_BLUE;
+        break;
+    case 'G':
+    case 'g':
+        nbColor = TEXT_COLOUR_GREEN;
+        break;
+    case 'l':
+        nbColor = TEXT_COLOUR_BLACK;
+        break;
+    case 'p':
+    case 'P':
+        nbColor = TEXT_COLOUR_PURPLE;
+        break;
+    case 'r':
+    case 'R':
+        nbColor = TEXT_COLOUR_RED;
+        break;
+    case 's':
+    case 'S':
+        nbColor = TEXT_COLOUR_WHITE;
+        break;
+    case 'w':
+    case 'W':
+        nbColor = TEXT_COLOUR_WHITE;
+        break;
+    case 'y':
+    case 'Y':
+        nbColor = TEXT_COLOUR_YELLOW;
+        break;
+
+    case '=':
+    case '?':
+    case '@':
+    case 'E':
+    case 'F':
+    case 'I':
+    case 'L':
+    case 'Z':
+    case '[':
+    case '\\':
+    case ']':
+    case '^':
+    case '_':
+    case '`':
+    case 'e':
+    case 'f':
+    case 'i':
+        break;
+    default:
+        assert("Unknown GXT token given: ~%c~", text[1]);
+        break;
+    }
+#endif
+}
 
 void CFont::SetScale(float w, float h)
 {
@@ -453,12 +574,12 @@ void CFont::SetAllignment(eFontAlignment alignment)
 #else
     if (alignment)
     {
-        if (alignment == eFontAlignment::ALIGN_LEFT)
+        if (alignment == ALIGN_LEFT)
         {
             m_bFontCentreAlign = 0;
             m_bFontRightAlign = 0;
         }
-        else if (alignment == eFontAlignment::ALIGN_RIGHT)
+        else if (alignment == ALIGN_RIGHT)
         {
             m_bFontCentreAlign = 0;
             m_bFontRightAlign = 1;
@@ -481,7 +602,7 @@ void CFont::InitPerFrame()
     m_nFontOutline = 0;
     m_nFontShadow = 0;
     m_bNewLine = 0;
-    m_nExtraFontSymbolId = 0;
+    PS2Symbol = 0;
     RenderState.m_wFontTexture = -1;
     pEmptyChar = &setup;
     CSprite::InitSpriteBuffer();
@@ -684,7 +805,7 @@ void CFont::GetTextRect(CRect* rect, float x, float y, char* text)
     float fontCentreX;
     float wrapx;
 
-    unsigned int nLines = GetNumberLines(x, y, text); //unsigned __int8 in IDA
+    unsigned char nLines = GetNumberLines(x, y, text);
     if (m_bFontCentreAlign)
     {
         rect->left = x - (m_fFontCentreSize * 0.5f + 4.0f);
@@ -750,9 +871,9 @@ void CFont::PrintStringFromBottom(float x, float y, char* text)
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(float, float, char*))0x71A820)(x, y, text);
 #else
-    y = y - (m_Scale->y * 32.0f * 0.5f + m_Scale->y + m_Scale->y) * GetNumberLines(x, y, text);
+    y -= (m_Scale->y * 32.0f * 0.5f + m_Scale->y + m_Scale->y) * GetNumberLines(x, y, text);
     if (m_fSlant != 0.0)
-        y = y - ((m_fSlantRefPoint->x - x) * m_fSlant + m_fSlantRefPoint->y);
+        y -= ((m_fSlantRefPoint->x - x) * m_fSlant + m_fSlantRefPoint->y);
     CFont::PrintString(x, y, text);
 #endif
 }

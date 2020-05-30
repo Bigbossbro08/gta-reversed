@@ -8,8 +8,7 @@
 #include "PluginBase.h"
 #include "CRGBA.h"
 
-enum eHudColours
-{
+enum eHudColours : unsigned char {
 	HUD_COLOUR_RED,
 	HUD_COLOUR_GREEN,
 	HUD_COLOUR_BLUEDARK,
@@ -26,6 +25,17 @@ enum eHudColours
 	HUD_COLOUR_BLUE,
 	HUD_COLOUR_YELLOW,
 	HUD_COLOUR_NUM_COLOURS
+};
+
+// Thanks Nick007J
+enum eTextColour : unsigned char {
+    TEXT_COLOUR_RED      = HUD_COLOUR_RED,                  // ~r~
+    TEXT_COLOUR_GREEN    = HUD_COLOUR_GREEN,                // ~g~
+    TEXT_COLOUR_BLUE     = HUD_COLOUR_BLUEDARK,             // ~b~
+    TEXT_COLOUR_WHITE    = HUD_COLOUR_WHITE,                // ~w~
+    TEXT_COLOUR_BLACK    = HUD_COLOUR_BLACK,                // ~l~
+    TEXT_COLOUR_PURPLE   = HUD_COLOUR_PURPLE,               // ~p~
+    TEXT_COLOUR_YELLOW   = HUD_COLOUR_YELLOW                // ~y~
 };
 
 
