@@ -226,5 +226,5 @@ public:
 
     static void LoadFontValue();
     static int GetLetterIdPropValue(char letterId);
-    static int GetLetterIdPropValue(char letterId, char fontType);
+    static int FindSubFontCharacter(char letterId, char fontType);
 };

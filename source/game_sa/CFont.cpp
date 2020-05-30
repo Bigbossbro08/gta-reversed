@@ -69,8 +69,8 @@ void CFont::InjectHooks()
     HookInstall(0x71A600, &CFont::ProcessStringToDisplay, 7);
     HookInstall(0x71A700, &CFont::PrintString, 7);
     HookInstall(0x7187C0, &CFont::LoadFontValue, 7);
-    HookInstall(0x718770, (int(*)(char))&CFont::GetLetterIdPropValue, 7);
-    HookInstall(0x7192C0, (int(*)(char, char))&CFont::GetLetterIdPropValue, 7);
+    HookInstall(0x718770, &CFont::GetLetterIdPropValue, 7);
+    HookInstall(0x7192C0, &CFont::FindSubFontCharacter, 7);
     HookInstall(0x718A10, &CFont::PrintChar, 7);
     HookInstall(0x71A5E0, &CFont::GetNumberLines, 7);
     HookInstall(0x71A0E0, &CFont::GetStringWidth, 7);
@@ -734,7 +734,7 @@ int CFont::GetCharacterSize(char letterId)
     }
     if (m_FontStyle)
     {
-        letterIdPropValue = GetLetterIdPropValue(letterId, m_FontStyle);
+        letterIdPropValue = FindSubFontCharacter(letterId, m_FontStyle);
     }
     else if (letterIdPropValue == -111)
     {
@@ -772,11 +772,11 @@ double CFont::SetCharacterOutline(char letterId)
     char outlineType = CTheScripts::IntroTextLines[CTheScripts::NumberOfIntroTextLinesThisFrame].outlineType;
     if (CTheScripts::IntroTextLines[CTheScripts::NumberOfIntroTextLinesThisFrame].font == 2)
     {
-        idForPropValue = GetLetterIdPropValue(letterId, 2);
+        idForPropValue = FindSubFontCharacter(letterId, 2);
     }
     else if (CTheScripts::IntroTextLines[CTheScripts::NumberOfIntroTextLinesThisFrame].font == 3)
     {
-        idForPropValue = GetLetterIdPropValue(letterId, 1);
+        idForPropValue = FindSubFontCharacter(letterId, 1);
     }
     else
     {
@@ -985,57 +985,53 @@ int CFont::GetLetterIdPropValue(char letterId)
 #endif
 }
 
-//7192C0
-int CFont::GetLetterIdPropValue(char letterId, char fontType)
+// Thanks Nick007J
+int CFont::FindSubFontCharacter(char index, char fontAttribute)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
-    return ((int(__cdecl*)(char, char))0x7192C0)(letterId, fontType);
+    return ((int(__cdecl*)(char, char))0x7192C0)(index, fontAttribute);
 #else
-    short result;
+    if (fontAttribute == 1) { // STYLE_HEADING
+        switch (index) {
+        case CHAR_DOLLAR: // 4
+            return 93;
+        case CHAR_LPARENTHESIS: // 8
+            return 94;
+        case CHAR_RPARENTHESIS: // 9
+            return 95;
+        case CHAR_COLON: // 26 - :
+            return 154;
+        case CHAR_SINGLEQUOTE: // 7
+            return 206;
+        case CHAR_DOT: // 14
+            return 207;
+        case CHAR_EXCL: // 1
+            return 208;
+        }
+    }
 
-    result = letterId;
-    if (fontType != 1)
-        goto LABEL_43;
-    if (letterId == 26)
-        return -102;
-    if (letterId >= 8u && letterId <= 9u)
-        return letterId + 86;
-    switch (letterId)
-    {
-    case 4u:
-        return 93;
-    case 7u:
-        return -50;
-    case 0xEu:
-        return -49;
-    case 1u:
-        return -48;
-    }
-LABEL_43:
-    switch (letterId)
-    {
-    case 143u:
-        return -51;
-    case 31u:
-        return 91;
-    case 6u:
+    if (index == CHAR_AMP)
         return 10;
-    case 62u:
+    if (index >= 16 && index <= 25)
+        return index + 128;
+    if (index == 31)
+        return 91;
+    if (index >= 33 && index <= 58)
+        return index + 122;
+    if (index == 62)
         return 32;
-    }
-    if (letterId >= 16u && letterId <= 25u)
-        return letterId + -128;
-    if (letterId >= 33u && letterId <= 58u)
-        return letterId + 122;
-    if (letterId >= 65u && letterId <= 90u)
-        return letterId + 90;
-    if (letterId >= 96u && letterId <= 118u)
-        return letterId + 85;
-    if (letterId >= 119u && letterId <= 140u)
-        return letterId + 62;
-    if (letterId >= 141u && letterId <= 142u)
-        result = -52;
-    return result;
+    if (index >= 65 && index <= 90)
+        return index + 90;
+    if (index >= 96 && index <= 118)
+        return index + 85;
+    if (index >= 119 && index <= 140)
+        return index + 62;
+    if (index >= 141 && index <= 142)
+        return 204;
+    if (index == 143)
+        return 205;
+
+    return index;
 #endif
 }
 
