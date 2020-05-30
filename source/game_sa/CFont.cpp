@@ -160,10 +160,10 @@ void CFont::PrintChar(float x, float y, char character)
         }
         else
         {
-            bool isLetter = 0;
+            bool isLetter = false;
             if (!character || character == '?')
             {
-                isLetter = 1;
+                isLetter = true;
                 character = 0;
             }
             float letterIdPropValue = GetLetterIdPropValue(character) / 32;
@@ -174,24 +174,27 @@ void CFont::PrintChar(float x, float y, char character)
             {
                 if (!isLetter)
                 {
-                    float v1 = static_cast<float>(character >> 4) / 16;
+                    float v1 = (character >> 4) / 16;
                     rect.top = y;
                     rect.left = x;
                     rect.right = RenderState.m_fWidth * 32.0f * letterIdPropValue + x;
                     rect.bottom = RenderState.m_fHeigth * 32.0f * 0.5f + y;
-                    y = v1 + (1 / 16);
-                    float u2 = letterIdPropValue * (1 / 16) + u1;
-                    float v4 = y - 0.0001f;
+                    float v3 = v1 + 0.0625f;
+                    float u2 = letterIdPropValue / 16 + u1;
+                    float v4 = v3 - 0.0001f;
                     float u4 = u2 - 0.0001f;
-                    CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, u2, v1 /*v2*/, u1, y/*v3*/, u4, v4);
+                    float v2 = v1;
+                    CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, u2, v2, u1, v3, u4, v4);
                 }
             }
             else
             {
                 if (!isLetter)
                 {
-                    float ratio = (character >> 4) * 0.078125f;
+                    float characterRatio = (character >> 4) * 0.078125f;
                     rect.left = x;
+                    const float xRatio = 1.0f / 16.0f;
+                    const float yRatio = 1.0f / 12.8f;
                     if (RenderState.m_fSlant == 0.0f)
                     {
                         rect.top = y;
@@ -199,20 +202,27 @@ void CFont::PrintChar(float x, float y, char character)
                         if (character < 192)
                         {
                             rect.bottom = RenderState.m_fHeigth * 40.0f * 0.5f + y;
-                            float v3 = ratio + 0.078125f - 0.0021f;
-                            y = u1 + (1 / 16) - 0.001f;
-                            float v1 = ratio + 0.0021f;
-                            CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, y /*u2*/ , v1 /*v2*/ , u1 /*u3*/, v3, y, v3);
+                            float v3 = characterRatio + yRatio - 0.0021f;
+                            float u2 = u1 + xRatio - 0.001f;
+                            float v1 = characterRatio + 0.0021f;
+                            float v2 = v1;
+                            float u3 = u1;
+                            float u4 = y;
+                            float v4 = v3;
+                            CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, u2, v2, u3, v3, u4, v4);
                         }
                         else
                         {
                             rect.bottom = RenderState.m_fHeigth * 32.0f * 0.5f + y;
-                            float offset = ratio + 0.078125f;
-                            y = u1 + (1 / 16) - 0.001f;
-                            float v1 = ratio + 0.0021f;
+                            float offset = characterRatio + yRatio;
+                            float u2 = u1 + xRatio - 0.001f;
+                            float v1 = characterRatio + 0.0021f;
                             float v4 = offset - 0.015f;
                             float v3 = offset - 0.016f;
-                            CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, y /*u2*/ , v1 /*v2*/, u1 /*u2*/, v3, y /*v4*/, v4);
+                            float v2 = v1;
+                            float u4 = y;
+                            float u3 = u2;
+                            CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, u2 , v2, u3, v3, u4, v4);
                         }
                     }
                     else
@@ -220,13 +230,15 @@ void CFont::PrintChar(float x, float y, char character)
                         rect.top = y + 0.015f;
                         rect.right = RenderState.m_fWidth * 32.0f + x;
                         rect.bottom = RenderState.m_fHeigth * 40.0f * 0.5f + y + 0.015f;
-                        float offset = ratio + 0.078125f;
-                        y = u1 + (1 / 16) - 0.001f;
+                        float offset = characterRatio + yRatio;
+                        float u2 = u1 + xRatio - 0.001f;
                         float v4 = offset - 0.0021f + 0.01f;
                         float v3 = offset - 0.009f;
-                        float v2 = ratio + 0.0121f;
-                        float v1 = ratio + 0.00055f;
-                        CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, y/*u2*/, v2, u1/*u3*/, v3, y/*u4*/, v4);
+                        float v2 = characterRatio + 0.0121f;
+                        float v1 = characterRatio + 0.00055f;
+                        float u3 = u1;
+                        float u4 = y;
+                        CSprite2d::AddToBuffer(rect, RenderState.m_color, u1, v1, u2, v2, u3, v3, u4, v4);
                     }
                 }
             }
