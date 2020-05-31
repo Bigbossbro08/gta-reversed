@@ -28,7 +28,7 @@ enum  eFontStyle : unsigned char {
     FONT_PRICEDOWN
 };
 
-// Thanks Nick007J
+// Thanks nick7.
 enum ePS2Sprites : unsigned char {
     PS2_NONE,
     PS2_UP,         ///<  1  ~U~
@@ -49,8 +49,8 @@ enum ePS2Sprites : unsigned char {
     PS2_SPRITE_COUNT,
 };
 
-// Thanks Nick007J
-enum eFontData : unsigned char {
+// Thanks nick7.
+enum eFontData : unsigned short {
     SPRITE_FONT1 = 1,
     SPRITE_FONT2 = 0,
     SPRITE_FONT_SPECIAL = 2,
@@ -63,28 +63,33 @@ enum eFontData : unsigned char {
     FONT_CHAR_COUNT = 210,
 };
 
-// Thanks Nick007J
+// Thanks nick7.
 enum eFontSymbol : unsigned char {
     FONT_TABLE_BASE     = 32,
     FONT_TABLE_ROW      = 16,
     FONT_TABLE_ROWS     = 13,
     FONT_TABLE_SIZE     = FONT_TABLE_ROW * FONT_TABLE_ROWS,
-    CHAR_SPACE          = ' '   -     FONT_TABLE_BASE,  ///< 0
-    CHAR_EXCL           = '!'   -     FONT_TABLE_BASE,  ///< 1   !
-    CHAR_QUOT           = '"'   -     FONT_TABLE_BASE,  ///< 2   "
-    CHAR_POUND          = '#'   -     FONT_TABLE_BASE,  ///< 3   #
-    CHAR_DOLLAR         = '$'   -     FONT_TABLE_BASE,  ///< 4   $
-    CHAR_PERCENT        = '%'   -     FONT_TABLE_BASE,  ///< 5   %
-    CHAR_AMP            = '&'   -     FONT_TABLE_BASE,  ///< 6   &
-    CHAR_SINGLEQUOTE    = '\''  -     FONT_TABLE_BASE,  ///< 7   '
-    CHAR_LPARENTHESIS   = '('   -     FONT_TABLE_BASE,  ///< 8   (
-    CHAR_RPARENTHESIS   = ')'   -     FONT_TABLE_BASE,  ///< 9   )
-    CHAR_MINUS          = '-'   -     FONT_TABLE_BASE,  ///< 13  -
-    CHAR_DOT            = '.'   -     FONT_TABLE_BASE,  ///< 14  .
-    CHAR_SLASH          = '/'   -     FONT_TABLE_BASE,  ///< 15  /
-    CHAR_COLON          = ':'   -     FONT_TABLE_BASE,  ///< 26  :
-    CHAR_BACKSLASH      = '\\'  -     FONT_TABLE_BASE,  ///< 60  
-    CHAR_UNDERSCORE     = '_'   -     FONT_TABLE_BASE,  ///< 63  _
+    CHAR_SPACE          = ' '   -     FONT_TABLE_BASE,                  ///< 0
+    CHAR_EXCL           = '!'   -     FONT_TABLE_BASE,                  ///< 1   !
+    CHAR_QUOT           = '"'   -     FONT_TABLE_BASE,                  ///< 2   "
+    CHAR_POUND          = '#'   -     FONT_TABLE_BASE,                  ///< 3   #
+    CHAR_DOLLAR         = '$'   -     FONT_TABLE_BASE,                  ///< 4   $
+    CHAR_PERCENT        = '%'   -     FONT_TABLE_BASE,                  ///< 5   %
+    CHAR_AMP            = '&'   -     FONT_TABLE_BASE,                  ///< 6   &
+    CHAR_SINGLEQUOTE    = '\''  -     FONT_TABLE_BASE,                  ///< 7   '
+    CHAR_LPARENTHESIS   = '('   -     FONT_TABLE_BASE,                  ///< 8   (
+    CHAR_RPARENTHESIS   = ')'   -     FONT_TABLE_BASE,                  ///< 9   )
+    CHAR_MINUS          = '-'   -     FONT_TABLE_BASE,                  ///< 13  -
+    CHAR_DOT            = '.'   -     FONT_TABLE_BASE,                  ///< 14  .
+    CHAR_SLASH          = '/'   -     FONT_TABLE_BASE,                  ///< 15  /
+    CHAR_COLON          = ':'   -     FONT_TABLE_BASE,                  ///< 26  :
+    CHAR_BACKSLASH      = '\\'  -     FONT_TABLE_BASE,                  ///< 60  
+    CHAR_UNDERSCORE     = '_'   -     FONT_TABLE_BASE,                  ///< 63  _
+};
+
+enum eFontWidth : unsigned char {
+    WIDTH_FIRSTWORD,
+    WIDTH_TOTAL,
 };
 
 class CFontDetails
@@ -217,11 +222,13 @@ public:
     static double SetCharacterOutline(char letterId);
     // same as RenderFontBuffer()
     static void DrawFonts();
-    static short ProcessCurrentString(bool print, float x, float y, char *text);
+    static short ProcessCurrentString(bool display, float x, float y, char* text);
     static short GetNumberLines(float x, float y, char *text);
     static short ProcessStringToDisplay(float x, float y, char *text);
     static void GetTextRect(CRect *rect, float x, float y, char *text);
+
     static void PrintString(float x, float y, char *text);
+    static void PrintString(float x, float y, char* start, char* end, float wrap);
     static void PrintStringFromBottom(float x, float y, char *text);
 
     static void LoadFontValue();

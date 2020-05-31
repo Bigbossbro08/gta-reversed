@@ -27,7 +27,7 @@ enum eHudColours : unsigned char {
 	HUD_COLOUR_NUM_COLOURS
 };
 
-// Thanks Nick007J
+// Thanks nick7.
 enum eTextColour : unsigned char {
     TEXT_COLOUR_RED      = HUD_COLOUR_RED,                  // ~r~
     TEXT_COLOUR_GREEN    = HUD_COLOUR_GREEN,                // ~g~

@@ -603,8 +603,24 @@ bool RpAnimBlendPluginAttach() {
     return plugin::CallAndReturn<bool, 0x4D6150>();
 }
 
-void AsciiToGxtChar(char const *src, char *dst) {
-    plugin::Call<0x718600, char const *, char *>(src, dst);
+void AsciiToGxtChar(char const *source, char *destination) {
+    plugin::Call<0x718600, char const *, char *>(source, destination);
+}
+
+char* GxtCharStrcat(char* destination, char* source) {
+    assert(destination && source);
+
+    char* target = destination;
+    if (*destination) {
+        while (target[0])
+            ++target;
+    }
+    if (*source) {
+        while (*source)
+            *target++ = *source++;
+    }
+    *target = '\0';
+    return destination;
 }
 
 // US-1.00 @ 0x005A4150

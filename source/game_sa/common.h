@@ -187,7 +187,9 @@ CAnimBlendAssociation* RpAnimBlendGetNextAssociation(CAnimBlendAssociation* asso
 void RpAnimBlendKeyFrameInterpolate(void* voidOut, void* voidIn1, void* voidIn2, float time, void* customData);
 bool RpAnimBlendPluginAttach();
 
-void AsciiToGxtChar(char const *src, char *dst);
+void AsciiToGxtChar(char const *source, char *destination);
+
+char* GxtCharStrcat(char* destination, char* source);
 
 /**
 * Writes given raster to PNG file using RtPNGImageWrite

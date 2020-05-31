@@ -67,7 +67,8 @@ void CFont::InjectHooks()
     HookInstall(0x719800, &CFont::InitPerFrame, 7);
     HookInstall(0x71A820, &CFont::PrintStringFromBottom, 7);
     HookInstall(0x71A600, &CFont::ProcessStringToDisplay, 7);
-    HookInstall(0x71A700, &CFont::PrintString, 7);
+    HookInstall(0x71A700, (void(*)(float, float, char*))&CFont::PrintString, 7);
+    HookInstall(0x719B40, (void(*)(float, float, char*, char*, float)) & CFont::PrintString, 7);
     HookInstall(0x7187C0, &CFont::LoadFontValue, 7);
     HookInstall(0x718770, &CFont::GetLetterIdPropValue, 7);
     HookInstall(0x7192C0, &CFont::FindSubFontCharacter, 7);
@@ -813,9 +814,152 @@ void CFont::DrawFonts()
 #endif
 }
 
-short CFont::ProcessCurrentString(bool print, float x, float y, char* text)
+short CFont::ProcessCurrentString(bool display, float x, float y, char* text)
 {
-    return ((short(__cdecl*)(bool, float, float, char*))0x71A220)(print, x, y, text);
+#ifdef USE_DEFAULT_FUNCTIONS
+    return ((short(__cdecl*)(bool, float, float, char*))0x71A220)(display, x, y, text);
+#else
+    short lines = 0;
+    short spaces = 0;
+
+    if (!text || !text[0]) {
+        return lines;
+    }
+
+    CRGBA rgbaBackup = CFont::m_Color;
+
+    char buffer[256] = { 0 };
+    char* start = text;
+    char* end = text;
+
+    float rightX = 0.0f;
+    float lastLineRightX = 0.0f;
+
+    bool unknown = true;
+
+    if (!(m_bFontCentreAlign || m_bFontRightAlign))
+    {
+        rightX = x;
+    }
+
+    CRGBA colour;
+    char tag = false;
+
+    while (*start) {
+        CFont::PS2Symbol = 0;
+        float wordWidth = CFont::GetStringWidth(end, WIDTH_FIRSTWORD, false);
+        if (*end == '~') {
+            end = CFont::ParseToken(end, colour, true, &tag);
+        }
+
+        float rightMaxX = 0.f;
+        if (m_bFontCentreAlign)
+            rightMaxX = m_fFontCentreSize;
+        else if (m_bFontRightAlign)
+            rightMaxX = x - m_fRightJustifyWrap;
+        else
+            rightMaxX = m_fWrapx;
+
+        if ((rightX + wordWidth <= rightMaxX || unknown) && !CFont::m_bNewLine) {
+            rightX += wordWidth;
+
+            end = CFont::GetNextSpace(end);
+
+            if (!end[0]) { // we have one word to render, okay
+                float leftX;
+                if (m_bFontCentreAlign)
+                    leftX = x - rightX / 2.f;
+                else if (m_bFontRightAlign)
+                    leftX = x - rightX;
+                else
+                    leftX = x;
+
+                ++lines;
+                if (display) {
+                    CFont::PrintString(leftX, y, start, end, 0.f);
+                }
+                printf("2014/12/17 [nick7]: is this bug present in original version or it's just mine?");
+                // here's a little fix in cause we have trailing spaces, otherwise last line won't be rendered
+                start = end;
+                continue; // actually, it's break as loop will be ended
+            }
+            if (!unknown) {
+                ++spaces;
+            }
+
+            // actually _pStrTo points to a one of space chars, so
+            // we just add a space and skip this char
+            if (*end != '~') {
+                ++end;
+                rightX += CFont::GetCharacterSize(CHAR_SPACE); // add space
+            }
+            lastLineRightX = rightX;
+            unknown = false;
+            continue;
+        }
+
+        if (PS2Symbol) {
+            end -= 3; // ~?~
+        }
+
+        if (m_bNewLine) {
+            end -= 3; // ~n~
+        }
+
+        float leftX = 0;
+        float unknown = 0.f;
+
+        if (m_bFontCentreAlign) {
+            leftX = x - rightX / 2.f;
+        }
+        else if (m_bFontRightAlign) {
+            leftX = x - (rightX - GetCharacterSize(0));
+        }
+        else {
+            leftX = x;
+        }
+
+        if (!m_bFontCentreAlign && m_bFontJustify) {
+            unknown = (m_fWrapx - rightX) / float(spaces);
+        }
+
+        ++lines;
+        if (display) {
+            CFont::PrintString(leftX, y, start, end, unknown);
+        }
+
+        if (m_bNewLine) {
+            end += 3;
+        }
+
+        if (tag) {
+            printf(gString, "~%c~", tag);
+            AsciiToGxtChar(gString, buffer);
+            end = GxtCharStrcat(buffer, end);
+            tag = 0;
+        }
+
+        // begin rendering new line
+        m_bNewLine = false;
+        y += m_Scale->y * (32.f / 2.f + 2.f); //CFont::GetHeight(false);
+
+        if (m_bFontCentreAlign || m_bFontRightAlign)
+            rightX = 0.f;
+        else
+            rightX = x;
+
+        start = end;
+        spaces = 0;
+        lastLineRightX = 0;
+        unknown = true;
+    }
+
+    if (!display) {
+        SetColor(rgbaBackup); // restore color
+    }
+
+    return lines;
+#endif
 }
 
 short CFont::GetNumberLines(float x, float y, char* text)
@@ -905,6 +1049,11 @@ void CFont::PrintString(float x, float y, char* text)
 #endif
 }
 
+void CFont::PrintString(float x, float y, char* start, char* end, float wrap)
+{
+    ((void(__cdecl*)(float, float, char*, char*, float wrap))0x719B40)(x, y, start, end, wrap);
+}
+
 void CFont::PrintStringFromBottom(float x, float y, char* text)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
@@ -985,7 +1134,7 @@ int CFont::GetLetterIdPropValue(char letterId)
 #endif
 }
 
-// Thanks Nick007J
+// Thanks nick7.
 int CFont::FindSubFontCharacter(char index, char fontAttribute)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
