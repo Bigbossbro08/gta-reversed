@@ -1079,12 +1079,12 @@ void CFont::LoadFontValue()
     {
         if (*line != '#' && *line)
         {
-            unsigned int fontId = 0, propValues[8], replacementSpaceChar;
+            unsigned int fontId = 0, totalFonts, propValues[8], replacementSpaceChar;
             char attribute;
             sscanf(line, "%s", &attribute);
             if (!memcmp(&attribute, "[TOTAL_FONTS]", 0xEu))
             {
-                sscanf(CFileLoader::LoadLine(fontDatFile), "%d", &propValues);
+                sscanf(CFileLoader::LoadLine(fontDatFile), "%d", &totalFonts);
             }
             else if (!memcmp(&attribute, "[FONT_ID]", 0xAu))
             {
