@@ -133,6 +133,7 @@ public:
 	void SetIsLod(int bIsLod);
 	void SetOwnsColModel(int bOwns);
 	void IncreaseAlpha();
+    inline CColModel* GetColModel() { return m_pColModel; }
 };
 
 VALIDATE_SIZE(CBaseModelInfo, 0x20);

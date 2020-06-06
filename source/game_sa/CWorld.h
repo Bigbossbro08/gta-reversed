@@ -152,27 +152,43 @@ public:
     // returns sector index in range 0 to 60 (covers half of the map) 
     static float GetHalfMapSectorX(float fSector) { return fSector / (MAX_WORLD_UNITS / MAX_SECTORS_X); }
     static float GetHalfMapSectorY(float fSector) { return fSector / (MAX_WORLD_UNITS / MAX_SECTORS_Y); }
+    static float GetSectorfX(float fSector) { return GetHalfMapSectorX(fSector) + (MAX_SECTORS_X / 2); }
+    static float GetSectorfY(float fSector) { return GetHalfMapSectorY(fSector) + (MAX_SECTORS_Y / 2); }
     // returns sector index in range 0 to 120 (covers full map) 
-    static std::int32_t GetSectorX(float fSector)
+    static std::int32_t GetSectorX(float fSector) { return static_cast<std::int32_t>(std::floor(GetSectorfX(fSector))); }
+    static std::int32_t GetSectorY(float fSector) { return static_cast<std::int32_t>(std::floor(GetSectorfY(fSector))); }
+    static float GetSectorPosX(std::int32_t sector)
     {
-        return static_cast<std::int32_t>(std::floor(GetHalfMapSectorX(fSector) + (MAX_SECTORS_X / 2)));
+        const std::int32_t HalfOfTotalSectorsX = MAX_SECTORS_Y / 2;
+        const float fTotalMapUnitsX = MAX_WORLD_UNITS / MAX_SECTORS_Y;
+        return (sector - HalfOfTotalSectorsX) * fTotalMapUnitsX + (fTotalMapUnitsX / 2);
     }
-    static std::int32_t GetSectorY(float fSector)
+    static float GetSectorPosY(std::int32_t sector)
     {
-        return static_cast<std::int32_t>(std::floor(GetHalfMapSectorY(fSector) + (MAX_SECTORS_Y / 2)));
+        const std::int32_t HalfOfTotalSectorsY = MAX_SECTORS_Y / 2;
+        const float fTotalMapUnitsY = MAX_WORLD_UNITS / MAX_SECTORS_Y;
+        return (sector - HalfOfTotalSectorsY) * fTotalMapUnitsY + (fTotalMapUnitsY / 2);
     }
 
     // returns sector index in range 0 to 15 (covers half of the map) 
     static float GetHalfMapLodSectorX(float fSector) { return fSector / (MAX_WORLD_UNITS / MAX_LOD_PTR_LISTS_X); }
     static float GetHalfMapLodSectorY(float fSector) { return fSector / (MAX_WORLD_UNITS / MAX_LOD_PTR_LISTS_Y); }
+    static float GetLodSectorfX(float fSector) { return GetHalfMapLodSectorX(fSector) + (MAX_LOD_PTR_LISTS_X / 2); }
+    static float GetLodSectorfY(float fSector) { return GetHalfMapLodSectorY(fSector) + (MAX_LOD_PTR_LISTS_Y / 2); }
     // returns sector index in range 0 to 30 (covers full map) 
-    static std::int32_t GetLodSectorX(float fSector)
+    static std::int32_t GetLodSectorX(float fSector) { return static_cast<std::int32_t>(std::floor(GetLodSectorfX(fSector))); }
+    static std::int32_t GetLodSectorY(float fSector) { return static_cast<std::int32_t>(std::floor(GetLodSectorfY(fSector)));  }
+    static float GetLodSectorPosX(std::int32_t sector)
     {
-        return static_cast<std::int32_t>(std::floor(GetHalfMapLodSectorX(fSector) + (MAX_LOD_PTR_LISTS_X / 2)));
+        const std::int32_t HalfOfTotalSectorsX = MAX_LOD_PTR_LISTS_X / 2;
+        const float fTotalMapUnitsX = MAX_WORLD_UNITS / MAX_LOD_PTR_LISTS_X;
+        return (sector - HalfOfTotalSectorsX) * fTotalMapUnitsX + (fTotalMapUnitsX / 2);
     }
-    static std::int32_t GetLodSectorY(float fSector)
+    static float GetLodSectorPosY(std::int32_t sector)
     {
-        return static_cast<std::int32_t>(std::floor(GetHalfMapLodSectorY(fSector) + (MAX_LOD_PTR_LISTS_Y / 2)));
+        const std::int32_t HalfOfTotalSectorsY = MAX_LOD_PTR_LISTS_Y / 2;
+        const float fTotalMapUnitsY = MAX_WORLD_UNITS / MAX_LOD_PTR_LISTS_Y;
+        return (sector - HalfOfTotalSectorsY) * fTotalMapUnitsY + (fTotalMapUnitsY / 2);
     }
 };
 
