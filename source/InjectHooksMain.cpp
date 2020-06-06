@@ -12,6 +12,7 @@ void InjectHooksMain(void)
     //CFont::InjectHooks();
     CPhysical::InjectHooks();
     CRenderer::InjectHooks();
+    CVisibilityPlugins::InjectHooks();
     CPed::InjectHooks();
     CPedIntelligence::InjectHooks();
     CTrain::InjectHooks();
@@ -48,5 +49,4 @@ void InjectHooksMain(void)
     CTheZones::InjectHooks();
     CMenuManager::InjectHooks();
     CSprite2d::InjectHooks();
-    CVisibilityPlugins::InjectHooks();
 }

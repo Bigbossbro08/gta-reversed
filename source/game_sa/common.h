@@ -5,6 +5,9 @@ https://github.com/DK22Pac/plugin-sdk
 Do not delete this comment block. Respect others' work!
 */
 #pragma once
+
+#include <string>
+
 #include "PluginBase.h"
 #include "CVector.h"
 #include "CEntity.h"
@@ -21,7 +24,7 @@ extern char *gString; // char gString[200]
 
 extern float &GAME_GRAVITY; // default 0.0080000004
 
-extern char *&PC_Scratch;
+extern char(&PC_Scratch)[16384];
                             // returns player coors
 CVector FindPlayerCoors(int playerId);
 // returns player speed
@@ -52,6 +55,7 @@ CVector* Multiply3x3(CVector* out, CMatrix* m, CVector* in);
 // returns player wanted
 CWanted * FindPlayerWanted(int playerId);
 
+const unsigned int rwVENDORID_ROCKSTAR = 0x0253F2;
 extern unsigned int &ClumpOffset;
 
 #define RpClumpGetAnimBlendClumpData(clump) (*(CAnimBlendClumpData **)(((unsigned int)(clump) + ClumpOffset)))
@@ -195,3 +199,10 @@ char* GxtCharStrcat(char* destination, char* source);
 * Writes given raster to PNG file using RtPNGImageWrite
 */
 void WriteRaster(RwRaster * pRaster, char const * pszPath);
+
+/* Convert UTF-8 string to Windows Unicode. Free pointer using delete[] */
+std::wstring UTF8ToUnicode(const std::string &str);
+/* Convert Windows Unicode to UTF-8. Free pointer using delete[] */
+std::string UnicodeToUTF8(const std::wstring &str);
+
+extern int WindowsCharset;
