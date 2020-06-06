@@ -9,6 +9,7 @@ void InjectHooksMain(void)
     CVehicleModelInfo::InjectHooks();
     CFileLoader::InjectHooks();
     CFileMgr::InjectHooks();
+    //CFont::InjectHooks();
     CPhysical::InjectHooks();
     CRenderer::InjectHooks();
     CPed::InjectHooks();

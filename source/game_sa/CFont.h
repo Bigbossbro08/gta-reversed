@@ -141,7 +141,7 @@ public:
     static CRGBA& m_Color;
     static CVector2D *m_Scale;
     static float& m_fSlant;
-    static CVector2D *m_fSlantRefPoint;
+    static CVector2D &m_fSlantRefPoint;
     static bool& m_bFontJustify;
     static bool& m_bFontCentreAlign;
     static bool& m_bFontRightAlign;

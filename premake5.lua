@@ -55,6 +55,28 @@ solution "gta_reversed"
        "source/**"
     }
     libdirs {"source"}
+
+    function setpaths (gamepath, exepath, scriptspath)
+        scriptspath = scriptspath or ""
+        if (gamepath) then
+           postbuildcommands {
+              '{COPY} "%{cfg.buildtarget.abspath}" "' .. gamepath .. scriptspath .. '%{cfg.buildtarget.name}"'
+           }
+           debugdir (gamepath)
+           if (exepath) then
+              -- Used VS variable $(TargetFileName) because it doesn't accept premake tokens. Does debugcommand even work outside VS??
+              debugcommand (gamepath .. "gta_sa.exe")
+              dir, file = exepath:match'(.*/)(.*)'
+              debugdir (gamepath .. (dir or ""))
+           end
+        end
+        --targetdir ("bin/%{prj.name}/" .. scriptspath)
+     end
+
+    filter {}
+	if(os.getenv("GTA_SA_DIR")) then
+		setpaths("$(GTA_SA_DIR)/", "%(cfg.buildtarget.name)", "")
+	end
     
     configuration "Debug*"
         flags { symbols ("On") }
@@ -83,11 +105,11 @@ solution "gta_reversed"
         "source/**.c*"
         }
 
-        libdirs { 
-            "libs/dxsdk" 
-        }
+        --libdirs { 
+        --    "libs/dxsdk" 
+        --}
 
-        links { "d3d9", "dinput" }
+        --links { "d3d9", "dinput" }
         
         excludes{
         "source/**/errcom.def", --bugfix for premake5
