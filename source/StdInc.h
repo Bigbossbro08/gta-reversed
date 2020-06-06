@@ -14,17 +14,12 @@
 #include <iostream>
 #include <cassert>
 
-#include "imgui.h"
-#include "imgui_impl_dx9.h"
-#include "imgui_impl_win32.h"
-
 // DirectX
 #include <d3d9.h>
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
 #include "game_sa\constants.h"
-#include "game_sa\Debug\CDebug.h"
 #include "game_sa\CPostEffects.h"
 #include "game_sa\CMemoryMgr.h"
 #include "game_sa\COcclusion.h"

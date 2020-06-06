@@ -42,29 +42,29 @@ tFontData* CFont::gFontData = (tFontData*)0xC718B0;
 
 void CFont::InjectHooks()
 {
-    HookInstall(0x5BA690, &CFont::Initialise, 7);
-    HookInstall(0x7189B0, &CFont::Shutdown, 7);
-    HookInstall(0x719420, &CFont::SetSlant, 7);
-    HookInstall(0x719400, &CFont::SetSlantRefPoint, 7);
-    HookInstall(0x719430, &CFont::SetColor, 7);
-    HookInstall(0x7194D0, &CFont::SetWrapx, 7);
-    HookInstall(0x7194E0, &CFont::SetCentreSize, 7);
-    HookInstall(0x719380, &CFont::SetScale, 7);
-    HookInstall(0x7193A0, &CFont::SetScaleForCurrentlanguage, 7);
-    HookInstall(0x7194F0, &CFont::SetRightJustifyWrap, 7);
-    HookInstall(0x719500, &CFont::SetAlphaFade, 7);
-    HookInstall(0x719510, &CFont::SetDropColor, 7);
-    HookInstall(0x719570, &CFont::SetDropShadowPosition, 7);
-    HookInstall(0x719590, &CFont::SetEdge, 7);
-    HookInstall(0x7195B0, &CFont::SetProportional, 7);
-    HookInstall(0x7195C0, &CFont::SetBackground, 7);
-    HookInstall(0x7195E0, &CFont::SetBackgroundColor, 7);
-    HookInstall(0x719600, &CFont::SetJustify, 7);
-    HookInstall(0x719610, &CFont::SetAllignment, 7);
-    HookInstall(0x719490, &CFont::SetFontStyle, 7);
-    HookInstall(0x71A210, &CFont::DrawFonts, 7);
+    //HookInstall(0x5BA690, &CFont::Initialise, 7);
+    //HookInstall(0x7189B0, &CFont::Shutdown, 7);
+    //HookInstall(0x719420, &CFont::SetSlant, 7);
+    //HookInstall(0x719400, &CFont::SetSlantRefPoint, 7);
+    //HookInstall(0x719430, &CFont::SetColor, 7);
+    //HookInstall(0x7194D0, &CFont::SetWrapx, 7);
+    //HookInstall(0x7194E0, &CFont::SetCentreSize, 7);
+    //HookInstall(0x719380, &CFont::SetScale, 7);
+    //HookInstall(0x7193A0, &CFont::SetScaleForCurrentlanguage, 7);
+    //HookInstall(0x7194F0, &CFont::SetRightJustifyWrap, 7);
+    //HookInstall(0x719500, &CFont::SetAlphaFade, 7);
+    //HookInstall(0x719510, &CFont::SetDropColor, 7);
+    //HookInstall(0x719570, &CFont::SetDropShadowPosition, 7);
+    //HookInstall(0x719590, &CFont::SetEdge, 7);
+    //HookInstall(0x7195B0, &CFont::SetProportional, 7);
+    //HookInstall(0x7195C0, &CFont::SetBackground, 7);
+    //HookInstall(0x7195E0, &CFont::SetBackgroundColor, 7);
+    //HookInstall(0x719600, &CFont::SetJustify, 7);
+    //HookInstall(0x719610, &CFont::SetAllignment, 7);
+    //HookInstall(0x719490, &CFont::SetFontStyle, 7);
+    //HookInstall(0x71A210, &CFont::DrawFonts, 7);
     //HookInstall(0x71A620, &CFont::GetTextRect, 7);
-    HookInstall(0x719800, &CFont::InitPerFrame, 7);
+    //HookInstall(0x719800, &CFont::InitPerFrame, 7);
     //HookInstall(0x71A820, &CFont::PrintStringFromBottom, 7);
     //HookInstall(0x71A600, &CFont::ProcessStringToDisplay, 7);
     //HookInstall(0x71A700, (void(*)(float, float, char*))&CFont::PrintString, 7);
@@ -82,6 +82,8 @@ void CFont::InjectHooks()
     //HookInstall(0x719840, &CFont::RenderFontBuffer, 7);
     //HookInstall(0x71A220, &CFont::ProcessCurrentString, 7);
 }
+
+#define USE_DEFAULT_FUNCTIONS
 
 void CFont::Initialise()
 {
@@ -144,8 +146,6 @@ void CFont::Shutdown()
     CTxdStore::RemoveTxdSlot(ps2buttonsTxdIdSlot);
 #endif
 }
-
-#define USE_DEFAULT_FUNCTIONS
 
 void CFont::PrintChar(float x, float y, char character)
 {
@@ -420,8 +420,6 @@ char* CFont::ParseToken(char* text, CRGBA& colour, bool disableColor, char* colo
 #endif
 }
 
-#undef USE_DEFAULT_FUNCTIONS
-
 void CFont::SetScale(float w, float h)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
@@ -654,8 +652,6 @@ void CFont::InitPerFrame()
     CSprite::InitSpriteBuffer();
 #endif
 }
-
-#define USE_DEFAULT_FUNCTIONS
 
 float CFont::GetStringWidth(char* str, bool bFull, bool bScriptText)
 {
@@ -904,8 +900,6 @@ void CFont::RenderFontBuffer()
 #endif
 }
 
-#undef USE_DEFAULT_FUNCTIONS
-
 void CFont::DrawFonts()
 {
 #ifdef USE_DEFAULT_FUNCTIONS
@@ -914,8 +908,6 @@ void CFont::DrawFonts()
     RenderFontBuffer();
 #endif
 }
-
-#define USE_DEFAULT_FUNCTIONS
 
 short CFont::ProcessCurrentString(bool display, float x, float y, char* text)
 {
@@ -1330,8 +1322,6 @@ int CFont::FindSubFontCharacter(char index, char fontAttribute)
     return index;
 #endif
 }
-
-#undef USE_DEFAULT_FUNCTIONS
 
 CFontDetails* CFontDetails::operator=(CFontDetails const* rhs)
 {
