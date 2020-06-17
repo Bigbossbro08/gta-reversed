@@ -42,48 +42,46 @@ tFontData* CFont::gFontData = (tFontData*)0xC718B0;
 
 void CFont::InjectHooks()
 {
-    //HookInstall(0x5BA690, &CFont::Initialise, 7);
-    //HookInstall(0x7189B0, &CFont::Shutdown, 7);
-    //HookInstall(0x719420, &CFont::SetSlant, 7);
-    //HookInstall(0x719400, &CFont::SetSlantRefPoint, 7);
-    //HookInstall(0x719430, &CFont::SetColor, 7);
-    //HookInstall(0x7194D0, &CFont::SetWrapx, 7);
-    //HookInstall(0x7194E0, &CFont::SetCentreSize, 7);
-    //HookInstall(0x719380, &CFont::SetScale, 7);
-    //HookInstall(0x7193A0, &CFont::SetScaleForCurrentlanguage, 7);
-    //HookInstall(0x7194F0, &CFont::SetRightJustifyWrap, 7);
-    //HookInstall(0x719500, &CFont::SetAlphaFade, 7);
-    //HookInstall(0x719510, &CFont::SetDropColor, 7);
-    //HookInstall(0x719570, &CFont::SetDropShadowPosition, 7);
-    //HookInstall(0x719590, &CFont::SetEdge, 7);
-    //HookInstall(0x7195B0, &CFont::SetProportional, 7);
-    //HookInstall(0x7195C0, &CFont::SetBackground, 7);
-    //HookInstall(0x7195E0, &CFont::SetBackgroundColor, 7);
-    //HookInstall(0x719600, &CFont::SetJustify, 7);
-    //HookInstall(0x719610, &CFont::SetAllignment, 7);
-    //HookInstall(0x719490, &CFont::SetFontStyle, 7);
-    //HookInstall(0x71A210, &CFont::DrawFonts, 7);
+    HookInstall(0x5BA690, &CFont::Initialise, 7);
+    HookInstall(0x7189B0, &CFont::Shutdown, 7);
+    HookInstall(0x719420, &CFont::SetSlant, 7);
+    HookInstall(0x719400, &CFont::SetSlantRefPoint, 7);
+    HookInstall(0x719430, &CFont::SetColor, 7);
+    HookInstall(0x7194D0, &CFont::SetWrapx, 7);
+    HookInstall(0x7194E0, &CFont::SetCentreSize, 7);
+    HookInstall(0x719380, &CFont::SetScale, 7);
+    HookInstall(0x7193A0, &CFont::SetScaleForCurrentlanguage, 7);
+    HookInstall(0x7194F0, &CFont::SetRightJustifyWrap, 7);
+    HookInstall(0x719500, &CFont::SetAlphaFade, 7);
+    HookInstall(0x719510, &CFont::SetDropColor, 7);
+    HookInstall(0x719570, &CFont::SetDropShadowPosition, 7);
+    HookInstall(0x719590, &CFont::SetEdge, 7);
+    HookInstall(0x7195B0, &CFont::SetProportional, 7);
+    HookInstall(0x7195C0, &CFont::SetBackground, 7);
+    HookInstall(0x7195E0, &CFont::SetBackgroundColor, 7);
+    HookInstall(0x719600, &CFont::SetJustify, 7);
+    HookInstall(0x719610, &CFont::SetAllignment, 7);
+    HookInstall(0x719490, &CFont::SetFontStyle, 7);
+    HookInstall(0x71A210, &CFont::DrawFonts, 7);
     //HookInstall(0x71A620, &CFont::GetTextRect, 7);
-    //HookInstall(0x719800, &CFont::InitPerFrame, 7);
+    HookInstall(0x719800, &CFont::InitPerFrame, 7);
     //HookInstall(0x71A820, &CFont::PrintStringFromBottom, 7);
-    //HookInstall(0x71A600, &CFont::ProcessStringToDisplay, 7);
+    HookInstall(0x71A600, &CFont::ProcessStringToDisplay, 7);
     //HookInstall(0x71A700, (void(*)(float, float, char*))&CFont::PrintString, 7);
     //HookInstall(0x719B40, (void(*)(float, float, char*, char*, float)) & CFont::PrintString, 7);
     //HookInstall(0x7187C0, &CFont::LoadFontValue, 7);
-    //HookInstall(0x718770, &CFont::GetLetterIdPropValue, 7);
+    HookInstall(0x718770, &CFont::GetLetterIdPropValue, 7);
     //HookInstall(0x7192C0, &CFont::FindSubFontCharacter, 7);
     //HookInstall(0x718A10, &CFont::PrintChar, 7);
-    //HookInstall(0x71A5E0, &CFont::GetNumberLines, 7);
+    HookInstall(0x71A5E0, &CFont::GetNumberLines, 7);
     //HookInstall(0x71A0E0, &CFont::GetStringWidth, 7);
-    //HookInstall(0x719750, &CFont::GetCharacterSize, 7);
-    //HookInstall(0x719670, &CFont::SetCharacterOutline, 7);
-    //HookInstall(0x718ED0, &CFont::GetNextSpace, 7);
+    HookInstall(0x719750, &CFont::GetCharacterSize, 7);
+    HookInstall(0x719670, &CFont::SetCharacterOutline, 7);
+    HookInstall(0x718ED0, &CFont::GetNextSpace, 7);
     //HookInstall(0x718ED0, &CFont::ParseToken, 7);
     //HookInstall(0x719840, &CFont::RenderFontBuffer, 7);
     //HookInstall(0x71A220, &CFont::ProcessCurrentString, 7);
 }
-
-#define USE_DEFAULT_FUNCTIONS
 
 void CFont::Initialise()
 {
@@ -146,6 +144,9 @@ void CFont::Shutdown()
     CTxdStore::RemoveTxdSlot(ps2buttonsTxdIdSlot);
 #endif
 }
+
+//bug
+#define USE_DEFAULT_FUNCTIONS
 
 void CFont::PrintChar(float x, float y, char character)
 {
@@ -255,7 +256,9 @@ void CFont::PrintChar(float x, float y, char character)
 #endif
 }
 
-char* __cdecl CFont::GetNextSpace(char* text)
+#undef USE_DEFAULT_FUNCTIONS
+
+char* CFont::GetNextSpace(char* text)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
     return ((char* (__cdecl*)(char*))0x718ED0)(text);
@@ -272,6 +275,9 @@ char* __cdecl CFont::GetNextSpace(char* text)
     return text;
 #endif
 }
+
+//bug
+#define USE_DEFAULT_FUNCTIONS
 
 char* CFont::ParseToken(char* text, CRGBA& colour, bool disableColor, char* colorCode)
 {
@@ -419,6 +425,8 @@ char* CFont::ParseToken(char* text, CRGBA& colour, bool disableColor, char* colo
     return text + 1;
 #endif
 }
+
+#undef USE_DEFAULT_FUNCTIONS
 
 void CFont::SetScale(float w, float h)
 {
@@ -653,6 +661,8 @@ void CFont::InitPerFrame()
 #endif
 }
 
+#define USE_DEFAULT_FUNCTIONS
+
 float CFont::GetStringWidth(char* str, bool bFull, bool bScriptText)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
@@ -722,6 +732,8 @@ float CFont::GetStringWidth(char* str, bool bFull, bool bScriptText)
     return width;
 #endif
 }
+
+#undef USE_DEFAULT_FUNCTIONS
 
 int CFont::GetCharacterSize(char letterId)
 {
@@ -803,6 +815,8 @@ double CFont::SetCharacterOutline(char letterId)
     return letterWidth * totalOutlineValue;
 #endif
 }
+
+#define USE_DEFAULT_FUNCTIONS
 
 void CFont::RenderFontBuffer()
 {
@@ -900,6 +914,8 @@ void CFont::RenderFontBuffer()
 #endif
 }
 
+#undef USE_DEFAULT_FUNCTIONS
+
 void CFont::DrawFonts()
 {
 #ifdef USE_DEFAULT_FUNCTIONS
@@ -908,6 +924,8 @@ void CFont::DrawFonts()
     RenderFontBuffer();
 #endif
 }
+
+#define USE_DEFAULT_FUNCTIONS
 
 short CFont::ProcessCurrentString(bool display, float x, float y, char* text)
 {
@@ -1057,6 +1075,8 @@ short CFont::ProcessCurrentString(bool display, float x, float y, char* text)
 #endif
 }
 
+#undef USE_DEFAULT_FUNCTIONS
+
 short CFont::GetNumberLines(float x, float y, char* text)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
@@ -1074,6 +1094,8 @@ short CFont::ProcessStringToDisplay(float x, float y, char* text) //
     return GetNumberLines(x, y, text);
 #endif
 }
+
+#define USE_DEFAULT_FUNCTIONS
 
 void CFont::GetTextRect(CRect* rect, float x, float y, char* text)
 {
@@ -1201,7 +1223,7 @@ void CFont::PrintStringFromBottom(float x, float y, char* text)
     y -= (m_Scale->y * 32.0f * 0.5f + m_Scale->y + m_Scale->y) * GetNumberLines(x, y, text);
     if (m_fSlant != 0.0)
         y -= ((m_fSlantRefPoint.x - x) * m_fSlant + m_fSlantRefPoint.y);
-    CFont::PrintString(x, y, text);
+    PrintString(x, y, text);
 #endif
 }
 
@@ -1259,20 +1281,6 @@ void CFont::LoadFontValue()
 #endif
 }
 
-int CFont::GetLetterIdPropValue(char letterId)
-{
-#ifdef USE_DEFAULT_FUNCTIONS
-    return ((int(__cdecl*)(char))0x718770)(letterId);
-#else
-    if (letterId == 63)
-        letterId = 0;
-    if (RenderState.m_bPropOn == 1)
-        return gFontData[RenderState.m_wFontTexture].m_propValues[letterId];
-    else
-        return gFontData[RenderState.m_wFontTexture].m_unpropValue;
-#endif
-}
-
 // Thanks nick7.
 int CFont::FindSubFontCharacter(char index, char fontAttribute)
 {
@@ -1320,6 +1328,22 @@ int CFont::FindSubFontCharacter(char index, char fontAttribute)
         return 205;
 
     return index;
+#endif
+}
+
+#undef USE_DEFAULT_FUNCTIONS
+
+int CFont::GetLetterIdPropValue(char letterId)
+{
+#ifdef USE_DEFAULT_FUNCTIONS
+    return ((int(__cdecl*)(char))0x718770)(letterId);
+#else
+    if (letterId == CHAR_UNDERSCORE)
+        letterId = CHAR_SPACE;
+    if (RenderState.m_bPropOn == 1)
+        return gFontData[RenderState.m_wFontTexture].m_propValues[letterId];
+    else
+        return gFontData[RenderState.m_wFontTexture].m_unpropValue;
 #endif
 }
 
