@@ -2,14 +2,14 @@
 
 void CTaskComplexGoToPointAndStandStill::InjectHooks()
 {
-    HookInstall(0x668120, &CTaskComplexGoToPointAndStandStill::Constructor, 7);
-    HookInstall(0x66CEA0, &CTaskComplexGoToPointAndStandStill::Clone_Reversed, 7);
-    HookInstall(0x66DBA0, &CTaskComplexGoToPointAndStandStill::CreateNextSubTask_Reversed, 7);
-    HookInstall(0x66DC40, &CTaskComplexGoToPointAndStandStill::CreateFirstSubTask_Reversed, 7);
-    HookInstall(0x668570, &CTaskComplexGoToPointAndStandStill::ControlSubTask_Reversed, 7);
-    HookInstall(0x46FE60, &CTaskComplexGoToPointAndStandStill::GoToPoint, 7);
-    HookInstall(0x668250, &CTaskComplexGoToPointAndStandStill::SelectMoveState, 7);
-    HookInstall(0x6682D0, (CTask*(CTaskComplexGoToPointAndStandStill::*)(int, CPed*)) & CTaskComplexGoToPointAndStandStill::CreateFirstSubTask, 7);
+    HookInstall(0x668120, &CTaskComplexGoToPointAndStandStill::Constructor);
+    HookInstall(0x66CEA0, &CTaskComplexGoToPointAndStandStill::Clone_Reversed);
+    HookInstall(0x66DBA0, &CTaskComplexGoToPointAndStandStill::CreateNextSubTask_Reversed);
+    HookInstall(0x66DC40, &CTaskComplexGoToPointAndStandStill::CreateFirstSubTask_Reversed);
+    HookInstall(0x668570, &CTaskComplexGoToPointAndStandStill::ControlSubTask_Reversed);
+    HookInstall(0x46FE60, &CTaskComplexGoToPointAndStandStill::GoToPoint);
+    HookInstall(0x668250, &CTaskComplexGoToPointAndStandStill::SelectMoveState);
+    HookInstall(0x6682D0, (CTask*(CTaskComplexGoToPointAndStandStill::*)(int, CPed*)) & CTaskComplexGoToPointAndStandStill::CreateFirstSubTask);
 }
 
 CTaskComplexGoToPointAndStandStill::CTaskComplexGoToPointAndStandStill(int moveState, const CVector& targetPoint, float fRadius, float fMoveStateRadius, bool bUnknown, bool bGoToPoint)
@@ -207,7 +207,7 @@ CTask* CTaskComplexGoToPointAndStandStill::CreateFirstSubTask(int taskId, CPed* 
     case TASK_SIMPLE_STAND_STILL: {
         if (m_bGoToPoint && m_pSubTask && m_pSubTask->GetId() == TASK_SIMPLE_GO_TO_POINT) {
             CVector vecDistance = m_vecTargetPoint - ped->GetPosition(); 
-            float fDotProduct = DotProduct(&vecDistance, &ped->m_matrix->up);
+            float fDotProduct = DotProduct(&vecDistance, &ped->GetForward());
             float fBlendDelta = 8.0f;
             if (ped->m_vecAnimMovingShiftLocal.y >= 0.01f) {
                 fBlendDelta = 50.0f / ((fDotProduct / (ped->m_vecAnimMovingShiftLocal.y * 0.5f) - 1.0f) * CTimer::ms_fTimeStep);

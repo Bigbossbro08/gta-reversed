@@ -18,6 +18,7 @@ void InjectHooksMain(void)
     CAnimBlendAssociation::InjectHooks();
     CEventEditableResponse::InjectHooks();
     CEventDamage::InjectHooks();
+    CPedDamageResponseCalculator::InjectHooks();
     CPedScriptedTaskRecord::InjectHooks();
     CPedScriptedTaskRecordData::InjectHooks();
     CScriptedBrainTaskStore::InjectHooks();
@@ -48,4 +49,5 @@ void InjectHooksMain(void)
     CTheZones::InjectHooks();
     CMenuManager::InjectHooks();
     CSprite2d::InjectHooks();
+    CCheat::InjectHooks();
 }

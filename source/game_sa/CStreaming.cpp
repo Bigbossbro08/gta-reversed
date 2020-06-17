@@ -57,99 +57,99 @@ static std::int32_t& CurrentGangMemberToLoad = *(std::int32_t*)0x9654D4;
 void CStreaming::InjectHooks()
 {
     //CStreamingInfo::InjectHooks(); 
-    HookInstall(0x409650, &CStreaming::AddEntity, 7);
-    HookInstall(0x1567B90, &CStreaming::AddImageToList, 7);
-    HookInstall(0x40C520, &CStreaming::AddLodsToRequestList, 7);
-    HookInstall(0x40D3F0, &CStreaming::AddModelsToRequestList, 7);
-    HookInstall(0x4019B9, &CStreaming::AreAnimsUsedByRequestedModels, 7);
-    HookInstall(0x15664B0, &CStreaming::AreTexturesUsedByRequestedModels, 7);
-    HookInstall(0x1566490, &CStreaming::ClearFlagForAll, 7);
-    HookInstall(0x40BAA0, &CStreaming::ClearSlots, 7);
-    HookInstall(0x408E20, &CStreaming::GetNextFileOnCd, 7);
-    HookInstall(0x15642C0, &CStreaming::HasSpecialCharLoaded, 7);
-    HookInstall(0x156A100, &CStreaming::HasVehicleUpgradeLoaded, 7);
-    HookInstall(0x40C6B0, &CStreaming::ConvertBufferToObject, 7);
-    HookInstall(0x4090A0, &CStreaming::DeleteAllRwObjects, 7);
-    HookInstall(0x409760, &CStreaming::DeleteLeastUsedEntityRwObject, 7);
-    HookInstall(0x409210, &CStreaming::DeleteRwObjectsAfterDeath, 7);
-    HookInstall(0x40D7C0, &CStreaming::DeleteRwObjectsBehindCamera, 7);
-    HookInstall(0x409940, &CStreaming::DeleteRwObjectsBehindCameraInSectorList, 7);
-    HookInstall(0x407A70, &CStreaming::DeleteRwObjectsInSectorList, 7);
-    HookInstall(0x4099E0, &CStreaming::DeleteRwObjectsNotInFrustumInSectorList, 7);
-    HookInstall(0x40D2F0, &CStreaming::RemoveReferencedTxds, 7);
-    HookInstall(0x15703D0, &CStreaming::DisableCopBikes, 7);
-    HookInstall(0x156D7A0, &CStreaming::IsVeryBusy, 7);
-    HookInstall(0x5D29E0, &CStreaming::Load, 7);
-    HookInstall(0x40A45E, &CStreaming::LoadAllRequestedModels, 7);
-    HookInstall(0x5B6170, (void(*)(const char*, std::int32_t)) & CStreaming::LoadCdDirectory, 7);
-    HookInstall(0x5B82C0, (void(*)()) & CStreaming::LoadCdDirectory, 7);
-    HookInstall(0x15638D0, &CStreaming::LoadInitialPeds, 7);
-    HookInstall(0x1566460, &CStreaming::LoadInitialWeapons, 7);
-    HookInstall(0x40EB70, &CStreaming::LoadScene, 7);
-    HookInstall(0x40ED80, &CStreaming::LoadSceneCollision, 7);
-    HookInstall(0x40B4B0, &CStreaming::LoadZoneVehicle, 7);
-    HookInstall(0x156C5B0, &CStreaming::PossiblyStreamCarOutAfterCreation, 7);
-    HookInstall(0x156D750, &CStreaming::RenderEntity, 7);
-    HookInstall(0x409430, &CStreaming::RequestBigBuildings, 7);
-    HookInstall(0x15663B0, &CStreaming::RequestFile, 7);
-    HookInstall(0x409050, &CStreaming::RequestFilesInChannel, 7);
-    HookInstall(0x4087E0, &CStreaming::RequestModel, 7);
-    HookInstall(0x407100, &CStreaming::RequestTxdModel, 7);
-    HookInstall(0x156C970, &CStreaming::RequestVehicleUpgrade, 7);
-    HookInstall(0x407FB0, &CStreaming::FindMIPedSlotForInterior, 7);
-    HookInstall(0x408CB0, &CStreaming::FinishLoadingLargeFile, 7);
-    HookInstall(0x40E460, &CStreaming::FlushChannels, 7);
-    HookInstall(0x40CBA0, &CStreaming::RequestModelStream, 7);
-    HookInstall(0x40B450, &CStreaming::RequestSpecialChar, 7);
-    HookInstall(0x409D10, &CStreaming::RequestSpecialModel, 7);
-    HookInstall(0x40E170, &CStreaming::ProcessLoadingChannel, 7);
-    HookInstall(0x40C1E0, &CStreaming::PurgeRequestList, 7);
-    HookInstall(0x156D000, &CStreaming::ReInit, 7);
-    HookInstall(0x5BCCD0, &CStreaming::ReadIniFile, 7);
-    HookInstall(0x40AFA0, &CStreaming::ReclassifyLoadedCars, 7);
-    HookInstall(0x15645F0, &CStreaming::RemoveAllUnusedModels, 7);
-    HookInstall(0x4093B0, &CStreaming::RemoveBigBuildings, 7);
-    HookInstall(0x4094B0, &CStreaming::RemoveBuildingsNotInArea, 7);
-    HookInstall(0x156C0A0, &CStreaming::RemoveCarModel, 7);
-    HookInstall(0x15629D0, &CStreaming::RemoveCurrentZonesModels, 7);
-    HookInstall(0x40BE60, &CStreaming::RemoveDodgyPedsFromRandomSlots, 7);
-    HookInstall(0x1561520, &CStreaming::RemoveEntity, 7);
-    HookInstall(0x156CA30, &CStreaming::RemoveInappropriatePedModels, 7);
-    HookInstall(0x40CFD0, &CStreaming::RemoveLeastUsedModel, 7);
-    HookInstall(0x40C020, &CStreaming::RemoveLoadedVehicle, 7);
-    HookInstall(0x1566EF0, &CStreaming::RemoveLoadedZoneModel, 7);
-    HookInstall(0x4089A0, &CStreaming::RemoveModel, 7);
-    HookInstall(0x40C180, &CStreaming::RemoveTxdModel, 7);
-    HookInstall(0x4037EB, &CStreaming::MakeSpaceFor, 7);
-    HookInstall(0x40C270, (void(*)(CPtrList&, float, float, float, float, float, float, float, std::int32_t)) & CStreaming::ProcessEntitiesInSectorList, 7);
-    HookInstall(0x4076C0, &CStreaming::RetryLoadFile, 7);
-    HookInstall(0x40E3A0, &CStreaming::LoadRequestedModels, 7);
-    HookInstall(0x40E4E0, &CStreaming::FlushRequestList, 7);
-    HookInstall(0x15662F0, &CStreaming::AddToLoadedVehiclesList, 7);
-    HookInstall(0x407D50, &CStreaming::GetDefaultCabDriverModel, 7);
-    HookInstall(0x156CD70, &CStreaming::GetDefaultFiremanModel, 7);
-    HookInstall(0x1563A50, &CStreaming::GetDefaultMedicModel, 7);
-    HookInstall(0x407C50, &CStreaming::GetDefaultCopCarModel, 7);
-    HookInstall(0x156C9E0, &CStreaming::GetDefaultCopModel, 7);
-    HookInstall(0x5B8AD0, &CStreaming::Init2, 7);
-    HookInstall(0x4083C0, &CStreaming::InitImageList, 7);
-    HookInstall(0x4084F0, &CStreaming::InstanceLoadedModels, 7);
-    HookInstall(0x15704A0, &CStreaming::IsCarModelNeededInCurrentZone, 7);
-    HookInstall(0x409C90, &CStreaming::SetMissionDoesntRequireModel, 7);
-    HookInstall(0x409C10, &CStreaming::SetModelIsDeletable, 7);
-    HookInstall(0x1563AB0, &CStreaming::Shutdown, 7);
-    HookInstall(0x40A2A0, &CStreaming::StreamAmbulanceAndMedic, 7);
-    HookInstall(0x156C100, &CStreaming::StreamCopModels, 7);
-    HookInstall(0x1570230, &CStreaming::StreamFireEngineAndFireman, 7);
-    HookInstall(0x1563B30, &CStreaming::StreamOneNewCar, 7);
-    HookInstall(0x40BBB0, &CStreaming::StreamPedsForInterior, 7);
-    HookInstall(0x15703E0, &CStreaming::StreamPedsIntoRandomSlots, 7);
-    HookInstall(0x40B700, &CStreaming::StreamVehiclesAndPeds, 7);
-    HookInstall(0x40B650, &CStreaming::StreamVehiclesAndPeds_Always, 7);
-    HookInstall(0x40A560, &CStreaming::StreamZoneModels, 7);
-    HookInstall(0x40AA10, &CStreaming::StreamZoneModels_Gangs, 7);
-    HookInstall(0x40E670, &CStreaming::Update, 7);
-    HookInstall(0x1567B60, &CStreaming::WeAreTryingToPhaseVehicleOut, 7);
+    HookInstall(0x409650, &CStreaming::AddEntity);
+    HookInstall(0x407610, &CStreaming::AddImageToList);
+    HookInstall(0x40C520, &CStreaming::AddLodsToRequestList);
+    HookInstall(0x40D3F0, &CStreaming::AddModelsToRequestList);
+    HookInstall(0x407AD0, &CStreaming::AreAnimsUsedByRequestedModels);
+    HookInstall(0x409A90, &CStreaming::AreTexturesUsedByRequestedModels);
+    HookInstall(0x407A40, &CStreaming::ClearFlagForAll);
+    HookInstall(0x40BAA0, &CStreaming::ClearSlots);
+    HookInstall(0x408E20, &CStreaming::GetNextFileOnCd);
+    HookInstall(0x407F00, &CStreaming::HasSpecialCharLoaded);
+    HookInstall(0x407820, &CStreaming::HasVehicleUpgradeLoaded);
+    HookInstall(0x40C6B0, &CStreaming::ConvertBufferToObject);
+    HookInstall(0x4090A0, &CStreaming::DeleteAllRwObjects);
+    HookInstall(0x409760, &CStreaming::DeleteLeastUsedEntityRwObject);
+    HookInstall(0x409210, &CStreaming::DeleteRwObjectsAfterDeath);
+    HookInstall(0x40D7C0, &CStreaming::DeleteRwObjectsBehindCamera);
+    HookInstall(0x409940, &CStreaming::DeleteRwObjectsBehindCameraInSectorList);
+    HookInstall(0x407A70, &CStreaming::DeleteRwObjectsInSectorList);
+    HookInstall(0x4099E0, &CStreaming::DeleteRwObjectsNotInFrustumInSectorList);
+    HookInstall(0x40D2F0, &CStreaming::RemoveReferencedTxds);
+    HookInstall(0x407D10, &CStreaming::DisableCopBikes);
+    HookInstall(0x4076A0, &CStreaming::IsVeryBusy);
+    HookInstall(0x5D29E0, &CStreaming::Load);
+    HookInstall(0x40EA10, &CStreaming::LoadAllRequestedModels);
+    HookInstall(0x5B6170, (void(*)(const char*, std::int32_t)) & CStreaming::LoadCdDirectory);
+    HookInstall(0x5B82C0, (void(*)()) & CStreaming::LoadCdDirectory);
+    HookInstall(0x40D3D0, &CStreaming::LoadInitialPeds);
+    HookInstall(0x40A120, &CStreaming::LoadInitialWeapons);
+    HookInstall(0x40EB70, &CStreaming::LoadScene);
+    HookInstall(0x40ED80, &CStreaming::LoadSceneCollision);
+    HookInstall(0x40B4B0, &CStreaming::LoadZoneVehicle);
+    HookInstall(0x40BA70, &CStreaming::PossiblyStreamCarOutAfterCreation);
+    HookInstall(0x4096D0, &CStreaming::RenderEntity);
+    HookInstall(0x409430, &CStreaming::RequestBigBuildings);
+    HookInstall(0x40A080, &CStreaming::RequestFile);
+    HookInstall(0x409050, &CStreaming::RequestFilesInChannel);
+    HookInstall(0x4087E0, &CStreaming::RequestModel);
+    HookInstall(0x407100, &CStreaming::RequestTxdModel);
+    HookInstall(0x408C70, &CStreaming::RequestVehicleUpgrade);
+    HookInstall(0x407FB0, &CStreaming::FindMIPedSlotForInterior);
+    HookInstall(0x408CB0, &CStreaming::FinishLoadingLargeFile);
+    HookInstall(0x40E460, &CStreaming::FlushChannels);
+    HookInstall(0x40CBA0, &CStreaming::RequestModelStream);
+    HookInstall(0x40B450, &CStreaming::RequestSpecialChar);
+    HookInstall(0x409D10, &CStreaming::RequestSpecialModel);
+    HookInstall(0x40E170, &CStreaming::ProcessLoadingChannel);
+    HookInstall(0x40C1E0, &CStreaming::PurgeRequestList);
+    HookInstall(0x40E560, &CStreaming::ReInit);
+    HookInstall(0x5BCCD0, &CStreaming::ReadIniFile);
+    HookInstall(0x40AFA0, &CStreaming::ReclassifyLoadedCars);
+    HookInstall(0x40CF80, &CStreaming::RemoveAllUnusedModels);
+    HookInstall(0x4093B0, &CStreaming::RemoveBigBuildings);
+    HookInstall(0x4094B0, &CStreaming::RemoveBuildingsNotInArea);
+    HookInstall(0x4080F0, &CStreaming::RemoveCarModel);
+    HookInstall(0x40B080, &CStreaming::RemoveCurrentZonesModels);
+    HookInstall(0x40BE60, &CStreaming::RemoveDodgyPedsFromRandomSlots);
+    HookInstall(0x409710, &CStreaming::RemoveEntity);
+    HookInstall(0x40B3A0, &CStreaming::RemoveInappropriatePedModels);
+    HookInstall(0x40CFD0, &CStreaming::RemoveLeastUsedModel);
+    HookInstall(0x40C020, &CStreaming::RemoveLoadedVehicle);
+    HookInstall(0x40B340, &CStreaming::RemoveLoadedZoneModel);
+    HookInstall(0x4089A0, &CStreaming::RemoveModel);
+    HookInstall(0x40C180, &CStreaming::RemoveTxdModel);
+    HookInstall(0x40E120, &CStreaming::MakeSpaceFor);
+    HookInstall(0x40C270, (void(*)(CPtrList&, float, float, float, float, float, float, float, std::int32_t)) & CStreaming::ProcessEntitiesInSectorList);
+    HookInstall(0x4076C0, &CStreaming::RetryLoadFile);
+    HookInstall(0x40E3A0, &CStreaming::LoadRequestedModels);
+    HookInstall(0x40E4E0, &CStreaming::FlushRequestList);
+    HookInstall(0x408000, &CStreaming::AddToLoadedVehiclesList);
+    HookInstall(0x407D50, &CStreaming::GetDefaultCabDriverModel);
+    HookInstall(0x407D40, &CStreaming::GetDefaultFiremanModel);
+    HookInstall(0x407D20, &CStreaming::GetDefaultMedicModel);
+    HookInstall(0x407C50, &CStreaming::GetDefaultCopCarModel);
+    HookInstall(0x407C00, &CStreaming::GetDefaultCopModel);
+    HookInstall(0x5B8AD0, &CStreaming::Init2);
+    HookInstall(0x4083C0, &CStreaming::InitImageList);
+    HookInstall(0x4084F0, &CStreaming::InstanceLoadedModels);
+    HookInstall(0x407DD0, &CStreaming::IsCarModelNeededInCurrentZone);
+    HookInstall(0x409C90, &CStreaming::SetMissionDoesntRequireModel);
+    HookInstall(0x409C10, &CStreaming::SetModelIsDeletable);
+    HookInstall(0x4084B0, &CStreaming::Shutdown);
+    HookInstall(0x40A2A0, &CStreaming::StreamAmbulanceAndMedic);
+    HookInstall(0x40A150, &CStreaming::StreamCopModels);
+    HookInstall(0x40A400, &CStreaming::StreamFireEngineAndFireman);
+    HookInstall(0x40B4F0, &CStreaming::StreamOneNewCar);
+    HookInstall(0x40BBB0, &CStreaming::StreamPedsForInterior);
+    HookInstall(0x40BDA0, &CStreaming::StreamPedsIntoRandomSlots);
+    HookInstall(0x40B700, &CStreaming::StreamVehiclesAndPeds);
+    HookInstall(0x40B650, &CStreaming::StreamVehiclesAndPeds_Always);
+    HookInstall(0x40A560, &CStreaming::StreamZoneModels);
+    HookInstall(0x40AA10, &CStreaming::StreamZoneModels_Gangs);
+    HookInstall(0x40E670, &CStreaming::Update);
+    HookInstall(0x407F80, &CStreaming::WeAreTryingToPhaseVehicleOut);
 }
 
 void* CStreaming::AddEntity(CEntity* pEntity) {
@@ -719,14 +719,14 @@ void CStreaming::DeleteRwObjectsBehindCamera(std::int32_t memoryToCleanInBytes) 
     const CVector& cameraPos = TheCamera.GetPosition();
     std::int32_t pointX = CWorld::GetSectorX(cameraPos.x);
     std::int32_t pointY = CWorld::GetSectorY(cameraPos.y);
-    const CVector2D& cameraUp = TheCamera.GetMatrix()->up;
-    if (fabs(cameraUp.y) < fabs(cameraUp.x)) {
+    const CVector2D& cameraForward = TheCamera.GetForward();
+    if (fabs(cameraForward.y) < fabs(cameraForward.x)) {
         std::int32_t sectorStartY = std::max(pointY - 10, 0);
         std::int32_t sectorEndY = std::min(pointY + 10, MAX_SECTORS_Y - 1);
         std::int32_t sectorStartX = 0;
         std::int32_t sectorEndX = 0;
         std::int32_t factorX = 0;
-        if (cameraUp.x <= 0.0f) {
+        if (cameraForward.x <= 0.0f) {
             sectorStartX = std::min(pointX + 10, MAX_SECTORS_X - 1);
             sectorEndX = std::min(pointX + 2, MAX_SECTORS_X - 1);
             factorX = -1;
@@ -749,7 +749,7 @@ void CStreaming::DeleteRwObjectsBehindCamera(std::int32_t memoryToCleanInBytes) 
                 }
             }
         }
-        if (cameraUp.x <= 0.0f) {
+        if (cameraForward.x <= 0.0f) {
             sectorEndX = std::min(pointX + 2, MAX_SECTORS_X - 1);
             sectorStartX = std::max(pointX - 10, 0);
             factorX = -1;
@@ -792,7 +792,7 @@ void CStreaming::DeleteRwObjectsBehindCamera(std::int32_t memoryToCleanInBytes) 
         std::int32_t sectorStartY = 0;
         std::int32_t sectorEndY = 0;
         std::int32_t factorY = 0;
-        if (cameraUp.y <= 0.0f) {
+        if (cameraForward.y <= 0.0f) {
             sectorEndY = std::min(pointY + 2, MAX_SECTORS_Y - 1);
             sectorStartY = std::min(pointY + 10, MAX_SECTORS_Y - 1);
             factorY = -1;
@@ -815,7 +815,7 @@ void CStreaming::DeleteRwObjectsBehindCamera(std::int32_t memoryToCleanInBytes) 
                 }
             }
         }
-        if (cameraUp.y <= 0.0f) {
+        if (cameraForward.y <= 0.0f) {
             sectorEndY = std::min(pointY + 2, MAX_SECTORS_Y - 1);
             sectorStartY = std::max(pointY - 10, 0);
             factorY = -1;

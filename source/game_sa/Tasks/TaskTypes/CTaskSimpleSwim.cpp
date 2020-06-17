@@ -4,19 +4,19 @@ float& CTaskSimpleSwim::SWIM_DIVE_UNDER_ANGLE = *reinterpret_cast<float*>(0x8D2F
 float& CTaskSimpleSwim::SWIM_STOP_TIME = *reinterpret_cast<float*>(0x8D2FC0);
 
 void CTaskSimpleSwim::InjectHooks() {
-    HookInstall(0x688930, &CTaskSimpleSwim::Constructor, 7);
-    HookInstall(0x68B050, &CTaskSimpleSwim::Clone_Reversed, 7);
-    HookInstall(0x6889F0, &CTaskSimpleSwim::GetId_Reversed, 7);
-    HookInstall(0x68B1C0, &CTaskSimpleSwim::ProcessPed_Reversed, 7);
-    HookInstall(0x68B100, &CTaskSimpleSwim::MakeAbortable_Reversed, 7);
-    HookInstall(0x68A8E0, &CTaskSimpleSwim::ApplyRollAndPitch, 7);
-    HookInstall(0x6899F0, &CTaskSimpleSwim::ProcessSwimAnims, 7);
-    HookInstall(0x68A1D0, &CTaskSimpleSwim::ProcessSwimmingResistance, 7);
-    HookInstall(0x68AA70, &CTaskSimpleSwim::ProcessEffects, 7);
-    HookInstall(0x689640, &CTaskSimpleSwim::ProcessControlAI, 7);
-    HookInstall(0x688A90, &CTaskSimpleSwim::ProcessControlInput, 7);
-    HookInstall(0x68A9F0, &CTaskSimpleSwim::CreateFxSystem, 7);
-    HookInstall(0x68AA50, &CTaskSimpleSwim::DestroyFxSystem, 7);
+    HookInstall(0x688930, &CTaskSimpleSwim::Constructor);
+    HookInstall(0x68B050, &CTaskSimpleSwim::Clone_Reversed);
+    HookInstall(0x6889F0, &CTaskSimpleSwim::GetId_Reversed);
+    HookInstall(0x68B1C0, &CTaskSimpleSwim::ProcessPed_Reversed);
+    HookInstall(0x68B100, &CTaskSimpleSwim::MakeAbortable_Reversed);
+    HookInstall(0x68A8E0, &CTaskSimpleSwim::ApplyRollAndPitch);
+    HookInstall(0x6899F0, &CTaskSimpleSwim::ProcessSwimAnims);
+    HookInstall(0x68A1D0, &CTaskSimpleSwim::ProcessSwimmingResistance);
+    HookInstall(0x68AA70, &CTaskSimpleSwim::ProcessEffects);
+    HookInstall(0x689640, &CTaskSimpleSwim::ProcessControlAI);
+    HookInstall(0x688A90, &CTaskSimpleSwim::ProcessControlInput);
+    HookInstall(0x68A9F0, &CTaskSimpleSwim::CreateFxSystem);
+    HookInstall(0x68AA50, &CTaskSimpleSwim::DestroyFxSystem);
 }
 
 CTaskSimpleSwim::CTaskSimpleSwim(CVector* pPosition, CPed* pPed) {
@@ -34,7 +34,7 @@ CTaskSimpleSwim::CTaskSimpleSwim(CVector* pPosition, CPed* pPed) {
     m_fSwimStopTime = 0.0f;
     m_nTimeStep = 0;
     m_nSwimState = SWIM_TREAD;
-    m_AnimID = NO_ANIMATION_SET;
+    m_AnimID = ANIM_ID_NO_ANIMATION_SET;
     if (pPosition)
         m_vecPos = *pPosition;
     if (pPed)
@@ -109,11 +109,11 @@ bool CTaskSimpleSwim::MakeAbortable_Reversed(class CPed* ped, eAbortPriority pri
 
     if (priority == ABORT_PRIORITY_IMMEDIATE)
     {
-        CAnimManager::BlendAnimation(ped->m_pRwClump, ped->m_nAnimGroup, ANIMATION_STARTED | ANIMATION_LOOPED, 1000.0f);
+        CAnimManager::BlendAnimation(ped->m_pRwClump, ped->m_nAnimGroup, ANIM_FLAG_STARTED | ANIM_FLAG_LOOPED, 1000.0f);
         ped->m_nMoveState = PEDMOVE_STILL;
         ped->m_nSwimmingMoveState = PEDMOVE_STILL;
 
-        if (m_AnimID != NO_ANIMATION_SET)
+        if (m_AnimID != ANIM_ID_NO_ANIMATION_SET)
         {
             auto pAnimAssociation = RpAnimBlendClumpGetAssociation(ped->m_pRwClump, m_AnimID);
             if (pAnimAssociation)
@@ -142,7 +142,7 @@ bool CTaskSimpleSwim::ProcessPed_Reversed(CPed* pPed)
 {
     if (m_pEntity)
     {
-        CAnimManager::BlendAnimation(pPed->m_pRwClump, pPed->m_nAnimGroup, DEFAULT_IDLE_STANCE, 8.0f);
+        CAnimManager::BlendAnimation(pPed->m_pRwClump, pPed->m_nAnimGroup, ANIM_ID_IDLE, 8.0f);
         pPed->m_nMoveState = PEDMOVE_STILL;
         pPed->m_nSwimmingMoveState = PEDMOVE_STILL;
 
@@ -158,28 +158,28 @@ bool CTaskSimpleSwim::ProcessPed_Reversed(CPed* pPed)
     if (m_fSwimStopTime > CTaskSimpleSwim::SWIM_STOP_TIME || pPed->bIsStanding)
     {
         CAnimBlendAssociation* pAnimAssociation = nullptr;
-        if (m_AnimID != NO_ANIMATION_SET)
+        if (m_AnimID != ANIM_ID_NO_ANIMATION_SET)
         {
             pAnimAssociation = RpAnimBlendClumpGetAssociation(pPed->m_pRwClump, m_AnimID);
         }
-        unsigned int animId = DEFAULT_IDLE_STANCE;
+        unsigned int animId = ANIM_ID_IDLE;
         pPed->m_nSwimmingMoveState = PEDMOVE_STILL;
         pPed->m_nMoveState = PEDMOVE_STILL;
         if (pAnimAssociation)
         {
-            if (pAnimAssociation->m_nAnimId == DEFAULT_CLIMB_JUMP)
-                pAnimAssociation->m_nFlags |= ANIMATION_UNLOCK_LAST_FRAME;
+            if (pAnimAssociation->m_nAnimId == ANIM_ID_CLIMB_JUMP)
+                pAnimAssociation->m_nFlags |= ANIM_FLAG_UNLOCK_LAST_FRAME;
             else
                 pAnimAssociation->m_fBlendDelta = -4.0f;
-            if (m_AnimID == SWIM_SWIM_BREAST)
+            if (m_AnimID == ANIM_ID_SWIM_BREAST)
             {
-                animId = DEFAULT_WALK_CIVI;
+                animId = ANIM_ID_WALK;
                 pPed->m_nSwimmingMoveState = PEDMOVE_WALK;
                 pPed->m_nMoveState = PEDMOVE_WALK;
             }
-            else if (m_AnimID == SWIM_SWIM_CRAWL)
+            else if (m_AnimID == ANIM_ID_SWIM_CRAWL)
             {
-                animId = DEFAULT_RUN_CIVI;
+                animId = ANIM_ID_RUN;
                 pPed->m_nSwimmingMoveState = PEDMOVE_RUN;
                 pPed->m_nMoveState = PEDMOVE_RUN;
             }
@@ -207,13 +207,12 @@ bool CTaskSimpleSwim::ProcessPed_Reversed(CPed* pPed)
             else
                 m_nTimeStep -= swimmingTimeStep;
 
-            CVector vecOut;
-            VectorSub(&vecOut, &m_vecPos, &pPed->GetPosition());
+            CVector vecOut = m_vecPos - pPed->GetPosition();
             pPed->m_pPlayerData->m_fMoveBlendRatio = vecOut.Magnitude();
             CPlayerData* pPlayerData = pPed->m_pPlayerData;
             if (pPlayerData->m_fMoveBlendRatio < 0.5f) {
                 pPlayerData->m_fMoveBlendRatio = 0.0f;
-                CAnimManager::BlendAnimation(pPed->m_pRwClump, pPed->m_nAnimGroup, DEFAULT_IDLE_STANCE, 4.0f);
+                CAnimManager::BlendAnimation(pPed->m_pRwClump, pPed->m_nAnimGroup, ANIM_ID_IDLE, 4.0f);
                 pPed->RestoreHeadingRate();
                 DestroyFxSystem();
                 return true;
@@ -231,7 +230,7 @@ bool CTaskSimpleSwim::ProcessPed_Reversed(CPed* pPed)
         if (m_nSwimState == SWIM_UNDERWATER_SPRINTING)
         {
             bDecreaseAir = true;
-            CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPed->m_pRwClump, SWIM_SWIM_UNDER);
+            CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPed->m_pRwClump, ANIM_ID_SWIM_UNDER);
             if (pAnimAssociation)
             {
                 fDecreaseAirMultiplicator = pAnimAssociation->m_fSpeed * pAnimAssociation->m_fBlendAmount + 1.0f;
@@ -246,7 +245,7 @@ bool CTaskSimpleSwim::ProcessPed_Reversed(CPed* pPed)
             {
                 CPlayerData* pPlayerData = pPed->m_pPlayerData;
                 if (CStats::GetFatAndMuscleModifier(STAT_MOD_AIR_IN_LUNG) * 0.5f > pPlayerData->m_fBreath)
-                    pPed->Say(356, 0, 1.0, 0, 0, 0);
+                    pPed->Say(356, 0, 1.0f, 0, 0, 0);
             }
         }
         pPed->SetMoveState(PEDMOVE_NONE);
@@ -255,25 +254,14 @@ bool CTaskSimpleSwim::ProcessPed_Reversed(CPed* pPed)
     {
         ProcessControlAI(pPed);
 
-        if (m_nSwimState == SWIM_UNDERWATER_SPRINTING)
-        {
-            eWeaponType weaponType = static_cast<eWeaponType>(WEAPON_ARMOUR | WEAPON_BASEBALLBAT);
-
-            CPedDamageResponseCalculator pedDamageResponseCalculator;
-            pedDamageResponseCalculator.Constructor1(0, CTimer::ms_fTimeStep, weaponType, PED_PIECE_TORSO, false);
-
-            CEventDamage eventDamage(0, CTimer::m_snTimeInMilliseconds, weaponType, PED_PIECE_TORSO, 0, 0, pPed->bInVehicle);
-            CPedDamageResponse damageResponseInfo;
+        if (m_nSwimState == SWIM_UNDERWATER_SPRINTING) {
+            CPedDamageResponseCalculator damageCalculator(0, CTimer::ms_fTimeStep, WEAPON_DROWNING, PED_PIECE_TORSO, false);
+            CEventDamage eventDamage(0, CTimer::m_snTimeInMilliseconds, WEAPON_DROWNING, PED_PIECE_TORSO, 0, 0, pPed->bInVehicle);
             if (eventDamage.AffectsPed(pPed))
-            {
-                pedDamageResponseCalculator.ComputeDamageResponse(pPed, &damageResponseInfo, true);
-            }
+                damageCalculator.ComputeDamageResponse(pPed, &eventDamage.m_damageResponse, true);
             else
-            {
-                damageResponseInfo.m_bDamageCalculated = true;
-            }
-            pPed->m_pIntelligence->m_eventGroup.Add((CEvent*)& eventDamage, false);
-            pedDamageResponseCalculator.Destructor1();
+                eventDamage.m_damageResponse.m_bDamageCalculated = true;
+            pPed->m_pIntelligence->m_eventGroup.Add(&eventDamage, false);
         }
     }
     ProcessSwimAnims(pPed);
@@ -313,17 +301,17 @@ void CTaskSimpleSwim::ProcessSwimAnims(CPed* pPed)
     plugin::CallMethod<0x6899F0, CTaskSimpleSwim*, CPed*>(this, pPed);
 #else
     CPlayerPed* pPlayerPed = (CPlayerPed*)pPed;
-    CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPed->m_pRwClump, DEFAULT_SWIM_TREAD);
+    CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPed->m_pRwClump, ANIM_ID_SWIM_TREAD);
     if (m_bFinishedBlending) {
         if (pAnimAssociation
             && pAnimAssociation->m_fBlendAmount < 1.0f
             && pAnimAssociation->m_fBlendDelta <= 0.0f) {
-            CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_DEFAULT, DEFAULT_SWIM_TREAD, 8.0f);
+            CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_DEFAULT, ANIM_ID_SWIM_TREAD, 8.0f);
         }
     }
     else {
         if (pAnimAssociation
-            || (pAnimAssociation = CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_DEFAULT, DEFAULT_SWIM_TREAD, 8.0f)) != 0)
+            || (pAnimAssociation = CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_DEFAULT, ANIM_ID_SWIM_TREAD, 8.0f)) != 0)
         {
             if (pAnimAssociation->m_fBlendAmount >= 1.0f)
                 m_bFinishedBlending = true;
@@ -338,12 +326,11 @@ void CTaskSimpleSwim::ProcessSwimAnims(CPed* pPed)
 
         if (pPlayerPed->IsPlayer() && !m_nSwimState)
         {
-            CMatrixLink* pPlayerMatrix = pPlayerPed->m_matrix;
-            CVector* pVecPosition = (pPlayerMatrix ? &pPlayerMatrix->pos : &pPlayerPed->m_placement.m_vPosn);
+            CVector& vecPos = pPlayerPed->GetPosition();
             float waterLevel = 0.0f;
-            if (CWaterLevel::GetWaterLevel(pVecPosition->x, pVecPosition->y, pVecPosition->z, &waterLevel, 1, 0))
+            if (CWaterLevel::GetWaterLevel(vecPos.x, vecPos.y, vecPos.z, &waterLevel, 1, 0))
             {
-                if (waterLevel - 2.0f > pVecPosition->z)
+                if (waterLevel - 2.0f > vecPos.z)
                     m_nSwimState = SWIM_UNDERWATER_SPRINTING;
             }
         }
@@ -367,37 +354,37 @@ void CTaskSimpleSwim::ProcessSwimAnims(CPed* pPed)
     if (m_bFinishedBlending && m_bAnimBlockRefAdded) {
         switch (m_nSwimState){
         case SWIM_TREAD: {
-            if (m_AnimID != DEFAULT_SWIM_TREAD)
+            if (m_AnimID != ANIM_ID_SWIM_TREAD)
             {
-                CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, SWIM_SWIM_BREAST);
+                CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, ANIM_ID_SWIM_BREAST);
                 if (pAnimAssociation)
                     pAnimAssociation->m_fBlendDelta = -1.0f;
-                pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, SWIM_SWIM_CRAWL);
+                pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, ANIM_ID_SWIM_CRAWL);
                 if (pAnimAssociation)
                     pAnimAssociation->m_fBlendDelta = -1.0f;
-                pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, SWIM_SWIM_DIVE_UNDER);
+                pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, ANIM_ID_SWIM_DIVE_UNDER);
                 if (pAnimAssociation)
                     pAnimAssociation->m_fBlendDelta = -4.0f;
-                pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, SWIM_SWIM_UNDER);
+                pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, ANIM_ID_SWIM_UNDER);
                 if (pAnimAssociation)
                     pAnimAssociation->m_fBlendDelta = -2.0f;
-                pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, SWIM_SWIM_GLIDE);
+                pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, ANIM_ID_SWIM_GLIDE);
                 if (pAnimAssociation)
                     pAnimAssociation->m_fBlendDelta = -2.0f;
-                pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, SWIM_SWIM_JUMPOUT);
+                pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, ANIM_ID_SWIM_JUMPOUT);
                 if (pAnimAssociation)
                     pAnimAssociation->m_fBlendDelta = -4.0f;
-                pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, DEFAULT_CLIMB_JUMP);
+                pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, ANIM_ID_CLIMB_JUMP);
                 if (pAnimAssociation)
                     pAnimAssociation->m_fBlendDelta = -4.0f;
-                m_AnimID = DEFAULT_SWIM_TREAD;
+                m_AnimID = ANIM_ID_SWIM_TREAD;
             }
             break;
         }
         case SWIM_SPRINT: {
-            if (m_AnimID == SWIM_SWIM_BREAST)
+            if (m_AnimID == ANIM_ID_SWIM_BREAST)
             {
-                CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, SWIM_SWIM_BREAST);
+                CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, ANIM_ID_SWIM_BREAST);
                 if (!pAnimAssociation)
                 {
                     m_nSwimState = SWIM_TREAD;
@@ -414,16 +401,16 @@ void CTaskSimpleSwim::ProcessSwimAnims(CPed* pPed)
             }
             else
             {
-                CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_SWIM, SWIM_SWIM_BREAST, 2.0f);
-                m_AnimID = SWIM_SWIM_BREAST;
+                CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_SWIM, ANIM_ID_SWIM_BREAST, 2.0f);
+                m_AnimID = ANIM_ID_SWIM_BREAST;
             }
             break;
         }
         case SWIM_SPRINTING:
         {
-            if (m_AnimID == SWIM_SWIM_CRAWL)
+            if (m_AnimID == ANIM_ID_SWIM_CRAWL)
             {
-                CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, SWIM_SWIM_CRAWL);
+                CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, ANIM_ID_SWIM_CRAWL);
                 if (!pAnimAssociation)
                 {
                     m_nSwimState = SWIM_TREAD;
@@ -442,16 +429,16 @@ void CTaskSimpleSwim::ProcessSwimAnims(CPed* pPed)
             }
             else
             {
-                CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_SWIM, SWIM_SWIM_CRAWL, 2.0f);
-                m_AnimID = SWIM_SWIM_CRAWL;
+                CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_SWIM, ANIM_ID_SWIM_CRAWL, 2.0f);
+                m_AnimID = ANIM_ID_SWIM_CRAWL;
             }
             break;
         }
         case SWIM_DIVE_UNDERWATER:
         {
-            if (m_AnimID == SWIM_SWIM_DIVE_UNDER)
+            if (m_AnimID == ANIM_ID_SWIM_DIVE_UNDER)
             {
-                CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, SWIM_SWIM_DIVE_UNDER);
+                CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, ANIM_ID_SWIM_DIVE_UNDER);
                 if (!pAnimAssociation)
                 {
                     m_nSwimState = SWIM_TREAD;
@@ -463,24 +450,24 @@ void CTaskSimpleSwim::ProcessSwimAnims(CPed* pPed)
             }
             else
             {
-                CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_SWIM, SWIM_SWIM_DIVE_UNDER, 8.0f);
-                m_AnimID = SWIM_SWIM_DIVE_UNDER;
+                CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_SWIM, ANIM_ID_SWIM_DIVE_UNDER, 8.0f);
+                m_AnimID = ANIM_ID_SWIM_DIVE_UNDER;
             }
             break;
         }
         case SWIM_UNDERWATER_SPRINTING:
         {
             int animID = m_AnimID;
-            if ((animID == SWIM_SWIM_UNDER || animID == SWIM_SWIM_GLIDE) && m_fStateChanger >= 0.0f)
+            if ((animID == ANIM_ID_SWIM_UNDER || animID == ANIM_ID_SWIM_GLIDE) && m_fStateChanger >= 0.0f)
             {
                 if (pPlayerPed->m_pPlayerData && pPlayerPed->GetButtonSprintResults((eSprintType)3) >= 1.0f)
                 {
-                    CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, SWIM_SWIM_UNDER);
+                    CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, ANIM_ID_SWIM_UNDER);
                     if (!pAnimAssociation
                         || pAnimAssociation->m_fBlendDelta < 0.0f
                         || pAnimAssociation->m_fBlendAmount == 0.0f)
                     {
-                        pAnimAssociation = CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_SWIM, SWIM_SWIM_UNDER, 4.0f);
+                        pAnimAssociation = CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_SWIM, ANIM_ID_SWIM_UNDER, 4.0f);
                     }
                     if (pAnimAssociation->m_pHierarchy->m_fTotalTime == pAnimAssociation->m_fCurrentTime)
                     {
@@ -488,23 +475,23 @@ void CTaskSimpleSwim::ProcessSwimAnims(CPed* pPed)
                         float buttonSprintResults = pPlayerPed->GetButtonSprintResults((eSprintType)3);
                         pAnimAssociation->m_fSpeed = static_cast <float> (std::max(0.69999999f, buttonSprintResults));
                     }
-                    m_AnimID = SWIM_SWIM_UNDER;
+                    m_AnimID = ANIM_ID_SWIM_UNDER;
                 }
                 else
                 {
-                    CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, SWIM_SWIM_GLIDE);
+                    CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, ANIM_ID_SWIM_GLIDE);
                     if (!pAnimAssociation
                         || pAnimAssociation->m_fBlendDelta < 0.0f
                         || pAnimAssociation->m_fBlendAmount == 0.0f)
                     {
-                        CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_SWIM, SWIM_SWIM_GLIDE, 4.0f);
+                        CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_SWIM, ANIM_ID_SWIM_GLIDE, 4.0f);
                     }
-                    m_AnimID = SWIM_SWIM_GLIDE;
+                    m_AnimID = ANIM_ID_SWIM_GLIDE;
                 }
             }
             else
             {
-                CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, SWIM_SWIM_UNDER);
+                CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, ANIM_ID_SWIM_UNDER);
                 if (pAnimAssociation)
                 {
                     if (m_fStateChanger < 0.0f && pAnimAssociation->m_fBlendAmount >= 0.99f)
@@ -523,17 +510,17 @@ void CTaskSimpleSwim::ProcessSwimAnims(CPed* pPed)
                 }
                 else
                 {
-                    CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_SWIM, SWIM_SWIM_UNDER, 1000.0f);
+                    CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_SWIM, ANIM_ID_SWIM_UNDER, 1000.0f);
                     int animID = m_AnimID;
-                    if (animID == DEFAULT_SWIM_TREAD || animID == NO_ANIMATION_SET)
+                    if (animID == ANIM_ID_SWIM_TREAD || animID == ANIM_ID_NO_ANIMATION_SET)
                     {
                         m_fStateChanger = -2.0f;
-                        m_AnimID = SWIM_SWIM_UNDER;
+                        m_AnimID = ANIM_ID_SWIM_UNDER;
                     }
                     else
                     {
                         m_fStateChanger = -1.0f;
-                        m_AnimID = SWIM_SWIM_UNDER;
+                        m_AnimID = ANIM_ID_SWIM_UNDER;
                     }
                 }
             }
@@ -542,25 +529,25 @@ void CTaskSimpleSwim::ProcessSwimAnims(CPed* pPed)
         case SWIM_BACK_TO_SURFACE:
         {
             int animID = m_AnimID;
-            if (animID == SWIM_SWIM_JUMPOUT)
+            if (animID == ANIM_ID_SWIM_JUMPOUT)
             {
-                CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, SWIM_SWIM_JUMPOUT);
+                CAnimBlendAssociation* pAnimAssociation = RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, ANIM_ID_SWIM_JUMPOUT);
                 if (pAnimAssociation)
                 {
                     if (pAnimAssociation->m_pHierarchy->m_fTotalTime * 0.25f <= pAnimAssociation->m_fTimeStep
                         + pAnimAssociation->m_fCurrentTime) {
-                        pAnimAssociation = CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_DEFAULT, DEFAULT_CLIMB_JUMP, 8.0f);
-                        pAnimAssociation->m_nFlags |= ANIMATION_UNLOCK_LAST_FRAME;
-                        m_AnimID = DEFAULT_CLIMB_JUMP;
+                        pAnimAssociation = CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_DEFAULT, ANIM_ID_CLIMB_JUMP, 8.0f);
+                        pAnimAssociation->m_nFlags |= ANIM_FLAG_UNLOCK_LAST_FRAME;
+                        m_AnimID = ANIM_ID_CLIMB_JUMP;
                     }
                     break;
                 }
             }
             else {
-                if (animID != DEFAULT_CLIMB_JUMP)
+                if (animID != ANIM_ID_CLIMB_JUMP)
                 {
-                    CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_SWIM, SWIM_SWIM_JUMPOUT, 8.0f);
-                    m_AnimID = SWIM_SWIM_JUMPOUT;
+                    CAnimManager::BlendAnimation(pPlayerPed->m_pRwClump, ANIM_GROUP_SWIM, ANIM_ID_SWIM_JUMPOUT, 8.0f);
+                    m_AnimID = ANIM_ID_SWIM_JUMPOUT;
                     pPlayerPed->m_vecMoveSpeed.z = static_cast <float> (8.0f / pPlayerPed->m_fMass);
                     CEntity* pEntity = CTaskSimpleClimb::TestForClimb(pPlayerPed, m_pClimbPos, (m_fAngle), (m_nSurfaceType), 1);
                     m_pEntity = pEntity;
@@ -568,7 +555,7 @@ void CTaskSimpleSwim::ProcessSwimAnims(CPed* pPed)
                         pEntity->RegisterReference(&m_pEntity);
                     break;
                 }
-                if (RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, DEFAULT_CLIMB_JUMP)) {
+                if (RpAnimBlendClumpGetAssociation(pPlayerPed->m_pRwClump, ANIM_ID_CLIMB_JUMP)) {
                     CVector& position = pPlayerPed->GetPosition();
                     float waterLevel = 0.0f;
                     if (!CWaterLevel::GetWaterLevel(position.x, position.y, position.z, &waterLevel, 1, 0)|| position.z + 0.5f >= waterLevel)
@@ -607,8 +594,8 @@ void CTaskSimpleSwim::ProcessSwimmingResistance(CPed* pPed)
     case SWIM_SPRINT:
     case SWIM_SPRINTING:
     {
-        CAnimBlendAssociation* pAnimSwimBreast = RpAnimBlendClumpGetAssociation(pPed->m_pRwClump, SWIM_SWIM_BREAST);
-        CAnimBlendAssociation* pAnimSwimCrawl = RpAnimBlendClumpGetAssociation(pPed->m_pRwClump, SWIM_SWIM_CRAWL);
+        CAnimBlendAssociation* pAnimSwimBreast = RpAnimBlendClumpGetAssociation(pPed->m_pRwClump, ANIM_ID_SWIM_BREAST);
+        CAnimBlendAssociation* pAnimSwimCrawl = RpAnimBlendClumpGetAssociation(pPed->m_pRwClump, ANIM_ID_SWIM_CRAWL);
 
         float fAnimBlendSum = 0.0f;
         float fAnimBlendDifference = 1.0f;
@@ -628,16 +615,16 @@ void CTaskSimpleSwim::ProcessSwimmingResistance(CPed* pPed)
 
         fSubmergeZ = fAnimBlendDifference * 0.55f + fAnimBlendSum;
 
-        vecPedMoveSpeed = pPed->m_vecAnimMovingShiftLocal.x * pPed->m_matrix->right;
-        vecPedMoveSpeed += pPed->m_vecAnimMovingShiftLocal.y * pPed->m_matrix->up;
+        vecPedMoveSpeed = pPed->m_vecAnimMovingShiftLocal.x * pPed->GetRight();
+        vecPedMoveSpeed += pPed->m_vecAnimMovingShiftLocal.y * pPed->GetForward();
         break;
     }
     case SWIM_DIVE_UNDERWATER:
     {
-        vecPedMoveSpeed = pPed->m_vecAnimMovingShiftLocal.x * pPed->m_matrix->right;
-        vecPedMoveSpeed += pPed->m_vecAnimMovingShiftLocal.y * pPed->m_matrix->up;
+        vecPedMoveSpeed = pPed->m_vecAnimMovingShiftLocal.x * pPed->GetRight();
+        vecPedMoveSpeed += pPed->m_vecAnimMovingShiftLocal.y * pPed->GetForward();
 
-        auto pAnimSwimDiveUnder = RpAnimBlendClumpGetAssociation(pPed->m_pRwClump, SWIM_SWIM_DIVE_UNDER);
+        auto pAnimSwimDiveUnder = RpAnimBlendClumpGetAssociation(pPed->m_pRwClump, ANIM_ID_SWIM_DIVE_UNDER);
         if (pAnimSwimDiveUnder)
         {
             vecPedMoveSpeed.z = pAnimSwimDiveUnder->m_fCurrentTime / pAnimSwimDiveUnder->m_pHierarchy->m_fTotalTime * -0.1f;
@@ -646,8 +633,8 @@ void CTaskSimpleSwim::ProcessSwimmingResistance(CPed* pPed)
     }
     case SWIM_UNDERWATER_SPRINTING:
     {
-        vecPedMoveSpeed = pPed->m_vecAnimMovingShiftLocal.x * pPed->m_matrix->right;
-        vecPedMoveSpeed += cos(m_fRotationX) * pPed->m_vecAnimMovingShiftLocal.y * pPed->m_matrix->up;
+        vecPedMoveSpeed = pPed->m_vecAnimMovingShiftLocal.x * pPed->GetRight();
+        vecPedMoveSpeed += cos(m_fRotationX) * pPed->m_vecAnimMovingShiftLocal.y * pPed->GetForward();
         vecPedMoveSpeed.z += sin(m_fRotationX) * pPed->m_vecAnimMovingShiftLocal.y + 0.01f;
         break;
     }
@@ -655,7 +642,7 @@ void CTaskSimpleSwim::ProcessSwimmingResistance(CPed* pPed)
     {
         auto pAnimAssociation = RpAnimBlendClumpGetAssociation(pPed->m_pRwClump, 128);
         if (!pAnimAssociation)
-            pAnimAssociation = RpAnimBlendClumpGetAssociation(pPed->m_pRwClump, SWIM_SWIM_JUMPOUT);
+            pAnimAssociation = RpAnimBlendClumpGetAssociation(pPed->m_pRwClump, ANIM_ID_SWIM_JUMPOUT);
 
         if (pAnimAssociation) {
             if (pAnimAssociation->m_pHierarchy->m_fTotalTime > pAnimAssociation->m_fCurrentTime
@@ -772,7 +759,7 @@ void CTaskSimpleSwim::ProcessEffects(CPed* pPed)
 #else
     CVector vecParticlePosition;
     if (pPed->m_matrix) {
-        vecParticlePosition = pPed->m_matrix->up;
+        vecParticlePosition = pPed->GetForward();
     }
     else
     {
@@ -820,7 +807,7 @@ void CTaskSimpleSwim::ProcessEffects(CPed* pPed)
     case SWIM_SPRINT:
     case SWIM_SPRINTING:
     {
-        const CVector& vecPedUp = pPed->m_matrix->up;
+        const CVector& vecPedUp = pPed->GetForward();
 
         float fRadianAngle = CGeneral::GetAngleBetweenPoints(vecPedUp.x, vecPedUp.y, 0.0f, 0.0f);
         float fLimitedRadianAngle = CGeneral::LimitAngle(fRadianAngle) + 180.0f;
@@ -960,9 +947,8 @@ void CTaskSimpleSwim::ProcessControlAI(CPed* pPed)
                     auto pSwimTask = m_pPed->m_pIntelligence->GetTaskSwim();
                     if (pSwimTask && pSwimTask->m_nSwimState == SWIM_SPRINTING)
                     {
-                        CVector out;
-                        CVector* pVecSub = VectorSub(&out, &m_vecPos, &pPed->GetPosition());
-                        if (pVecSub->Magnitude() > 5.0f)
+                        CVector distance = m_vecPos - pPed->GetPosition();
+                        if (distance.Magnitude() > 5.0f)
                         {
                             m_nSwimState = SWIM_SPRINTING;
                         }
@@ -1088,13 +1074,13 @@ void CTaskSimpleSwim::ProcessControlInput(CPlayerPed* pPed)
                 if (CGameLogic::IsPlayerAllowedToGoInThisDirection(pPed, vecPedWalkDirection.x, vecPedWalkDirection.y, vecPedWalkDirection.z, 0.0f))
                 {
                     CMatrixLink* pPedMatrix = pPed->m_matrix;
-                    pedWalkX = (vecPedWalkDirection.y * pPedMatrix->right.y
-                        + vecPedWalkDirection.x * pPedMatrix->right.x
-                        + pPedMatrix->right.z * 0.0f)
+                    pedWalkX = (vecPedWalkDirection.y * pPedMatrix->GetRight().y
+                        + vecPedWalkDirection.x * pPedMatrix->GetRight().x
+                        + pPedMatrix->GetRight().z * 0.0f)
                         * fWalkMagnitude;
-                    vecPedWalk.y = -((vecPedWalkDirection.y * pPedMatrix->up.y
-                        + pPedMatrix->up.z * 0.0f
-                        + vecPedWalkDirection.x * pPedMatrix->up.x)
+                    vecPedWalk.y = -((vecPedWalkDirection.y * pPedMatrix->GetForward().y
+                        + pPedMatrix->GetForward().z * 0.0f
+                        + vecPedWalkDirection.x * pPedMatrix->GetForward().x)
                         * fWalkMagnitude);
                 }
                 else
@@ -1235,23 +1221,15 @@ void CTaskSimpleSwim::ProcessControlInput(CPlayerPed* pPed)
 
         if (m_nSwimState == SWIM_SPRINTING)
         {
-            CVector vecPositionSum;
-            CVector vecPositionDifference;
-            CVector* pPedPosition = &pPed->GetPosition();
-
-            float fSumWaterLevel = 0.0f;
-            float fDifferenceWaterLevel = 0.0f;
-            VectorAdd(&vecPositionSum, pPedPosition, &pPed->m_matrix->up);
-            VectorSub(&vecPositionDifference, pPedPosition, &pPed->m_matrix->up);
-            if (CWaterLevel::GetWaterLevel(vecPositionSum.x, vecPositionSum.y, vecPositionSum.z, &fSumWaterLevel, 1, 0))
-            {
-                if (CWaterLevel::GetWaterLevel(vecPositionDifference.x, vecPositionDifference.y, vecPositionDifference.z, &fDifferenceWaterLevel, 1, 0))
-                {
-                    m_fRotationX = atan2(fSumWaterLevel - fDifferenceWaterLevel, 2.0f) * 1.0f;
-                }
+            float fWaterLevel1 = 0.0f;
+            float fWaterLevel2 = 0.0f;
+            CVector distance = pPed->GetPosition() - pPed->GetForward();
+            CVector position = pPed->GetPosition() + pPed->GetForward();
+            if (CWaterLevel::GetWaterLevel(position.x, position.y, position.z, &fWaterLevel1, 1, 0)) {
+                if (CWaterLevel::GetWaterLevel(distance.x, distance.y, distance.z, &fWaterLevel2, 1, 0))
+                    m_fRotationX = atan2(fWaterLevel1 - fWaterLevel2, 2.0f) * 1.0f;
             }
         }
-
         if (pPed->ControlButtonSprint(static_cast<eSprintType>(2)) < 1.0f)
         {
             m_nSwimState = static_cast<eSwimState>(pPed->m_pPlayerData->m_fMoveBlendRatio > 0.5f);

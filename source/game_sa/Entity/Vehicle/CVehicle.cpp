@@ -60,9 +60,9 @@ char(*VehicleNames)[14] = (char(*)[14])0x8D3978;
 
 void CVehicle::InjectHooks()
 {
-    HookInstall(0x6D1C40, (bool(CVehicle::*)(CPed*))(&CVehicle::IsDriver), 7);
-    HookInstall(0x6D1C60, (bool(CVehicle::*)(int))(&CVehicle::IsDriver), 7);
-    HookInstall(0x6DE240, &CVehicle::AddExhaustParticles, 7);
+    HookInstall(0x6D1C40, (bool(CVehicle::*)(CPed*))(&CVehicle::IsDriver));
+    HookInstall(0x6D1C60, (bool(CVehicle::*)(int))(&CVehicle::IsDriver));
+    HookInstall(0x6DE240, &CVehicle::AddExhaustParticles);
 }
 
 void* CVehicle::operator new(unsigned int size) {
@@ -1123,12 +1123,12 @@ void CVehicle::AddExhaustParticles()
     }
     if (firstExhaustPos != 0.0f) {
         CVector vecParticleVelocity;
-        if (DotProduct(m_matrix->up, m_vecMoveSpeed) >= 0.05f) {
+        if (DotProduct(GetForward(), m_vecMoveSpeed) >= 0.05f) {
             vecParticleVelocity = m_vecMoveSpeed * 30.0f;
         }
         else  {
             static float randomFactor = CGeneral::GetRandomNumberInRange(-1.8f, -0.9f);
-            vecParticleVelocity = randomFactor * m_matrix->up;
+            vecParticleVelocity = randomFactor * GetForward();
         }
         firstExhaustPos = entityMatrix * firstExhaustPos;
         bool bFirstExhaustSubmergedInWater = false;
