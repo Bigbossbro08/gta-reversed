@@ -372,7 +372,7 @@ public:
     // get special ride anim data for bile or quad
     virtual CRideAnimData* GetRideAnimData();
     virtual void SetupSuspensionLines();
-    virtual CVector* AddMovingCollisionSpeed(CVector* out, CVector& vecSpeed);
+    virtual CVector* AddMovingCollisionSpeed(CVector* out, CVector& vecDistance);
     virtual void Fix();
     virtual void SetupDamageAfterLoad();
     virtual void DoBurstAndSoftGroundRatios();
@@ -426,9 +426,9 @@ public:
     bool IsDriver(CPed* ped);
     bool IsDriver(int modelIndex);
     void KillPedsInVehicle();
-    // return this->m_pCoords->matrix.at.z <= -0.9;
+    // return this->m_pCoords->matrix.GetUp().z <= -0.9;
     bool IsUpsideDown();
-    // return this->m_pCoords->matrix.right.z >= 0.8 || this->m_pCoords->matrix.right.z <= -0.8;
+    // return this->m_pCoords->matrix.GetRight().z >= 0.8 || this->m_pCoords->matrix.GetRight().z <= -0.8;
     bool IsOnItsSide();
     bool CanPedOpenLocks(CPed* ped);
     bool CanDoorsBeDamaged();

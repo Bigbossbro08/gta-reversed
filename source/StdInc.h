@@ -3,7 +3,6 @@
 
 #include <windows.h>
 #include <cstdio>
-#define _USE_MATH_DEFINES
 #include <cmath>
 #include <algorithm>
 #include <list>
@@ -15,9 +14,10 @@
 #include <iostream>
 #include <cassert>
 
-#include "utils\common.h"
+#include "game_sa\constants.h"
 #include "game_sa\CPostEffects.h"
 #include "game_sa\CMemoryMgr.h"
+#include "game_sa\COcclusion.h"
 #include "game_sa\CCullZones.h"
 #include "game_sa\CGlass.h"
 #include "game_sa\CBuoyancy.h"
@@ -44,7 +44,6 @@
 #include "game_sa\CEventScanner.h"
 #include "game_sa\CEvent.h"
 #include "game_sa\CPedType.h"
-#include "game_sa\CPedScriptedTaskRecord.h"
 #include "game_sa\IKChainManager_c.h"
 #include "game_sa\CCrime.h"
 #include "game_sa\CSurfaceTable.h"
@@ -375,6 +374,7 @@
 #include "game_sa\Enums\eWeaponType.h"
 #include "game_sa\Enums\eWinchType.h"
 #include "game_sa\Enums\ePathType.h"
+#include "game_sa\Fx\CCarFXRenderer.h"
 #include "game_sa\Fx\FxBox_c.h"
 #include "game_sa\Fx\FxEmitterBP_c.h"
 #include "game_sa\Fx\FxFrustumInfo_c.h"
@@ -427,6 +427,8 @@
 #include "game_sa\Tasks\CTaskComplexSequence.h"
 #include "game_sa\Tasks\CTaskComplexUseSequence.h"
 #include "game_sa\Tasks\CTaskSequences.h"
+#include "game_sa\Tasks\CPedScriptedTaskRecord.h"
+#include "game_sa\Tasks\CScriptedBrainTaskStore.h"
 #include "game_sa\Tasks\TaskTypes\CTaskComplexCopInCar.h"
 #include "game_sa\Tasks\TaskTypes\CTaskComplexDie.h"
 #include "game_sa\Tasks\TaskTypes\CTaskComplexEnterBoatAsDriver.h"

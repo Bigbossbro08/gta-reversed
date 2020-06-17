@@ -47,7 +47,8 @@ solution "gta_reversed"
     }
     defines {
         "_CRT_SECURE_NO_WARNINGS",
-    "_SCL_SECURE_NO_WARNINGS",
+        "_SCL_SECURE_NO_WARNINGS",
+        "USE_GTASA_ALLOCATOR"
     }
 
     includedirs {
@@ -55,16 +56,15 @@ solution "gta_reversed"
        "source/**"
     }
     libdirs {"source"}
-    links {"detours"}
     
     configuration "Debug*"
         flags { symbols ("On") }
-        
+        buildoptions {"/MDd"}          
     configuration "Release*"
         defines { "NDEBUG" }
+        buildoptions {"/MD"}
     flags { symbols ("Off") }
         optimize "Full"
-
     configuration "vs*"
          linkoptions   { "/ignore:4099" }      
          buildoptions {"/EHsc"}

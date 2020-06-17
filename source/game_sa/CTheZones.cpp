@@ -48,13 +48,13 @@ CZoneInfo* CTheZones::ZoneInfoArray = (CZoneInfo*)0xBA1DF0;
 
 void CTheZones::InjectHooks()
 {
-    HookInstall(FUNC_CTheZones__ResetZonesRevealed, &CTheZones::ResetZonesRevealed, 7);
-    HookInstall(FUNC_CTheZones__GetCurrentZoneLockedOrUnlocked, &CTheZones::GetCurrentZoneLockedOrUnlocked, 7);
-    HookInstall(FUNC_CTheZones__PointLiesWithinZone, &CTheZones::PointLiesWithinZone, 7);
-    HookInstall(FUNC_CTheZones__GetInfoZone, &CTheZones::GetNavigationZone, 7);
-    HookInstall(FUNC_CTheZones__GetMapZone, &CTheZones::GetMapZone, 7);
-    HookInstall(FUNC_CTheZones__Save, &CTheZones::Save, 7);
-    HookInstall(FUNC_CTheZones__Load, &CTheZones::Load, 7);
+    HookInstall(FUNC_CTheZones__ResetZonesRevealed, &CTheZones::ResetZonesRevealed);
+    HookInstall(FUNC_CTheZones__GetCurrentZoneLockedOrUnlocked, &CTheZones::GetCurrentZoneLockedOrUnlocked);
+    HookInstall(FUNC_CTheZones__PointLiesWithinZone, &CTheZones::PointLiesWithinZone);
+    HookInstall(FUNC_CTheZones__GetInfoZone, &CTheZones::GetNavigationZone);
+    HookInstall(FUNC_CTheZones__GetMapZone, &CTheZones::GetMapZone);
+    HookInstall(FUNC_CTheZones__Save, &CTheZones::Save);
+    HookInstall(FUNC_CTheZones__Load, &CTheZones::Load);
 }
 // Functions
 void CTheZones::InitZonesPopulationSettings()
@@ -109,9 +109,9 @@ bool CTheZones::PointLiesWithinZone(CVector const* pPoint, CZone* pZone)
 }
 
 // Returns eLevelName from position
-eLevelName CTheZones::GetLevelFromPosition(CVector const* pPoint)
+eLevelName CTheZones::GetLevelFromPosition(CVector const& point)
 {
-    return ((eLevelName(__cdecl*)(CVector const*)) FUNC_CTheZones__GetLevelFromPosition)(pPoint);
+    return ((eLevelName(__cdecl*)(CVector const&))0x572300)(point);
 }
 
 // Returns pointer to zone by a point
@@ -121,9 +121,9 @@ CZone* CTheZones::FindSmallestZoneForPosition(const CVector& point, bool FindOnl
 }
 
 // 572400
-CZoneExtraInfo* CTheZones::GetZoneInfo(CVector* point, CZone** outzone)
+CZoneExtraInfo* CTheZones::GetZoneInfo(const CVector& point, CZone** outzone)
 {
-    return ((CZoneExtraInfo * (__cdecl*)(CVector*, CZone**)) FUNC_CTheZones__GetZoneInfo) (point, outzone);
+    return ((CZoneExtraInfo * (__cdecl*)(const CVector&, CZone**)) FUNC_CTheZones__GetZoneInfo) (point, outzone);
 }
 
 void CTheZones::FillZonesWithGangColours(bool DisableRadarGangColors)

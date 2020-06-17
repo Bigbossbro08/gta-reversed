@@ -6,12 +6,15 @@ Do not delete this comment block. Respect others' work!
 */
 #include "StdInc.h"
 
+#include <algorithm>
+#include <vector>
+
 int gDefaultTaskTime = 9999999; // or 0x98967F a.k.a (one milllion - 1)
 char *gString = (char *)0xB71670;
 
 float &GAME_GRAVITY = *(float *)0x863984;
 
-char *&PC_Scratch = *reinterpret_cast<char **>(0xC8E0C8);
+char(&PC_Scratch)[16384] = *(char(*)[16384])0xC8E0C8;
 
 CVector FindPlayerCoors(int playerId)
 {
@@ -66,29 +69,6 @@ CAutomobile * FindPlayerVehicle(int playerId, bool bIncludeRemote)
 bool InTwoPlayersMode()
 {
     return ((bool(__cdecl *)())0x441390)();
-}
-
-CVector* VectorAdd(CVector* out, CVector* from, CVector* what)
-{
-    return ((CVector * (__cdecl*)(CVector*, CVector*, CVector*))0x40FE30)(out, from, what);
-}
-
-
-CVector * VectorSub(CVector * out, CVector * from, CVector * what)
-{
-    return ((CVector *(__cdecl *)(CVector *, CVector *, CVector *))0x40FE60)(out, from, what);
-}
-
-CVector* MultiplyMatrixWithVector(CVector* outPoint, CMatrix* m, CVector* point)
-{
-#ifdef USE_DEFAULT_FUNCTIONS
-    return plugin::CallAndReturn<CVector*, 0x59C890, CVector*, CMatrix*, CVector*> (outPoint, m, point);
-#else
-    outPoint->x = m->at.x * point->z + m->up.x * point->y + m->right.x * point->x + m->pos.x;
-    outPoint->y = m->at.y * point->z + m->right.y * point->x + m->up.y * point->y + m->pos.y;
-    outPoint->z = m->at.z * point->z + m->right.z * point->x + m->up.z * point->y + m->pos.z;
-    return outPoint;
-#endif
 }
 
 CVector* Multiply3x3(CVector* out, CMatrix* m, CVector* in)
@@ -614,3 +594,45 @@ void WriteRaster(RwRaster * pRaster, char const * pszPath) {
     assert(pszPath && pszPath[0]);
     plugin::Call<0x005A4150>(pRaster, pszPath);
 }
+
+std::wstring UTF8ToUnicode(const std::string &str)
+{
+    std::wstring out;
+
+    int size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, str.data(), str.length(), nullptr, 0);
+    if (size)
+    {
+        std::vector<wchar_t> temp;
+        temp.resize(size, 0);
+
+        if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, str.data(), str.length(), temp.data(), size))
+        {
+            out.resize(size);
+            std::copy(temp.begin(), temp.end(), out.begin());
+        }
+    }
+
+    return out;
+}
+
+std::string UnicodeToUTF8(const std::wstring &str)
+{
+    std::string out;
+
+    int size = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, str.data(), str.length(), nullptr, 0, nullptr, nullptr);
+    if (size)
+    {
+        std::vector<char> temp;
+        temp.resize(size, 0);
+
+        if (WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, str.data(), str.length(), temp.data(), size, nullptr, nullptr))
+        {
+            out.resize(size);
+            std::copy(temp.begin(), temp.end(), out.begin());
+        }
+    }
+
+    return out;
+}
+
+int WindowsCharset = static_cast<int>(GetACP());

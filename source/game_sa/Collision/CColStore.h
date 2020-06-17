@@ -27,13 +27,16 @@ VALIDATE_SIZE(ColDef, 0x2C);
 class CColStore
 {
 public:
+    static CVector& ms_vecCollisionNeeded;
+    static bool& ms_bCollisionNeeded;
 
     static std::int32_t AddColSlot(const char* name);
     static void AddCollisionNeededAtPosn(const CVector& pos);
     static void AddRef(int colNum);
     static std::int32_t FindColSlot();
-    /* BoundingBoxesPostProcess()
-    * EnsureCollisionIsInMemory(CVector const&)
+    // BoundingBoxesPostProcess()
+    static void EnsureCollisionIsInMemory(CVector const& pos);
+    /*
     * GetBoundingBox(int)
     * HasCollisionLoaded(CVector const&, int)
     */
@@ -44,10 +47,8 @@ public:
     * LoadCol(int, char const*)
     */
     static bool LoadCol(int colId, unsigned char* data, int dataSize);
-    /*
-    * LoadCollision(CVector, bool)
-    * RemoveAllCollision()
-    */
+    static void LoadCollision(CVector point);
+    //RemoveAllCollision()
     static void RemoveCol(int colNum);
     /* RemoveColSlot(int)
     */

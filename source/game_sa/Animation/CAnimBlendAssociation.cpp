@@ -2,7 +2,7 @@
 
 void CAnimBlendAssociation::InjectHooks()
 {
-    HookInstall(0x4CEFC0, &CAnimBlendAssociation::Constructor, 7);
+    HookInstall(0x4CEFC0, &CAnimBlendAssociation::Constructor);
 }
 
 void* CAnimBlendAssociation::operator new(unsigned int size)
@@ -42,7 +42,7 @@ CAnimBlendAssociation::~CAnimBlendAssociation()
         m_pNext->m_pPrevious = m_pPrevious;
     m_pNext = nullptr;
     m_pPrevious = nullptr;
-    if (m_bBlockReferenced)
+    if (m_nFlags & ANIM_FLAG_BLOCK_REFERENCED)
         CAnimManager::RemoveAnimBlockRef(m_pHierarchy->m_nAnimBlockId);
 }
 

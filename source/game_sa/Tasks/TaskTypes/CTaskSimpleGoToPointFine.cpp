@@ -2,11 +2,11 @@
 
 void CTaskSimpleGoToPointFine::InjectHooks()
 {
-    HookInstall(0x65EEB0, &CTaskSimpleGoToPointFine::Constructor, 7);
-    HookInstall(0x662040, &CTaskSimpleGoToPointFine::Clone_Reversed, 7);
-    HookInstall(0x663500, &CTaskSimpleGoToPointFine::MakeAbortable_Reversed, 7);
-    HookInstall(0x663540, &CTaskSimpleGoToPointFine::ProcessPed_Reversed, 7);
-    HookInstall(0x65EF80, &CTaskSimpleGoToPointFine::SetBlendedMoveAnim, 7);
+    HookInstall(0x65EEB0, &CTaskSimpleGoToPointFine::Constructor);
+    HookInstall(0x662040, &CTaskSimpleGoToPointFine::Clone_Reversed);
+    HookInstall(0x663500, &CTaskSimpleGoToPointFine::MakeAbortable_Reversed);
+    HookInstall(0x663540, &CTaskSimpleGoToPointFine::ProcessPed_Reversed);
+    HookInstall(0x65EF80, &CTaskSimpleGoToPointFine::SetBlendedMoveAnim);
 }
 
 CTaskSimpleGoToPointFine::CTaskSimpleGoToPointFine(float fBlend, CVector targetPoint, float fRadius, int unused) :
@@ -96,11 +96,11 @@ void CTaskSimpleGoToPointFine::SetBlendedMoveAnim(CPed* ped)
 #ifdef USE_DEFAULT_FUNCTIONS 
     return plugin::CallMethod<0x65EF80, CTask*, CPed*>(this, ped);
 #else
-    auto pIdleAnimAssoc = RpAnimBlendClumpGetAssociation(ped->m_pRwClump, ANIM_MOVE_IDLE);
-    auto pWalkAnimAssoc = RpAnimBlendClumpGetAssociation(ped->m_pRwClump, ANIM_MOVE_WALK);
-    auto pRunAnimAssoc = RpAnimBlendClumpGetAssociation(ped->m_pRwClump, ANIM_MOVE_RUN);
-    auto pSprintAnimAssoc = RpAnimBlendClumpGetAssociation(ped->m_pRwClump, ANIM_MOVE_SPRINT);
-    auto pIdleTiredAnimAssoc = RpAnimBlendClumpGetAssociation(ped->m_pRwClump, ANIM_MOVE_IDLE_TIRED);
+    auto pIdleAnimAssoc = RpAnimBlendClumpGetAssociation(ped->m_pRwClump, ANIM_ID_IDLE);
+    auto pWalkAnimAssoc = RpAnimBlendClumpGetAssociation(ped->m_pRwClump, ANIM_ID_WALK);
+    auto pRunAnimAssoc = RpAnimBlendClumpGetAssociation(ped->m_pRwClump, ANIM_ID_RUN);
+    auto pSprintAnimAssoc = RpAnimBlendClumpGetAssociation(ped->m_pRwClump, ANIM_ID_SPRINT);
+    auto pIdleTiredAnimAssoc = RpAnimBlendClumpGetAssociation(ped->m_pRwClump, ANIM_ID_IDLE_TIRED);
     if (ped->bIsDucking && ped->m_pIntelligence->GetTaskDuck(false)) {
         float fMoveSpeedY = m_fBlend * 0.5f;
         if (fMoveSpeedY > 1.0f)
@@ -120,7 +120,7 @@ void CTaskSimpleGoToPointFine::SetBlendedMoveAnim(CPed* ped)
     }
     if (m_fBlend == 0.0f) {
         if (!pIdleAnimAssoc)
-            CAnimManager::BlendAnimation(ped->m_pRwClump, ped->m_nAnimGroup, ANIM_MOVE_IDLE, 4.0f);
+            CAnimManager::BlendAnimation(ped->m_pRwClump, ped->m_nAnimGroup, ANIM_ID_IDLE, 4.0f);
         if (pWalkAnimAssoc)
             delete pWalkAnimAssoc;
         if (pRunAnimAssoc)
@@ -150,40 +150,40 @@ void CTaskSimpleGoToPointFine::SetBlendedMoveAnim(CPed* ped)
             if (pWalkAnimAssoc)
                 delete pWalkAnimAssoc;
             if (!pRunAnimAssoc) {
-                pRunAnimAssoc = CAnimManager::AddAnimation(ped->m_pRwClump, ped->m_nAnimGroup, ANIM_MOVE_RUN);
+                pRunAnimAssoc = CAnimManager::AddAnimation(ped->m_pRwClump, ped->m_nAnimGroup, ANIM_ID_RUN);
                 pRunAnimAssoc->m_fBlendAmount = 0.0f;
                 pRunAnimAssoc->m_fSpeed = 1.0f;
             }
-            pRunAnimAssoc->m_nFlags |= ANIMATION_STARTED;
+            pRunAnimAssoc->m_nFlags |= ANIM_FLAG_STARTED;
             pRunAnimAssoc->m_fBlendDelta = 0.0f;
             pRunAnimAssoc->m_fBlendAmount = 3.0f - m_fBlend;
             if (!pSprintAnimAssoc)
             {
-                pSprintAnimAssoc = CAnimManager::AddAnimation(ped->m_pRwClump, ped->m_nAnimGroup, ANIM_MOVE_SPRINT);
+                pSprintAnimAssoc = CAnimManager::AddAnimation(ped->m_pRwClump, ped->m_nAnimGroup, ANIM_ID_SPRINT);
                 pSprintAnimAssoc->m_fBlendAmount = 0.0f;
                 pSprintAnimAssoc->m_fSpeed = 1.0f;
             }
-            pSprintAnimAssoc->m_nFlags |= ANIMATION_STARTED;
+            pSprintAnimAssoc->m_nFlags |= ANIM_FLAG_STARTED;
             pSprintAnimAssoc->m_fBlendDelta = 0.0f;
             moveState = PEDMOVE_SPRINT;
             pSprintAnimAssoc->m_fBlendAmount = m_fBlend - 2.0f;
         }
         else {
             if (!pWalkAnimAssoc) {
-                pWalkAnimAssoc = CAnimManager::AddAnimation(ped->m_pRwClump, ped->m_nAnimGroup, ANIM_MOVE_WALK);
+                pWalkAnimAssoc = CAnimManager::AddAnimation(ped->m_pRwClump, ped->m_nAnimGroup, ANIM_ID_WALK);
                 pWalkAnimAssoc->m_fBlendAmount = 0.0f;
                 pWalkAnimAssoc->m_fSpeed = 1.0f;
             }
-            pWalkAnimAssoc->m_nFlags |= ANIMATION_STARTED;
+            pWalkAnimAssoc->m_nFlags |= ANIM_FLAG_STARTED;
             pWalkAnimAssoc->m_fBlendDelta = 0.0f;
             pWalkAnimAssoc->m_fBlendAmount = 2.0f - m_fBlend;
             if (!pRunAnimAssoc)
             {
-                pRunAnimAssoc = CAnimManager::AddAnimation(ped->m_pRwClump, ped->m_nAnimGroup, ANIM_MOVE_RUN);
+                pRunAnimAssoc = CAnimManager::AddAnimation(ped->m_pRwClump, ped->m_nAnimGroup, ANIM_ID_RUN);
                 pRunAnimAssoc->m_fBlendAmount = 0.0f;
                 pRunAnimAssoc->m_fSpeed = 1.0f;
             }
-            pRunAnimAssoc->m_nFlags |= ANIMATION_STARTED;
+            pRunAnimAssoc->m_nFlags |= ANIM_FLAG_STARTED;
             pRunAnimAssoc->m_fBlendDelta = 0.0f;
             pRunAnimAssoc->m_fBlendAmount = m_fBlend - 1.0f;
             if (pSprintAnimAssoc)
@@ -193,11 +193,11 @@ void CTaskSimpleGoToPointFine::SetBlendedMoveAnim(CPed* ped)
     }
     else {
         if (!pWalkAnimAssoc) {
-            pWalkAnimAssoc = CAnimManager::AddAnimation(ped->m_pRwClump, ped->m_nAnimGroup, ANIM_MOVE_WALK);
+            pWalkAnimAssoc = CAnimManager::AddAnimation(ped->m_pRwClump, ped->m_nAnimGroup, ANIM_ID_WALK);
             pWalkAnimAssoc->m_fBlendAmount = 0.0f;
             pWalkAnimAssoc->m_fSpeed = 1.0f;
         }
-        pWalkAnimAssoc->m_nFlags |= ANIMATION_STARTED;
+        pWalkAnimAssoc->m_nFlags |= ANIM_FLAG_STARTED;
         pWalkAnimAssoc->m_fBlendAmount = 1.0f;
         pWalkAnimAssoc->m_fBlendDelta = 0.0f;
         if (pRunAnimAssoc)

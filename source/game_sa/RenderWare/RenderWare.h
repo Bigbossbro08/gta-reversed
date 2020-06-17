@@ -97,7 +97,6 @@ RwReal _rwMatrixDeterminant(const RwMatrix* matrix); // 0x7F1450
 RwReal _rwMatrixNormalError(const RwMatrix* matrix); // 0x7F1500
 RwReal _rwMatrixOrthogonalError(const RwMatrix* matrix); // 0x7F14A0
 RwReal _rwMatrixIdentityError(const RwMatrix* matrix); // 0x7F1590
-void RwV3dScale(RwV3d* out, const RwV3d* in, RwReal scalar);
 RwReal RwV3dNormalize(RwV3d* out, const RwV3d* in); // 0x7ED9B0
 RwReal RwV3dLength(const RwV3d* in); // 0x7EDAC0
 RwReal RwV2dLength(const RwV2d* in); // 0x7EDBF0

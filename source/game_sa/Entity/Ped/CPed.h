@@ -218,7 +218,7 @@ public:
     int        m_nAnimGroup;
     CVector2D           m_vecAnimMovingShiftLocal;
     CPedAcquaintance    m_acquaintance;
-    RwObject           *m_pWeaponObject;
+    RpClump            *m_pWeaponObject;
     RwFrame            *m_pGunflashObject;
     RwObject           *m_pGogglesObject;
     unsigned char      *m_pGogglesState;
@@ -442,6 +442,12 @@ public:
     void MakeTyresMuddySectorList(CPtrList& ptrList);
     void DeadPedMakesTyresBloody();
 	void SetModelIndex(unsigned int modelIndex);
+
+    inline CPedIntelligence* GetIntelligence() { return m_pIntelligence; }
+    inline CTaskManager& GetTaskManager() { return m_pIntelligence->m_TaskMgr; }
+    inline CEventGroup& GetEventGroup() { return m_pIntelligence->m_eventGroup; }
+    inline CWeapon& GetActiveWeapon() { return m_aWeapons[m_nActiveWeaponSlot]; }
+    inline RwMatrixTag* GetRwMatrix() { return m_pRwClump ? RwFrameGetMatrix(RpClumpGetFrame(m_pRwClump)) : nullptr; }
 
     static void* operator new(unsigned int size);
     static void operator delete(void* data);

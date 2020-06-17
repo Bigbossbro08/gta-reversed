@@ -104,9 +104,9 @@ bool CEntity::SetupLighting()
     return ((bool(__thiscall *)(CEntity *))(*(void ***)this)[19])(this);
 }
 
-void CEntity::RemoveLighting()
+void CEntity::RemoveLighting(bool bRemove)
 {
-    ((void(__thiscall *)(CEntity *))(*(void ***)this)[20])(this);
+    ((void(__thiscall *)(CEntity *, bool))(*(void ***)this)[20])(this, bRemove);
 }
 
 void CEntity::FlagToDestroyWhenNextProcessed()
@@ -374,7 +374,8 @@ void CEntity::UpdateRW() {
     plugin::CallMethod<0x446F90, CEntity*>(this);
 #else
     if (m_pRwObject) {
-        RwMatrix* pRwMatrix = &((RwFrame*)m_pRwObject->parent)->modelling;
+        RwFrame* frame = reinterpret_cast<RwFrame*>(rwObjectGetParent(m_pRwObject));
+        RwMatrix* pRwMatrix = RwFrameGetMatrix(frame);
         if (m_matrix)
             m_matrix->UpdateRwMatrix(pRwMatrix);
         else

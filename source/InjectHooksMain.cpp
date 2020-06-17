@@ -1,27 +1,26 @@
-﻿#include "StdInc.h"
-#include "detours.h"
-
-#pragma comment(lib, "detours.lib")
-
-auto OLD_CPhysical_ProcessEntityCollision = (int(__thiscall*) (CPhysical * pThis, CPhysical * entity, CColPoint * colpoint))0x546D00;
-int __fastcall CPhysical_ProcessEntityCollision(CPhysical* pThis, void* padding, CPhysical* entity, CColPoint* colpoint);
-
-void __cdecl HOOK_THEFUNCTION();
+#include "StdInc.h"
 
 void InjectHooksMain(void)
 {
+    CRunningScript::InjectHooks();
     CStreaming::InjectHooks();
+    InjectCdStreamHooks();
     CVehicleModelInfo::InjectHooks();
     CFileLoader::InjectHooks();
     CFileMgr::InjectHooks();
     CPhysical::InjectHooks();
     CRenderer::InjectHooks();
+    CVisibilityPlugins::InjectHooks();
     CPed::InjectHooks();
     CPedIntelligence::InjectHooks();
     CTrain::InjectHooks();
     CAnimBlendAssociation::InjectHooks();
     CEventEditableResponse::InjectHooks();
     CEventDamage::InjectHooks();
+    CPedDamageResponseCalculator::InjectHooks();
+    CPedScriptedTaskRecord::InjectHooks();
+    CPedScriptedTaskRecordData::InjectHooks();
+    CScriptedBrainTaskStore::InjectHooks();
     CTaskManager::InjectHooks();
     CTaskComplexUseSequence::InjectHooks();
     CTaskComplexSequence::InjectHooks();
@@ -49,46 +48,5 @@ void InjectHooksMain(void)
     CTheZones::InjectHooks();
     CMenuManager::InjectHooks();
     CSprite2d::InjectHooks();
-    CVisibilityPlugins::InjectHooks();
-    /*
-     DetourRestoreAfterWith();
-     DetourTransactionBegin();
-     DetourUpdateThread(GetCurrentThread());
-
-     std::printf("GOING TO HOOK FUNC NOW\n");
-     DetourAttach(&(PVOID&)OLD_CPhysical_ProcessEntityCollision, CPhysical_ProcessEntityCollision);
-     DetourTransactionCommit();
-     */
-}
-
-int __fastcall CPhysical_ProcessEntityCollision(CPhysical* pThis, void* padding, CPhysical* entity, CColPoint* colpoint)
-{
-    printf("CPhysical_ProcessEntityCollision called!n");
-    return 0;
-}
-
-/*
-dwReturnLocation:
-0 means that the function should return.
-1 means continue the function and it is inside of the "if" condition
-2 means continue the function and it is outside of the "if" condition
-*/
-
-enum eFunctionReturnValue
-{
-    FUNCTION_RETURN = 0,
-    FUNCTION_INSIDE_IF = 1,
-    FUNCTION_OUTSIDE_IF = 2,
-    //FUNCTION_SWITCH_CASE_2 = 3,
-    //FUNCTION_SOMELABEL = 4
-};
-
-DWORD RETURN_HOOK_INSIDE_IF = 0x0;
-DWORD RETURN_HOOK_OUTSIDE_IF = 0x0554ADD;
-DWORD RETURN_HOOK_EXIT_WITH_GRACE = 0x0;
-void _declspec(naked) HOOK_THEFUNCTION()
-{
-    _asm
-    {
-    }
+    CCheat::InjectHooks();
 }

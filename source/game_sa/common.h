@@ -5,6 +5,9 @@ https://github.com/DK22Pac/plugin-sdk
 Do not delete this comment block. Respect others' work!
 */
 #pragma once
+
+#include <string>
+
 #include "PluginBase.h"
 #include "CVector.h"
 #include "CEntity.h"
@@ -14,13 +17,14 @@ Do not delete this comment block. Respect others' work!
 #include "CAnimBlendAssociation.h"
 #include "CAnimBlendClumpData.h"
 
+const char gta_empty_string[4] = {0, 0, 0, 0};
 extern int gDefaultTaskTime;
 
 extern char *gString; // char gString[200]
 
 extern float &GAME_GRAVITY; // default 0.0080000004
 
-extern char *&PC_Scratch;
+extern char(&PC_Scratch)[16384];
                             // returns player coors
 CVector FindPlayerCoors(int playerId);
 // returns player speed
@@ -43,20 +47,28 @@ CPlayerPed * FindPlayerPed(int playerId = -1);
 CAutomobile * FindPlayerVehicle(int playerId, bool bIncludeRemote);
 // 2 players are playing
 bool InTwoPlayersMode();
-CVector* VectorAdd(CVector* out, CVector* from, CVector* what);
-CVector * VectorSub(CVector * out, CVector * from, CVector * what);
-CVector* MultiplyMatrixWithVector(CVector* outPoint, CMatrix* m, CVector* point);
+
 // matrix mul
 CVector* Multiply3x3(CVector* out, CMatrix* m, CVector* in);
 // returns player wanted
 CWanted * FindPlayerWanted(int playerId);
 
+const unsigned int rwVENDORID_ROCKSTAR = 0x0253F2;
 extern unsigned int &ClumpOffset;
 
 #define RpClumpGetAnimBlendClumpData(clump) (*(CAnimBlendClumpData **)(((unsigned int)(clump) + ClumpOffset)))
 
+constexpr float PI = 3.14159265358979323846f;
+constexpr float PI_2 = PI / 2.0f;
+
 constexpr float DegreesToRadians(float angleInDegrees) {
-    return angleInDegrees * static_cast<float>(M_PI) / 180.0f;
+    return angleInDegrees * PI / 180.0f;
+}
+
+template <typename T>
+T clamp(T value, T low, T high)
+{
+    return std::min(std::max(value, low), high);
 }
 
 AnimBlendFrameData *RpAnimBlendClumpFindFrame(RpClump *clump, char *name);
@@ -183,3 +195,10 @@ void AsciiToGxtChar(char const *src, char *dst);
 * Writes given raster to PNG file using RtPNGImageWrite
 */
 void WriteRaster(RwRaster * pRaster, char const * pszPath);
+
+/* Convert UTF-8 string to Windows Unicode. Free pointer using delete[] */
+std::wstring UTF8ToUnicode(const std::string &str);
+/* Convert Windows Unicode to UTF-8. Free pointer using delete[] */
+std::string UnicodeToUTF8(const std::wstring &str);
+
+extern int WindowsCharset;

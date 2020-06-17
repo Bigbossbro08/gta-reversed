@@ -2,11 +2,11 @@
 
 void CTaskSimpleGoToPoint::InjectHooks()
 {
-    HookInstall(0x667CD0, &CTaskSimpleGoToPoint::Constructor, 7);
-    HookInstall(0x66CC60, &CTaskSimpleGoToPoint::Clone_Reversed, 7);
-    HookInstall(0x667D60, &CTaskSimpleGoToPoint::MakeAbortable_Reversed, 7);
-    HookInstall(0x66D710, &CTaskSimpleGoToPoint::ProcessPed_Reversed, 7);
-    HookInstall(0x645700, &CTaskSimpleGoToPoint::UpdatePoint, 7);
+    HookInstall(0x667CD0, &CTaskSimpleGoToPoint::Constructor);
+    HookInstall(0x66CC60, &CTaskSimpleGoToPoint::Clone_Reversed);
+    HookInstall(0x667D60, &CTaskSimpleGoToPoint::MakeAbortable_Reversed);
+    HookInstall(0x66D710, &CTaskSimpleGoToPoint::ProcessPed_Reversed);
+    HookInstall(0x645700, &CTaskSimpleGoToPoint::UpdatePoint);
 }
 
 CTaskSimpleGoToPoint::CTaskSimpleGoToPoint(int moveState, const CVector& targetPoint, float fRadius, bool bMoveTowardsTargetPoint, bool a6) :
@@ -196,7 +196,7 @@ void CTaskSimpleGoToPoint::UpdatePoint(const CVector& targetPosition, float fRad
 #else
     if (bDontCheckRadius || m_vecTargetPoint != targetPosition || m_fRadius != fRadius)
     {
-        m_fRadius = fRadius;
+        m_vecTargetPoint = targetPosition;
         gotoFlags.m_b01 = false;
         gotoFlags.m_b02 = false;
         gotoFlags.m_b03 = false;

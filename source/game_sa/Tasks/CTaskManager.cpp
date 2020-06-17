@@ -11,26 +11,26 @@ void CTaskManager::InjectHooks()
 {
     CTaskSimple::InjectHooks();
 
-    HookInstall(0x6816A0, &CTaskManager::Constructor, 7);
-    HookInstall(0x6816D0, &CTaskManager::Destructor, 7);
-    HookInstall(0x681720, &CTaskManager::GetActiveTask, 7);
-    HookInstall(0x681740, &CTaskManager::FindActiveTaskByType, 7);
-    HookInstall(0x6817D0, &CTaskManager::FindTaskByType, 7);
-    HookInstall(0x681810, &CTaskManager::GetTaskSecondary, 7);
-    HookInstall(0x681820, &CTaskManager::HasTaskSecondary, 7);
-    HookInstall(0x681850, &CTaskManager::Flush, 7);
-    HookInstall(0x6818A0, &CTaskManager::FlushImmediately, 7);
-    HookInstall(0x681920, &CTaskManager::SetNextSubTask, 7);
-    HookInstall(0x681970, (CTaskSimple*(*)(CTask*))&CTaskManager::GetSimplestTask, 7);
-    HookInstall(0x6819A0, &CTaskManager::StopTimers, 7);
-    HookInstall(0x6819D0, &CTaskManager::GetSimplestActiveTask, 7);
-    HookInstall(0x681A00, (CTaskSimple*(CTaskManager::*)(int taskIndex))&CTaskManager::GetSimplestTask, 7);
-    HookInstall(0x681A30, &CTaskManager::AddSubTasks, 7);
-    HookInstall(0x681A80, &CTaskManager::ParentsControlChildren, 7);
-    HookInstall(0x681AF0, &CTaskManager::SetTask, 7);
-    HookInstall(0x681B60, &CTaskManager::SetTaskSecondary, 7);
-    HookInstall(0x681BD0, &CTaskManager::ClearTaskEventResponse, 7);
-    HookInstall(0x681C10, &CTaskManager::ManageTasks, 7);
+    HookInstall(0x6816A0, &CTaskManager::Constructor);
+    HookInstall(0x6816D0, &CTaskManager::Destructor);
+    HookInstall(0x681720, &CTaskManager::GetActiveTask);
+    HookInstall(0x681740, &CTaskManager::FindActiveTaskByType);
+    HookInstall(0x6817D0, &CTaskManager::FindTaskByType);
+    HookInstall(0x681810, &CTaskManager::GetTaskSecondary);
+    HookInstall(0x681820, &CTaskManager::HasTaskSecondary);
+    HookInstall(0x681850, &CTaskManager::Flush);
+    HookInstall(0x6818A0, &CTaskManager::FlushImmediately);
+    HookInstall(0x681920, &CTaskManager::SetNextSubTask);
+    HookInstall(0x681970, (CTaskSimple*(*)(CTask*))&CTaskManager::GetSimplestTask);
+    HookInstall(0x6819A0, &CTaskManager::StopTimers);
+    HookInstall(0x6819D0, &CTaskManager::GetSimplestActiveTask);
+    HookInstall(0x681A00, (CTaskSimple*(CTaskManager::*)(int taskIndex))&CTaskManager::GetSimplestTask);
+    HookInstall(0x681A30, &CTaskManager::AddSubTasks);
+    HookInstall(0x681A80, &CTaskManager::ParentsControlChildren);
+    HookInstall(0x681AF0, &CTaskManager::SetTask);
+    HookInstall(0x681B60, &CTaskManager::SetTaskSecondary);
+    HookInstall(0x681BD0, &CTaskManager::ClearTaskEventResponse);
+    HookInstall(0x681C10, &CTaskManager::ManageTasks);
 }
 
 // Converted from thiscall void CTaskManager::CTaskManager(CPed *ped) 0x6816A0
@@ -82,7 +82,7 @@ CTask* CTaskManager::GetActiveTask() {
 #ifdef USE_DEFAULT_FUNCTIONS
     return ((CTask* (__thiscall *)(CTaskManager*))0x681720)(this);
 #else
-    for (int primaryTaskIndex = 0; primaryTaskIndex < 5; primaryTaskIndex++)
+    for (int primaryTaskIndex = 0; primaryTaskIndex < TASK_PRIMARY_MAX; primaryTaskIndex++)
     {
         CTask* task = m_aPrimaryTasks[primaryTaskIndex];
         if (task)
@@ -189,13 +189,10 @@ bool CTaskManager::HasTaskSecondary(CTask const* task) {
 #ifdef USE_DEFAULT_FUNCTIONS
     return ((bool(__thiscall *)(CTaskManager*, CTask const*))0x681820)(this, task);
 #else
-    for (int secondaryTaskIndex = 0; secondaryTaskIndex < 6; secondaryTaskIndex++)
-    {
-        CTask* pSecondaryTask = m_aSecondaryTasks[secondaryTaskIndex];
-        if (pSecondaryTask == task)
-        {
+    for (int i = 0; i < TASK_SECONDARY_MAX; i++) {
+        CTask* secondaryTask = m_aSecondaryTasks[i];
+        if (secondaryTask && secondaryTask == task)
             return true;
-        }
     }
     return false;
 #endif
@@ -643,4 +640,14 @@ void CTaskManager::ManageTasks()
     }
 
 #endif
+}
+
+bool CTaskManager::HasPrimaryTask(CTask const* task)
+{
+    for (std::int32_t i = 0; i < TASK_PRIMARY_MAX; i++) {
+        CTask* primaryTask = m_aPrimaryTasks[i];
+        if (primaryTask && primaryTask == task)
+            return true;
+    }
+    return false;
 }
