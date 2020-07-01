@@ -35,7 +35,8 @@ public:
     bool MakeAbortable(class CPed* ped, eAbortPriority priority, class CEvent* _event) override;
     bool MakeAbortable_Reversed(class CPed* ped, eAbortPriority priority, class CEvent* _event);
     void ManageAnim(CPed* ped);
-    int FinishAnimStealthKillCB(int a1, int a2);
+
+    static void FinishAnimStealthKillCB(CAnimBlendAssociation* pAnimAssoc, void* something);
 };
 
 VALIDATE_SIZE(CTaskSimpleStealthKill, 0x20);

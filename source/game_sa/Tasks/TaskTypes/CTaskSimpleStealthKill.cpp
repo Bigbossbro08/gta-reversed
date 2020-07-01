@@ -6,6 +6,7 @@ void CTaskSimpleStealthKill::InjectHooks()
     //HookInstall(0x6225F0, &CTaskSimpleStealthKill::Constructor);
     //HookInstall(0x623830, &CTaskSimpleStealthKill::Clone_Reversed);
     HookInstall(0x622670, &CTaskSimpleStealthKill::GetId_Reversed);
+    //HookInstall(0x6296D0, &CTaskSimpleStealthKill::ManageAnim);
 }
 
 CTaskSimpleStealthKill::CTaskSimpleStealthKill(bool bKeepTargetAlive, CPed* pTarget, int nAssocGroupId)
@@ -144,6 +145,7 @@ eTaskType CTaskSimpleStealthKill::GetId()
 }
 
 #define USE_DEFAULT_FUNCTIONS
+
 void CTaskSimpleStealthKill::ManageAnim(CPed* ped)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
@@ -159,35 +161,33 @@ void CTaskSimpleStealthKill::ManageAnim(CPed* ped)
         else if (m_bIsFinished)
         {
             m_pAnim = CAnimManager::BlendAnimation(ped->m_pRwClump, m_nAssocGroupId, ANIM_ID_KILL_KNIFE_PED_DIE, 8.0);
-            CPedDamageResponseCalculator damageCalculator = CPedDamageResponseCalculator(ped, CPedDamageResponseCalculator::ms_damageFactor, m_pTarget->m_aWeapons[m_pTarget->m_nActiveWeaponSlot].m_nType, PED_PIECE_TORSO, false)
+            CPedDamageResponseCalculator damageCalculator = CPedDamageResponseCalculator(ped, CPedDamageResponseCalculator::ms_damageFactor, m_pTarget->m_aWeapons[m_pTarget->m_nActiveWeaponSlot].m_nType, PED_PIECE_TORSO, false);
 
-            v5 = (a2->m_nPedFlags >> 8) & 0xFFFFFF01;
-            v6 = v2->m_pTarget->m_aWeapons[v2->m_pTarget->m_nActiveWeaponSlot].m_nType;
-            v7 = &v2->m_pTarget->physical.entity;
-            v18 = 0;
-            CEventDamage::CEventDamage(&this, v7, CTimer::m_snTimeInMilliseconds, v6, 3u, 0, 0, v5);
-            LOBYTE(v18) = 1;
-            if (CEventDamage::AffectsPed(&this, a2))
+            int pedFlag = (ped->m_nPedFlags >> 8) & 0xFFFFFF01;
+            CEventDamage eventDamage = CEventDamage(m_pTarget, CTimer::m_snTimeInMilliseconds, m_pTarget->m_aWeapons[m_pTarget->m_nActiveWeaponSlot].m_nType, PED_PIECE_TORSO, 0, 0, pedFlag);
+            if (eventDamage.AffectsPed(ped))
             {
-                CPedDamageResponseCalculator::ComputeDamageResponse(&v10, &a2->physical.entity, &a3, 1);
-                v8 = &a2->m_pIntelligence->m_eventGroup;
-                v13 = v2->m_nAssocGroupId;
-                v14 = 350;
-                v15 = 0x41000000;
-                v16 = 0x3F800000;
-                v12 |= 4u;
-                CEventGroup::Add(v8, &this, 0);
+                CPedDamageResponse damageResponse;
+                damageCalculator.ComputeDamageResponse(ped, &damageResponse, true);
+
+                // Got no clue what these are and what role they really has
+
+                //v13 = m_nAssocGroupId;
+                //v14 = 350;
+                //v15 = 0x41000000;
+                //v16 = 0x3F800000;
+                //v12 |= 4u;
+
+                ped->m_pIntelligence->m_eventGroup.Add(&eventDamage, 0);
             }
-            LOBYTE(v18) = 0;
-            CEventDamage::~CEventDamage(&this);
-            v18 = -1;
-            CPedDamageResponseCalculator::~CPedDamageResponseCalculator();
+            eventDamage.~CEventDamage();
+            damageCalculator.~CPedDamageResponseCalculator();
         }
         else
         {
             m_pAnim = CAnimManager::BlendAnimation(ped->m_pRwClump, m_nAssocGroupId, ANIM_ID_KILL_KNIFE_PED_DAMAGE, 8.0);
         }
-        m_pAnim->SetFinishCallback(this->FinishAnimStealthKillCB, this);
+        m_pAnim->SetFinishCallback(CTaskSimpleStealthKill::FinishAnimStealthKillCB, this);
         m_bIsFinished = true;
     }
     else
@@ -201,7 +201,7 @@ void CTaskSimpleStealthKill::ManageAnim(CPed* ped)
 }
 #undef USE_DEFAULT_FUNCTIONS
 
-int CTaskSimpleStealthKill::FinishAnimStealthKillCB(int a1, int a2)
+void CTaskSimpleStealthKill::FinishAnimStealthKillCB(CAnimBlendAssociation* pAnimAssoc, void* something)
 {
-    return ((int(__thiscall*)(CTaskSimpleStealthKill*, int, int))0x622790)(this, a1, a2);
+    return ((void(__cdecl*)(CAnimBlendAssociation*, void*))0x622790)(pAnimAssoc, something);
 }
