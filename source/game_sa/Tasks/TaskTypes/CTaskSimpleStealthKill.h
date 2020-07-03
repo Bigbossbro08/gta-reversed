@@ -36,7 +36,7 @@ public:
     bool MakeAbortable_Reversed(class CPed* ped, eAbortPriority priority, class CEvent* _event);
     void ManageAnim(CPed* ped);
 
-    static void FinishAnimStealthKillCB(CAnimBlendAssociation* pAnimAssoc, void* something);
+    static void FinishAnimStealthKillCB(CAnimBlendAssociation* pAnimAssoc, void* function);
 };
 
 VALIDATE_SIZE(CTaskSimpleStealthKill, 0x20);

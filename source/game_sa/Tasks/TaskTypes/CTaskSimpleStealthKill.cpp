@@ -8,6 +8,7 @@ void CTaskSimpleStealthKill::InjectHooks()
     HookInstall(0x622670, &CTaskSimpleStealthKill::GetId_Reversed);
     HookInstall(0x6226F0, &CTaskSimpleStealthKill::MakeAbortable_Reversed);
     HookInstall(0x6296D0, &CTaskSimpleStealthKill::ManageAnim);
+    HookInstall(0x622790, &CTaskSimpleStealthKill::FinishAnimStealthKillCB);
 }
 
 CTaskSimpleStealthKill::CTaskSimpleStealthKill(bool bKeepTargetAlive, CPed* pTarget, int nAssocGroupId)
@@ -205,7 +206,20 @@ void CTaskSimpleStealthKill::ManageAnim(CPed* ped)
 #endif
 }
 
-void CTaskSimpleStealthKill::FinishAnimStealthKillCB(CAnimBlendAssociation* pAnimAssoc, void* something)
+void CTaskSimpleStealthKill::FinishAnimStealthKillCB(CAnimBlendAssociation* pAnimAssoc, void* function)
 {
+#ifdef USE_DEFAULT_FUNCTIONS
     return ((void(__cdecl*)(CAnimBlendAssociation*, void*))0x622790)(pAnimAssoc, something);
+#else
+    CTaskSimpleStealthKill* pTaskSimpleStealthKill = (CTaskSimpleStealthKill*)function;
+    if (pAnimAssoc->m_nAnimId != ANIM_ID_KILL_KNIFE_PLAYER && pAnimAssoc->m_nAnimId != ANIM_ID_KILL_KNIFE_PED_DIE)
+    {
+        pTaskSimpleStealthKill->m_pAnim = nullptr;
+    }
+    else
+    {
+        pTaskSimpleStealthKill->m_bIsAborting = true;
+        pTaskSimpleStealthKill->m_pAnim = nullptr;
+    }
+#endif
 }
