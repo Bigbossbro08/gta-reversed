@@ -6,6 +6,7 @@ void CTaskSimpleStealthKill::InjectHooks()
     //HookInstall(0x6225F0, &CTaskSimpleStealthKill::Constructor);
     //HookInstall(0x623830, &CTaskSimpleStealthKill::Clone_Reversed);
     HookInstall(0x622670, &CTaskSimpleStealthKill::GetId_Reversed);
+    HookInstall(0x6226F0, &CTaskSimpleStealthKill::MakeAbortable_Reversed);
     //HookInstall(0x6296D0, &CTaskSimpleStealthKill::ManageAnim);
 }
 
@@ -107,15 +108,17 @@ CTask* CTaskSimpleStealthKill::Clone()
 
 bool CTaskSimpleStealthKill::MakeAbortable(class CPed* ped, eAbortPriority priority, class CEvent* _event)
 {
+#ifdef USE_DEFAULT_FUNCTIONS
     return plugin::CallMethodAndReturn<bool, 0x6226F0, CTaskSimpleStealthKill*, CPed*, eAbortPriority, CEvent*>(this, ped, priority, _event);
+#else
+    return CTaskSimpleStealthKill::MakeAbortable_Reversed(ped, priority, _event);
+#endif
 }
 
-// Unfinished
 bool CTaskSimpleStealthKill::MakeAbortable_Reversed(class CPed* ped, eAbortPriority priority, class CEvent* _event)
 {
-    return plugin::CallMethodAndReturn<bool, 0x6226F0, CTaskSimpleStealthKill*, CPed*, eAbortPriority, CEvent*>(this, ped, priority, _event);
-    /*if (priority == ABORT_PRIORITY_IMMEDIATE)
-    {
+    CEventDamage* eventDamage = (CEventDamage*)_event;
+    if (priority == ABORT_PRIORITY_IMMEDIATE) {
         if (m_pAnim)
         {
             m_pAnim->SetDeleteCallback(CDefaultAnimCallback::DefaultAnimCB, 0);
@@ -123,16 +126,21 @@ bool CTaskSimpleStealthKill::MakeAbortable_Reversed(class CPed* ped, eAbortPrior
         }
 
         m_bIsAborting = true;
+        return true;
     }
-    else if (
-        priority == ABORT_PRIORITY_URGENT &&
-        !m_bKeepTargetAlive &&
-        m_pAnim != nullptr &&
-        m_pAnim->m_nAnimId == ANIM_ID_KILL_KNIFE_PED_DIE &&
-        _event->GetEventType() == EVENT_DAMAGE &&)
-    {
-        
-    }*/
+    else if (priority == ABORT_PRIORITY_URGENT &&
+             !m_bKeepTargetAlive &&
+             m_pAnim != nullptr &&
+             m_pAnim->m_nAnimId == ANIM_ID_KILL_KNIFE_PED_DIE &&
+             _event->GetEventType() == EVENT_DAMAGE &&
+             eventDamage->m_pSourceEntity == m_pTarget) {
+        m_bIsAborting = true;
+        m_pAnim->SetDeleteCallback(CDefaultAnimCallback::DefaultAnimCB, 0);
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 eTaskType CTaskSimpleStealthKill::GetId()
@@ -145,7 +153,6 @@ eTaskType CTaskSimpleStealthKill::GetId()
 }
 
 #define USE_DEFAULT_FUNCTIONS
-
 void CTaskSimpleStealthKill::ManageAnim(CPed* ped)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
