@@ -1,6 +1,6 @@
 #include "StdInc.h"
 
-float& CPedDamageResponseCalculator::ms_damageFactor = *(float*)0x8A6260;
+float& CPedDamageResponseCalculator::ms_damageFactor = *(float*)0x8A6260; // 5555.5498
 
 void CPedDamageResponseCalculator::InjectHooks()
 {

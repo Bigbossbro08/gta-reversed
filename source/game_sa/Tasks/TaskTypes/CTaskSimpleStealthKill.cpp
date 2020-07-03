@@ -7,7 +7,7 @@ void CTaskSimpleStealthKill::InjectHooks()
     //HookInstall(0x623830, &CTaskSimpleStealthKill::Clone_Reversed);
     HookInstall(0x622670, &CTaskSimpleStealthKill::GetId_Reversed);
     HookInstall(0x6226F0, &CTaskSimpleStealthKill::MakeAbortable_Reversed);
-    //HookInstall(0x6296D0, &CTaskSimpleStealthKill::ManageAnim);
+    HookInstall(0x6296D0, &CTaskSimpleStealthKill::ManageAnim);
 }
 
 CTaskSimpleStealthKill::CTaskSimpleStealthKill(bool bKeepTargetAlive, CPed* pTarget, int nAssocGroupId)
@@ -152,7 +152,6 @@ eTaskType CTaskSimpleStealthKill::GetId()
 #endif
 }
 
-#define USE_DEFAULT_FUNCTIONS
 void CTaskSimpleStealthKill::ManageAnim(CPed* ped)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
@@ -175,15 +174,13 @@ void CTaskSimpleStealthKill::ManageAnim(CPed* ped)
             if (eventDamage.AffectsPed(ped))
             {
                 CPedDamageResponse damageResponse;
-                damageCalculator.ComputeDamageResponse(ped, &damageResponse, true);
+                damageCalculator.ComputeDamageResponse(ped, &eventDamage.m_damageResponse, true);
 
-                // Got no clue what these are and what role they really has
-
-                //v13 = m_nAssocGroupId;
-                //v14 = 350;
-                //v15 = 0x41000000;
-                //v16 = 0x3F800000;
-                //v12 |= 4u;
+                eventDamage.m_nAnimGroup = m_nAssocGroupId;
+                eventDamage.m_nAnimID = 350;
+                eventDamage.m_fAnimBlend = 8.0;
+                eventDamage.m_fAnimSpeed = 1.0;
+                eventDamage.m_ucDirection |= 4u;
 
                 ped->m_pIntelligence->m_eventGroup.Add(&eventDamage, 0);
             }
@@ -199,14 +196,14 @@ void CTaskSimpleStealthKill::ManageAnim(CPed* ped)
     }
     else
     {
-        float timer = CTimer::ms_fTimeStep * 0.02 * 1000.0;
-        m_nTime += timer;
+        int timer = CTimer::ms_fTimeStep * 0.02f * 1000.0f;
+        timer += m_nTime;
+        m_nTime = timer;
         if (timer > 10000)
             m_bIsAborting = true;
     }
 #endif
 }
-#undef USE_DEFAULT_FUNCTIONS
 
 void CTaskSimpleStealthKill::FinishAnimStealthKillCB(CAnimBlendAssociation* pAnimAssoc, void* something)
 {
