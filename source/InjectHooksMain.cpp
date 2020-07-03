@@ -1,5 +1,14 @@
 #include "StdInc.h"
 
+#include "CAEAudioUtility.h"
+#include "CAEDataStream.h"
+#include "CAEMFDecoder.h"
+#include "CAEVorbisDecoder.h"
+#include "CAEWaveDecoder.h"
+#include "CAEWMADecoder.h"
+#include "CAEStreamingDecoder.h"
+#include "CAEUserRadioTrackManager.h"
+
 void InjectHooksMain(void)
 {
     CRunningScript::InjectHooks();
@@ -17,6 +26,23 @@ void InjectHooksMain(void)
     CAnimBlendAssociation::InjectHooks();
     CEventEditableResponse::InjectHooks();
     CEventDamage::InjectHooks();
+    CEventAttractor::InjectHooks();
+    CEventGunShot::InjectHooks();
+    CEventDeath::InjectHooks();
+    CEventDeadPed::InjectHooks();
+    CEventDraggedOutCar::InjectHooks();
+    CEventGotKnockedOverByCar::InjectHooks();
+    CEventScriptCommand::InjectHooks();
+    CEventSoundQuiet::InjectHooks();
+    CEventGroupEvent::InjectHooks();
+    CEventGunAimedAt::InjectHooks();
+    CEventPedToChase::InjectHooks();
+    CEventPedToFlee::InjectHooks();
+    CEventVehicleDamage::InjectHooks();
+    CEventVehicleDamageWeapon::InjectHooks();
+    CEventVehicleDied::InjectHooks();
+    CEventVehicleOnFire::InjectHooks();
+    CEventVehicleHitAndRun::InjectHooks();
     CPedDamageResponseCalculator::InjectHooks();
     CPedScriptedTaskRecord::InjectHooks();
     CPedScriptedTaskRecordData::InjectHooks();
@@ -50,4 +76,13 @@ void InjectHooksMain(void)
     CMenuManager::InjectHooks();
     CSprite2d::InjectHooks();
     CCheat::InjectHooks();
+
+    CAEAudioUtility::InjectHooks();
+    CAEDataStream::InjectHooks();
+    CAEStreamingDecoder::InjectHooks();
+    CAEMFDecoder::InjectHooks();
+    CAEUserRadioTrackManager::InjectHooks();
+    CAEVorbisDecoder::InjectHooks();
+    CAEWaveDecoder::InjectHooks();
+    CAEWMADecoder::InjectHooks();
 }

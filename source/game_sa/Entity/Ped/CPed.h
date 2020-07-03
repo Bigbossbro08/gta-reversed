@@ -24,6 +24,13 @@
 #include "CAnimBlendAssociation.h"
 #include "CFire.h"
 
+enum ePedCreatedBy
+{
+    PED_UNKNOWN = 0,
+    PED_GAME = 1,
+    PED_MISSION = 2,
+};
+
 enum ePedStats {
 
 };
@@ -212,7 +219,7 @@ public:
     };
     CPedIntelligence   *m_pIntelligence;
     CPlayerData        *m_pPlayerData;
-    unsigned char       m_nCreatedBy;
+    unsigned char       m_nCreatedBy; // see ePedCreatedBy
     char                field_485[3];
     AnimBlendFrameData *m_apBones[19];
     int        m_nAnimGroup;
@@ -442,10 +449,12 @@ public:
     void MakeTyresMuddySectorList(CPtrList& ptrList);
     void DeadPedMakesTyresBloody();
 	void SetModelIndex(unsigned int modelIndex);
-
+    bool IsInVehicleThatHasADriver();
     inline CPedIntelligence* GetIntelligence() { return m_pIntelligence; }
     inline CTaskManager& GetTaskManager() { return m_pIntelligence->m_TaskMgr; }
     inline CEventGroup& GetEventGroup() { return m_pIntelligence->m_eventGroup; }
+    inline CEventHandler& GetEventHandler() { return m_pIntelligence->m_eventHandler; }
+    inline CEventHandlerHistory& GetEventHandlerHistory() { return m_pIntelligence->m_eventHandler.m_history; }
     inline CWeapon& GetActiveWeapon() { return m_aWeapons[m_nActiveWeaponSlot]; }
     inline RwMatrixTag* GetRwMatrix() { return m_pRwClump ? RwFrameGetMatrix(RpClumpGetFrame(m_pRwClump)) : nullptr; }
 
