@@ -16,7 +16,7 @@ class CTaskSimpleStealthKill : public CTaskSimple
 public:
     bool m_bKeepTargetAlive;
     CPed *m_pTarget;
-    int m_nAssocGroupId;
+    std::int32_t m_nAssocGroupId;
     bool m_bIsAborting;
     bool m_bIsFinished;
     CAnimBlendAssociation *m_pAnim;

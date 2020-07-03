@@ -3,8 +3,8 @@
 void CTaskSimpleStealthKill::InjectHooks()
 {
     HookInstall(0x62E540, &CTaskSimpleStealthKill::ProcessPed_Reversed);
-    //HookInstall(0x6225F0, &CTaskSimpleStealthKill::Constructor);
-    //HookInstall(0x623830, &CTaskSimpleStealthKill::Clone_Reversed);
+    HookInstall(0x6225F0, &CTaskSimpleStealthKill::Constructor);
+    HookInstall(0x623830, &CTaskSimpleStealthKill::Clone_Reversed);
     HookInstall(0x622670, &CTaskSimpleStealthKill::GetId_Reversed);
     HookInstall(0x6226F0, &CTaskSimpleStealthKill::MakeAbortable_Reversed);
     HookInstall(0x6296D0, &CTaskSimpleStealthKill::ManageAnim);
@@ -24,7 +24,6 @@ CTaskSimpleStealthKill::CTaskSimpleStealthKill(bool bKeepTargetAlive, CPed* pTar
         pTarget->RegisterReference(reinterpret_cast<CEntity**>(&m_pTarget));
 }
 
-#define USE_DEFAULT_FUNCTIONS
 CTaskSimpleStealthKill* CTaskSimpleStealthKill::Constructor(bool bKeepTargetAlive, CPed* pTarget, int nAssocGroupId)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
@@ -34,7 +33,6 @@ CTaskSimpleStealthKill* CTaskSimpleStealthKill::Constructor(bool bKeepTargetAliv
     return this;
 #endif
 }
-#undef USE_DEFAULT_FUNCTIONS
 
 bool CTaskSimpleStealthKill::ProcessPed_Reversed(CPed* ped) {
     if (m_bIsAborting || !m_pTarget)
@@ -91,12 +89,10 @@ bool CTaskSimpleStealthKill::ProcessPed(CPed* ped)
 #endif
 }
 
-#define USE_DEFAULT_FUNCTIONS
 CTask* CTaskSimpleStealthKill::Clone_Reversed()
 {
     return new CTaskSimpleStealthKill(m_bKeepTargetAlive, m_pTarget, m_nAssocGroupId);
 }
-#undef USE_DEFAULT_FUNCTIONS
 
 CTask* CTaskSimpleStealthKill::Clone()
 {
@@ -174,7 +170,7 @@ void CTaskSimpleStealthKill::ManageAnim(CPed* ped)
             CEventDamage eventDamage = CEventDamage(m_pTarget, CTimer::m_snTimeInMilliseconds, m_pTarget->m_aWeapons[m_pTarget->m_nActiveWeaponSlot].m_nType, PED_PIECE_TORSO, 0, 0, pedFlag);
             if (eventDamage.AffectsPed(ped))
             {
-                CPedDamageResponse damageResponse;
+                CPedDamageResponse damageResponse = { };
                 damageCalculator.ComputeDamageResponse(ped, &eventDamage.m_damageResponse, true);
 
                 eventDamage.m_nAnimGroup = m_nAssocGroupId;
