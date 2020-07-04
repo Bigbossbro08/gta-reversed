@@ -40,7 +40,7 @@ bool CTaskSimplePause::MakeAbortable_Reversed(CPed* ped, eAbortPriority priority
 {
     m_timer.m_nStartTime = CTimer::m_snTimeInMilliseconds;
     m_timer.m_nInterval = -1;
-    m_timer.m_bStarted = 1;
+    m_timer.m_bStarted = true;
     return true;
 }
 
@@ -55,20 +55,11 @@ bool CTaskSimplePause::MakeAbortable(CPed* ped, eAbortPriority priority, CEvent*
 
 bool CTaskSimplePause::ProcessPed_Reversed(CPed* ped)
 {
-    if (!m_timer.m_bStarted)
-    {
-        m_timer.m_nStartTime = CTimer::m_snTimeInMilliseconds;
-        m_timer.m_nInterval = m_nTime;
-        m_timer.m_bStarted = 1;
-        if (!m_timer.m_bStarted)
-            return 0;
+    if (!m_timer.m_bStarted && !m_timer.Start(m_nTime)) {
+        return false;
     }
-    if (m_timer.m_bStopped)
-    {
-        m_timer.m_nStartTime = CTimer::m_snTimeInMilliseconds;
-        m_timer.m_bStopped = 0;
-    }
-    return CTimer::m_snTimeInMilliseconds >= (unsigned int)(this->m_timer.m_nStartTime + this->m_timer.m_nInterval);
+    m_timer.Reset();
+    return m_timer.IsOutOfTime();
 }
 
 bool CTaskSimplePause::ProcessPed(CPed* ped)

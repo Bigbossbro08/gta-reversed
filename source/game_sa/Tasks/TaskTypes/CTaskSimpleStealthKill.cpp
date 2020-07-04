@@ -62,17 +62,15 @@ bool CTaskSimpleStealthKill::ProcessPed_Reversed(CPed* ped) {
         return false;
     }
 
-    float normalizedDistance = distance.Magnitude() - 1.0f;
-    if (fabs(normalizedDistance) <= 0.02f)
+    float minimumDistance = distance.Magnitude() - 1.0f;
+    if (fabs(minimumDistance) <= 0.02f)
     {
         ped->m_fAimingRotation = atan2(-distance.x, distance.y);
     }
     else
     {
-        float timeStepMultiplier = CTimer::ms_fTimeStep * 0.05f;
-        if (normalizedDistance > timeStepMultiplier)
-            normalizedDistance = timeStepMultiplier;
-        ped->m_vecAnimMovingShiftLocal.y = normalizedDistance;
+        std::min(CTimer::ms_fTimeStep * 0.05f, minimumDistance);
+        ped->m_vecAnimMovingShiftLocal.y = minimumDistance;
         ped->m_vecAnimMovingShiftLocal.x = 0.0f;
         ped->m_fAimingRotation = atan2(-distance.x, distance.y);
     }
@@ -127,7 +125,7 @@ bool CTaskSimpleStealthKill::MakeAbortable_Reversed(class CPed* ped, eAbortPrior
     }
     else if (priority == ABORT_PRIORITY_URGENT &&
              !m_bKeepTargetAlive &&
-             m_pAnim != nullptr &&
+             m_pAnim &&
              m_pAnim->m_nAnimId == ANIM_ID_KILL_KNIFE_PED_DIE &&
              _event->GetEventType() == EVENT_DAMAGE &&
              eventDamage->m_pSourceEntity == m_pTarget) {
@@ -159,35 +157,32 @@ void CTaskSimpleStealthKill::ManageAnim(CPed* ped)
     {
         if (m_bKeepTargetAlive)
         {
-            m_pAnim = CAnimManager::BlendAnimation(ped->m_pRwClump, m_nAssocGroupId, ANIM_ID_KILL_KNIFE_PLAYER, 8.0);
+            m_pAnim = CAnimManager::BlendAnimation(ped->m_pRwClump, m_nAssocGroupId, ANIM_ID_KILL_KNIFE_PLAYER, 8.0f);
         }
         else if (m_bIsFinished)
         {
-            m_pAnim = CAnimManager::BlendAnimation(ped->m_pRwClump, m_nAssocGroupId, ANIM_ID_KILL_KNIFE_PED_DIE, 8.0);
-            CPedDamageResponseCalculator damageCalculator = CPedDamageResponseCalculator(ped, CPedDamageResponseCalculator::ms_damageFactor, m_pTarget->m_aWeapons[m_pTarget->m_nActiveWeaponSlot].m_nType, PED_PIECE_TORSO, false);
+            m_pAnim = CAnimManager::BlendAnimation(ped->m_pRwClump, m_nAssocGroupId, ANIM_ID_KILL_KNIFE_PED_DIE, 8.0f);
+            CPedDamageResponseCalculator damageCalculator = CPedDamageResponseCalculator(ped, CPedDamageResponseCalculator::ms_damageFactor, m_pTarget->GetActiveWeapon().m_nType, PED_PIECE_TORSO, false);
 
             int pedFlag = (ped->m_nPedFlags >> 8) & 0xFFFFFF01;
-            CEventDamage eventDamage = CEventDamage(m_pTarget, CTimer::m_snTimeInMilliseconds, m_pTarget->m_aWeapons[m_pTarget->m_nActiveWeaponSlot].m_nType, PED_PIECE_TORSO, 0, 0, pedFlag);
+            CEventDamage eventDamage(m_pTarget, CTimer::m_snTimeInMilliseconds, m_pTarget->GetActiveWeapon().m_nType, PED_PIECE_TORSO, 0, 0, ped->bInVehicle);
             if (eventDamage.AffectsPed(ped))
             {
-                CPedDamageResponse damageResponse = { };
                 damageCalculator.ComputeDamageResponse(ped, &eventDamage.m_damageResponse, true);
 
                 eventDamage.m_nAnimGroup = m_nAssocGroupId;
-                eventDamage.m_nAnimID = 350;
+                eventDamage.m_nAnimID = ANIM_ID_KILL_KNIFE_PED_DIE;
                 eventDamage.m_fAnimBlend = 8.0;
                 eventDamage.m_fAnimSpeed = 1.0;
                 eventDamage.m_ucDirection |= 4u;
-
-                ped->m_pIntelligence->m_eventGroup.Add(&eventDamage, 0);
+                ped->GetEventGroup().Add(&eventDamage, false);
             }
-            eventDamage.~CEventDamage();
-            damageCalculator.~CPedDamageResponseCalculator();
         }
         else
         {
-            m_pAnim = CAnimManager::BlendAnimation(ped->m_pRwClump, m_nAssocGroupId, ANIM_ID_KILL_KNIFE_PED_DAMAGE, 8.0);
+            m_pAnim = CAnimManager::BlendAnimation(ped->m_pRwClump, m_nAssocGroupId, ANIM_ID_KILL_KNIFE_PED_DAMAGE, 8.0f);
         }
+
         m_pAnim->SetFinishCallback(CTaskSimpleStealthKill::FinishAnimStealthKillCB, this);
         m_bIsFinished = true;
     }
@@ -202,12 +197,12 @@ void CTaskSimpleStealthKill::ManageAnim(CPed* ped)
 #endif
 }
 
-void CTaskSimpleStealthKill::FinishAnimStealthKillCB(CAnimBlendAssociation* pAnimAssoc, void* function)
+void CTaskSimpleStealthKill::FinishAnimStealthKillCB(CAnimBlendAssociation* pAnimAssoc, void* vpTaskSimpleStealthKill)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
-    return ((void(__cdecl*)(CAnimBlendAssociation*, void*))0x622790)(pAnimAssoc, something);
+    return ((void(__cdecl*)(CAnimBlendAssociation*, CTaskSimpleStealthKill*))0x622790)(pAnimAssoc, vpTaskSimpleStealthKill);
 #else
-    CTaskSimpleStealthKill* pTaskSimpleStealthKill = (CTaskSimpleStealthKill*)function;
+    CTaskSimpleStealthKill* pTaskSimpleStealthKill = (CTaskSimpleStealthKill*)vpTaskSimpleStealthKill;
     if (pAnimAssoc->m_nAnimId != ANIM_ID_KILL_KNIFE_PLAYER && pAnimAssoc->m_nAnimId != ANIM_ID_KILL_KNIFE_PED_DIE)
     {
         pTaskSimpleStealthKill->m_pAnim = nullptr;
