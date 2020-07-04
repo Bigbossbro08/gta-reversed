@@ -92,30 +92,26 @@ enum eFontWidth : unsigned char {
     WIDTH_TOTAL,
 };
 
-class CFontDetails
+class CFontRenderState
 {
 public:
     char m_cLetter;
-    char _pad0[3];
-    CVector2D m_vPosn;
-    int m_fWidth;
-    int m_fHeigth;
-    RwRGBA m_color;
+    CVector2D m_Position;
+    CVector2D m_Scale;
+    CRGBA m_Color;
     int m_fWrap;
     int m_fSlant;
-    CVector2D m_vSlanRefPoint;
-    char m_bContainImages;
+    CVector2D m_SlantRef;
+    char m_bForcedColor;
     char m_nFontStyle;
     char m_bPropOn;
     char _pad1;
     short m_wFontTexture;
     char m_nOutline;
     char _pad2;
-
-    CFontDetails* operator=(CFontDetails const* rhs);
+    CFontRenderState* operator=(CFontRenderState const* rhs);
 };
-
-VALIDATE_SIZE(CFontDetails, 0x30);
+VALIDATE_SIZE(CFontRenderState, 0x30);
 
 class tFontData
 {
@@ -124,8 +120,39 @@ public:
     char m_spaceValue;
     char m_unpropValue;
 };
-
 VALIDATE_SIZE(tFontData, 0xD2);
+
+class CFontDetails
+{
+public:
+    CRGBA m_Color;
+    CVector2D m_Scale;
+    float m_fSlant;
+    CVector2D m_SlantRef;
+    char m_bFontJustify;
+    char m_bFontCentreAlign;
+    char m_bFontRightAlign;
+    char m_bFontBackground;
+    char m_bEnlargeBackgroundBox;
+    char m_bFontPropOn;
+    char m_bFontIsBlip;
+    char field_1F;
+    float m_fFontAlpha;
+    CRGBA m_FontBackgroundColor;
+    float m_fWrapx;
+    float m_fFontCentreSize;
+    float m_fRightJustifyWrap;
+    char m_FontTextureId;
+    char m_FontStyle;
+    char m_nFontShadow;
+    CRGBA m_FontDropColor;
+    char m_nFontOutlineSize;
+    char m_nFontOutline;
+    char field_3D;
+    char field_3E;
+    char field_3F;
+};
+VALIDATE_SIZE(CFontDetails, 64);
 
 class  CFont {
 public:
@@ -138,7 +165,7 @@ public:
     static unsigned char& PS2Symbol;
     static bool& m_bNewLine;
 
-    static CRGBA& m_Color;
+    /*static CRGBA& m_Color;
     static CVector2D *m_Scale;
     static float& m_fSlant;
     static CVector2D &m_fSlantRefPoint;
@@ -159,10 +186,12 @@ public:
     static unsigned char& m_nFontShadow;
     static CRGBA& m_FontDropColor;
     static unsigned char& m_nFontOutlineSize;
-    static unsigned char& m_nFontOutline;
-    static CFontDetails& RenderState;
-    static CFontDetails*& pEmptyChar;
-    static CFontDetails& setup;
+    static unsigned char& m_nFontOutline;*/
+
+    static CFontDetails& details;
+    static CFontRenderState& RenderState;
+    static CFontRenderState*& pEmptyChar;
+    static CFontRenderState& setup;
 
     static tFontData* gFontData;
 
@@ -191,7 +220,7 @@ public:
     // set text color
     static void SetColor(CRGBA color);
     // set text style
-    static void SetFontStyle(short style);
+    static void SetFontStyle(char style);
     // set line width at right
     static void SetWrapx(float value);
     // set line width at center
@@ -202,9 +231,9 @@ public:
     // drop color is used for text shadow and text outline
     static void SetDropColor(CRGBA color);
     // set shadow size
-    static void SetDropShadowPosition(short value);
+    static void SetDropShadowPosition(char value);
     // set outline size
-    static void SetEdge(short value);
+    static void SetEdge(char value);
     // toggles character proportions in text
     static void SetProportional(bool on);
     // setups text background

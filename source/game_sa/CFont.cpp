@@ -11,31 +11,35 @@ CSprite2d* CFont::Sprite = (CSprite2d*)0xC71AD0;
 CSprite2d* CFont::PS2Sprite = (CSprite2d*)0xC71AD8;
 unsigned char& CFont::PS2Symbol = *(unsigned char*)0xC71A54;
 bool& CFont::m_bNewLine = *(bool*)0xC71A55;
-CRGBA& CFont::m_Color = *(CRGBA*)0xC71A60;
-CVector2D* CFont::m_Scale = (CVector2D*)0xC71A64;
-float& CFont::m_fSlant = *(float*)0xC71A6C;
-CVector2D& CFont::m_fSlantRefPoint = *(CVector2D*)0xC71A70;
-bool& CFont::m_bFontJustify = *(bool*)0xC71A78;
-bool& CFont::m_bFontCentreAlign = *(bool*)0xC71A79;
-bool& CFont::m_bFontRightAlign = *(bool*)0xC71A7A;
-bool& CFont::m_bFontBackground = *(bool*)0xC71A7B;
-bool& CFont::m_bEnlargeBackgroundBox = *(bool*)0xC71A7C;
-bool& CFont::m_bFontPropOn = *(bool*)0xC71A7D;
-bool& CFont::m_bFontIsBlip = *(bool*)0xC71A7E;
-unsigned int CFont::m_dwFontAlpha = *(unsigned int*)0xC71A80;
-CRGBA& CFont::m_FontBackgroundColor = *(CRGBA*)0xC71A84;
-float& CFont::m_fWrapx = *(float*)0xC71A88;
-float& CFont::m_fFontCentreSize = *(float*)0xC71A8C;
-float& CFont::m_fRightJustifyWrap = *(float*)0xC71A90;
-unsigned char& CFont::m_FontTextureId = *(unsigned char*)0xC71A94;
-unsigned char& CFont::m_FontStyle = *(unsigned char*)0xC71A95;
-unsigned char& CFont::m_nFontShadow = *(unsigned char*)0xC71A96;
-CRGBA& CFont::m_FontDropColor = *(CRGBA*)0xC71A97;
-unsigned char& CFont::m_nFontOutlineSize = *(unsigned char*)0xC71A9B;
-unsigned char& CFont::m_nFontOutline = *(unsigned char*)0xC71A9C;
-CFontDetails& CFont::RenderState = *(CFontDetails*)0xC71AA0;
-CFontDetails*& CFont::pEmptyChar = *(CFontDetails**)0xC716A8;
-CFontDetails& CFont::setup = *(CFontDetails*)0xC716B0;
+
+CFontDetails& CFont::details = *(CFontDetails*)0xC71A60;
+
+//CRGBA& CFont::m_Color = *(CRGBA*)0xC71A60;
+//CVector2D* CFont::m_Scale = (CVector2D*)0xC71A64;
+//float& CFont::m_fSlant = *(float*)0xC71A6C;
+//CVector2D& CFont::m_fSlantRefPoint = *(CVector2D*)0xC71A70;
+//bool& CFont::m_bFontJustify = *(bool*)0xC71A78;
+//bool& CFont::m_bFontCentreAlign = *(bool*)0xC71A79;
+//bool& CFont::m_bFontRightAlign = *(bool*)0xC71A7A;
+//bool& CFont::m_bFontBackground = *(bool*)0xC71A7B;
+//bool& CFont::m_bEnlargeBackgroundBox = *(bool*)0xC71A7C;
+//bool& CFont::m_bFontPropOn = *(bool*)0xC71A7D;
+//bool& CFont::m_bFontIsBlip = *(bool*)0xC71A7E;
+//unsigned int CFont::m_dwFontAlpha = *(unsigned int*)0xC71A80;
+//CRGBA& CFont::m_FontBackgroundColor = *(CRGBA*)0xC71A84;
+//float& CFont::m_fWrapx = *(float*)0xC71A88;
+//float& CFont::m_fFontCentreSize = *(float*)0xC71A8C;
+//float& CFont::m_fRightJustifyWrap = *(float*)0xC71A90;
+//unsigned char& CFont::m_FontTextureId = *(unsigned char*)0xC71A94;
+//unsigned char& CFont::m_FontStyle = *(unsigned char*)0xC71A95;
+//unsigned char& CFont::m_nFontShadow = *(unsigned char*)0xC71A96;
+//CRGBA& CFont::m_FontDropColor = *(CRGBA*)0xC71A97;
+//unsigned char& CFont::m_nFontOutlineSize = *(unsigned char*)0xC71A9B;
+//unsigned char& CFont::m_nFontOutline = *(unsigned char*)0xC71A9C;
+
+CFontRenderState& CFont::RenderState = *(CFontRenderState*)0xC71AA0;
+CFontRenderState*& CFont::pEmptyChar = *(CFontRenderState**)0xC716A8;
+CFontRenderState& CFont::setup = *(CFontRenderState*)0xC716B0;
 
 tFontData* CFont::gFontData = (tFontData*)0xC718B0;
 
@@ -433,8 +437,8 @@ void CFont::SetScale(float w, float h)
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(float, float))0x719380)(w, h);
 #else
-    m_Scale->x = w;
-    m_Scale->y = h;
+    details.m_Scale.x = w;
+    details.m_Scale.y = h;
 #endif
 }
 
@@ -449,12 +453,12 @@ void CFont::SetScaleForCurrentlanguage(float w, float h)
     case 2:
     case 3:
     case 4:
-        m_Scale->y = h;
-        m_Scale->x = w * 0.80000001f;
-        break;
-    default:
-        m_Scale->x = w;
-        m_Scale->y = h;
+        details.m_Scale.y = h;
+        details.m_Scale.x = w * 0.8f;
+        break; 
+    default:   
+        details.m_Scale.x = w;
+        details.m_Scale.y = h;
         break;
     }
 #endif
@@ -465,8 +469,8 @@ void CFont::SetSlantRefPoint(float x, float y)
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(float, float))0x719400)(x, y);
 #else
-    m_fSlantRefPoint.x = x;
-    m_fSlantRefPoint.y = y;
+    details.m_SlantRef.x = x;
+    details.m_SlantRef.y = y;
 #endif
 }
 
@@ -475,7 +479,7 @@ void CFont::SetSlant(float value)
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(float))0x719420)(value);
 #else
-    m_fSlant = value;
+    details.m_fSlant = value;
 #endif
 }
 
@@ -484,31 +488,31 @@ void CFont::SetColor(CRGBA color)
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(CRGBA))0x719430)(color);
 #else
-    m_Color = color;
-    if (m_dwFontAlpha < 255)
-        m_Color.a = color.a * m_dwFontAlpha / 255;
+    details.m_Color = color;
+    if (details.m_fFontAlpha < 255)
+        details.m_Color.a = color.a * details.m_fFontAlpha / 255;
 #endif
 }
 
-void CFont::SetFontStyle(short style)
+void CFont::SetFontStyle(char style)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(short))0x719490)(style);
 #else
-    if (style == 2)
+    if (style == FONT_MENU)
     {
-        m_FontTextureId = 0;
-        m_FontStyle = 2;
+        details.m_FontTextureId = 0;
+        details.m_FontStyle = FONT_MENU;
     }
-    else if (style == 3)
+    else if (style == FONT_PRICEDOWN)
     {
-        m_FontTextureId = 1;
-        m_FontStyle = 1;
+        details.m_FontTextureId = 1;
+        details.m_FontStyle = FONT_SUBTITLES;
     }
     else
     {
-        m_FontTextureId = (unsigned char)style;
-        m_FontStyle = 0;
+        details.m_FontTextureId = style;
+        details.m_FontStyle = FONT_GOTHIC;
     }
 #endif
 }
@@ -518,7 +522,7 @@ void CFont::SetWrapx(float value)
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(float))0x7194D0)(value);
 #else
-    m_fWrapx = value;
+    details.m_fWrapx = value;
 #endif
 }
 
@@ -527,7 +531,7 @@ void CFont::SetCentreSize(float value)
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(float))0x7194E0)(value);
 #else
-    m_fFontCentreSize = value;
+    details.m_fFontCentreSize = value;
 #endif
 }
 
@@ -536,7 +540,7 @@ void CFont::SetRightJustifyWrap(float value)
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(float))0x7194F0)(value);
 #else
-    m_fRightJustifyWrap = value;
+    details.m_fRightJustifyWrap = value;
 #endif
 }
 
@@ -545,7 +549,7 @@ void CFont::SetAlphaFade(float alpha)
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(float))0x719500)(alpha);
 #else
-    m_dwFontAlpha = (unsigned int)alpha;
+    details.m_fFontAlpha = alpha;
 #endif
 }
 
@@ -554,31 +558,31 @@ void CFont::SetDropColor(CRGBA color)
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(CRGBA))0x719510)(color);
 #else
-    m_FontDropColor = color;
-    if (m_dwFontAlpha < 255)
-        m_FontDropColor.a = color.a * m_dwFontAlpha / 255; //(m_Color->a * m_dwFontAlpha * (unsigned char)0.0039215689);
+    details.m_FontDropColor = color;
+    if (details.m_fFontAlpha < 255)
+        details.m_FontDropColor.a = color.a * details.m_fFontAlpha / 255; //(m_Color->a * m_dwFontAlpha * (unsigned char)0.0039215689);
 #endif
 }
 
-void CFont::SetDropShadowPosition(short value)
+void CFont::SetDropShadowPosition(char value)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(short))0x719570)(value);
 #else
-    m_nFontOutlineSize = 0;
-    m_nFontOutline = 0;
-    m_nFontShadow = (unsigned char)value;
+    details.m_nFontOutlineSize = 0;
+    details.m_nFontOutline = 0;
+    details.m_nFontShadow = (unsigned char)value;
 #endif
 }
 
-void CFont::SetEdge(short value)
+void CFont::SetEdge(char value)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(short))0x719590)(value);
 #else
-    m_nFontOutlineSize = (unsigned char)value;
-    m_nFontOutline = (unsigned char)value;
-    m_nFontShadow = 0;
+    details.m_nFontOutlineSize = value;
+    details.m_nFontOutline = value;
+    details.m_nFontShadow = 0;
 #endif
 }
 
@@ -587,7 +591,7 @@ void CFont::SetProportional(bool on)
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(bool))0x7195B0)(on);
 #else
-    m_bFontPropOn = on;
+    details.m_bFontPropOn = on;
 #endif
 }
 
@@ -596,8 +600,8 @@ void CFont::SetBackground(bool enable, bool includeWrap)
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(bool, bool))0x7195C0)(enable, includeWrap);
 #else
-    m_bFontBackground = enable;
-    m_bEnlargeBackgroundBox = includeWrap;
+    details.m_bFontBackground = enable;
+    details.m_bEnlargeBackgroundBox = includeWrap;
 #endif
 }
 
@@ -606,7 +610,7 @@ void CFont::SetBackgroundColor(CRGBA color)
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(CRGBA))0x7195E0)(color);
 #else
-    m_FontBackgroundColor = color;
+    details.m_FontBackgroundColor = color;
 #endif
 }
 
@@ -615,7 +619,7 @@ void CFont::SetJustify(bool on)
 #ifdef USE_DEFAULT_FUNCTIONS
     ((void(__cdecl*)(bool))0x719600)(on);
 #else
-    m_bFontJustify = on;
+    details.m_bFontJustify = on;
 #endif
 }
 
@@ -628,19 +632,19 @@ void CFont::SetAllignment(eFontAlignment alignment)
     {
         if (alignment == ALIGN_LEFT)
         {
-            m_bFontCentreAlign = 0;
-            m_bFontRightAlign = 0;
+            details.m_bFontCentreAlign = false;
+            details.m_bFontRightAlign = false;
         }
         else if (alignment == ALIGN_RIGHT)
         {
-            m_bFontCentreAlign = 0;
-            m_bFontRightAlign = 1;
+            details.m_bFontCentreAlign = false;
+            details.m_bFontRightAlign = true;
         }
     }
     else
     {
-        m_bFontCentreAlign = 1;
-        m_bFontRightAlign = 0;
+        details.m_bFontCentreAlign = true;
+        details.m_bFontRightAlign = false;
     }
 #endif
 }
@@ -650,11 +654,11 @@ void CFont::InitPerFrame()
 #ifdef USE_DEFAULT_FUNCTIONS
   ((void(__cdecl*)())0x719800)();
 #else
-    m_nFontOutlineSize = 0;
-    m_nFontOutline = 0;
-    m_nFontShadow = 0;
-    m_bNewLine = 0;
-    PS2Symbol = 0;
+    details.m_nFontOutlineSize = 0;
+    details.m_nFontOutline = false;
+    details.m_nFontShadow = false;
+    m_bNewLine = false;
+    PS2Symbol = false;
     RenderState.m_wFontTexture = -1;
     pEmptyChar = &setup;
     CSprite::InitSpriteBuffer();
@@ -749,9 +753,9 @@ int CFont::GetCharacterSize(char letterId)
         letterIdPropValue = 0;
         letterId = 0;
     }
-    if (m_FontStyle)
+    if (details.m_FontStyle)
     {
-        letterIdPropValue = FindSubFontCharacter(letterId, m_FontStyle);
+        letterIdPropValue = FindSubFontCharacter(letterId, details.m_FontStyle);
     }
     else if (letterIdPropValue == -111)
     {
@@ -761,10 +765,10 @@ int CFont::GetCharacterSize(char letterId)
     {
         letterIdPropValue = 0;
     }
-    if (m_bFontPropOn)
-        result = gFontData[m_FontTextureId].m_propValues[letterIdPropValue];
+    if (details.m_bFontPropOn)
+        result = gFontData[details.m_FontTextureId].m_propValues[letterIdPropValue];
     else
-        result = gFontData[m_FontTextureId].m_unpropValue;
+        result = gFontData[details.m_FontTextureId].m_unpropValue;
     return result;
 #endif
 }
@@ -1347,22 +1351,16 @@ int CFont::GetLetterIdPropValue(char letterId)
 #endif
 }
 
-CFontDetails* CFontDetails::operator=(CFontDetails const* rhs)
+CFontRenderState* CFontRenderState::operator=(CFontRenderState const* rhs)
 {
-    *&this->m_cLetter = *&rhs->m_cLetter;
-    this->m_vPosn.x = rhs->m_vPosn.x;
-    this->m_vPosn.y = rhs->m_vPosn.y;
-    this->m_fWidth = rhs->m_fWidth;
-    this->m_fHeigth = rhs->m_fHeigth;
-    this->m_color.red = rhs->m_color.red;
-    this->m_color.green = rhs->m_color.green;
-    this->m_color.blue = rhs->m_color.blue;
-    this->m_color.alpha = rhs->m_color.alpha;
+    this->m_cLetter = rhs->m_cLetter;
+    this->m_Position = rhs->m_Position;
+    this->m_Scale = rhs->m_Scale;
+    this->m_Color = rhs->m_Color;
     this->m_fWrap = rhs->m_fWrap;
     this->m_fSlant = rhs->m_fSlant;
-    this->m_vSlanRefPoint.x = rhs->m_vSlanRefPoint.x;
-    this->m_vSlanRefPoint.y = rhs->m_vSlanRefPoint.y;
-    this->m_bContainImages = rhs->m_bContainImages;
+    this->m_SlantRef = rhs->m_SlantRef;
+    this->m_bForcedColor = rhs->m_bForcedColor;
     this->m_nFontStyle = rhs->m_nFontStyle;
     this->m_bPropOn = rhs->m_bPropOn;
     this->m_wFontTexture = rhs->m_wFontTexture;
