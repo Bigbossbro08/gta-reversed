@@ -62,13 +62,13 @@ bool CTaskSimpleStealthKill::ProcessPed_Reversed(CPed* ped) {
         return false;
     }
 
-    float minimumDistance = distance.Magnitude() - 1.0f;
-    if (fabs(minimumDistance) <= 0.02f) {
+    float magnitude = distance.Magnitude() - 1.0f;
+    if (fabs(magnitude) <= 0.02f) {
         ped->m_fAimingRotation = atan2(-distance.x, distance.y);
     }
     else {
-        minimumDistance = std::min(CTimer::ms_fTimeStep * 0.05f, minimumDistance);
-        ped->m_vecAnimMovingShiftLocal.y = minimumDistance;
+        magnitude = std::min(CTimer::ms_fTimeStep * 0.05f, magnitude);
+        ped->m_vecAnimMovingShiftLocal.y = magnitude;
         ped->m_vecAnimMovingShiftLocal.x = 0.0f;
         ped->m_fAimingRotation = atan2(-distance.x, distance.y);
     }
