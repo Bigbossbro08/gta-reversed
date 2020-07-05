@@ -63,13 +63,11 @@ bool CTaskSimpleStealthKill::ProcessPed_Reversed(CPed* ped) {
     }
 
     float minimumDistance = distance.Magnitude() - 1.0f;
-    if (fabs(minimumDistance) <= 0.02f)
-    {
+    if (fabs(minimumDistance) <= 0.02f) {
         ped->m_fAimingRotation = atan2(-distance.x, distance.y);
     }
-    else
-    {
-        std::min(CTimer::ms_fTimeStep * 0.05f, minimumDistance);
+    else {
+        minimumDistance = std::min(CTimer::ms_fTimeStep * 0.05f, minimumDistance);
         ped->m_vecAnimMovingShiftLocal.y = minimumDistance;
         ped->m_vecAnimMovingShiftLocal.x = 0.0f;
         ped->m_fAimingRotation = atan2(-distance.x, distance.y);
@@ -164,7 +162,6 @@ void CTaskSimpleStealthKill::ManageAnim(CPed* ped)
             m_pAnim = CAnimManager::BlendAnimation(ped->m_pRwClump, m_nAssocGroupId, ANIM_ID_KILL_KNIFE_PED_DIE, 8.0f);
             CPedDamageResponseCalculator damageCalculator = CPedDamageResponseCalculator(ped, CPedDamageResponseCalculator::ms_damageFactor, m_pTarget->GetActiveWeapon().m_nType, PED_PIECE_TORSO, false);
 
-            int pedFlag = (ped->m_nPedFlags >> 8) & 0xFFFFFF01;
             CEventDamage eventDamage(m_pTarget, CTimer::m_snTimeInMilliseconds, m_pTarget->GetActiveWeapon().m_nType, PED_PIECE_TORSO, 0, 0, ped->bInVehicle);
             if (eventDamage.AffectsPed(ped))
             {
@@ -172,8 +169,8 @@ void CTaskSimpleStealthKill::ManageAnim(CPed* ped)
 
                 eventDamage.m_nAnimGroup = m_nAssocGroupId;
                 eventDamage.m_nAnimID = ANIM_ID_KILL_KNIFE_PED_DIE;
-                eventDamage.m_fAnimBlend = 8.0;
-                eventDamage.m_fAnimSpeed = 1.0;
+                eventDamage.m_fAnimBlend = 8.0f;
+                eventDamage.m_fAnimSpeed = 1.0f;
                 eventDamage.m_ucDirection |= 4u;
                 ped->GetEventGroup().Add(&eventDamage, false);
             }
@@ -188,7 +185,7 @@ void CTaskSimpleStealthKill::ManageAnim(CPed* ped)
     }
     else
     {
-        int timer = CTimer::ms_fTimeStep * 0.02f * 1000.0f;
+        int timer = int(CTimer::ms_fTimeStep * 0.02f * 1000.0f);
         timer += m_nTime;
         m_nTime = timer;
         if (timer > 10000)
