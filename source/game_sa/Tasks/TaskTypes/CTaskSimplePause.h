@@ -14,9 +14,9 @@ public:
 private:
     CTaskSimplePause* Constructor(int time);
 public:
-
-    CTask* Clone() override;
     eTaskType GetId() override { return TASK_SIMPLE_PAUSE; };
+    CTask* Clone_Reversed();
+    CTask* Clone() override;
     bool MakeAbortable(CPed* ped, eAbortPriority priority, CEvent* _event) override;
     bool MakeAbortable_Reversed(CPed* ped, eAbortPriority priority, CEvent* _event);
     bool ProcessPed(CPed* ped) override;

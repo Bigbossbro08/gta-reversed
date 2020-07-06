@@ -5,6 +5,7 @@ void CTaskSimplePause::InjectHooks()
     HookInstall(0x48E750, &CTaskSimplePause::Constructor);
     HookInstall(0x48E830, &CTaskSimplePause::ProcessPed_Reversed);
     HookInstall(0x48E810, &CTaskSimplePause::MakeAbortable_Reversed);
+    HookInstall(0x48E780, &CTaskSimplePause::Clone_Reversed);
 }
 
 CTaskSimplePause::CTaskSimplePause(int time)
@@ -31,9 +32,18 @@ CTaskSimplePause* CTaskSimplePause::Constructor(int time)
 #endif
 }
 
+CTask* CTaskSimplePause::Clone_Reversed()
+{
+    return new CTaskSimplePause(m_nTime);
+}
+
 CTask* CTaskSimplePause::Clone()
 {
+#ifdef USE_DEFAULT_FUNCTIONS
     return plugin::CallMethodAndReturn<CTask*, 0x48E780, CTask*>(this);
+#else
+    return CTaskSimplePause::Clone_Reversed();
+#endif
 }
 
 bool CTaskSimplePause::MakeAbortable_Reversed(CPed* ped, eAbortPriority priority, CEvent* _event)
