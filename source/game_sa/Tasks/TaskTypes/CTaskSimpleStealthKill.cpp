@@ -185,21 +185,19 @@ void CTaskSimpleStealthKill::ManageAnim(CPed* ped)
     }
     else
     {
-        int timer = int(CTimer::ms_fTimeStep * 0.02f * 1000.0f);
-        timer += m_nTime;
-        m_nTime = timer;
-        if (timer > 10000)
+        m_nTime += static_cast<std::uint32_t>(CTimer::ms_fTimeStep * 0.02f * 1000.0f);
+        if (m_nTime > 10000)
             m_bIsAborting = true;
     }
 #endif
 }
 
-void CTaskSimpleStealthKill::FinishAnimStealthKillCB(CAnimBlendAssociation* pAnimAssoc, void* vpTaskSimpleStealthKill)
+void CTaskSimpleStealthKill::FinishAnimStealthKillCB(CAnimBlendAssociation* pAnimAssoc, void* data)
 {
 #ifdef USE_DEFAULT_FUNCTIONS
-    return ((void(__cdecl*)(CAnimBlendAssociation*, CTaskSimpleStealthKill*))0x622790)(pAnimAssoc, vpTaskSimpleStealthKill);
+    return ((void(__cdecl*)(CAnimBlendAssociation*, void*))0x622790)(pAnimAssoc, data);
 #else
-    CTaskSimpleStealthKill* pTaskSimpleStealthKill = (CTaskSimpleStealthKill*)vpTaskSimpleStealthKill;
+    auto pTaskSimpleStealthKill = reinterpret_cast<CTaskSimpleStealthKill*>(data);
     if (pAnimAssoc->m_nAnimId != ANIM_ID_KILL_KNIFE_PLAYER && pAnimAssoc->m_nAnimId != ANIM_ID_KILL_KNIFE_PED_DIE)
     {
         pTaskSimpleStealthKill->m_pAnim = nullptr;
