@@ -136,7 +136,7 @@ public:
     char m_bEnlargeBackgroundBox;
     char m_bFontPropOn;
     char m_bFontIsBlip;
-    char field_1F;
+    char field_1F; // pad
     float m_fFontAlpha;
     CRGBA m_FontBackgroundColor;
     float m_fWrapx;
@@ -147,10 +147,10 @@ public:
     char m_nFontShadow;
     CRGBA m_FontDropColor;
     char m_nFontOutlineSize;
-    char m_nFontOutline;
-    char field_3D;
-    char field_3E;
-    char field_3F;
+    char m_nFontOutline; // or float?
+    char field_3D; // pad
+    char field_3E; // pad
+    char field_3F; // pad
 };
 VALIDATE_SIZE(CFontDetails, 64);
 
@@ -204,7 +204,7 @@ public:
     // CFont closing
     static void Shutdown();
     // this adds a single character into rendering buffer
-    static void PrintChar(float x, float y, char character);
+    static void PrintChar(float x, float y, unsigned char character);
     // get next ' ' character in a string
     static char *GetNextSpace(char *string);
     // tags processing
@@ -252,7 +252,7 @@ public:
     // same as RenderFontBuffer()
     static void DrawFonts();
     static short ProcessCurrentString(bool display, float x, float y, char* text);
-    static short GetNumberLines(float x, float y, char *text);
+    static short GetNumberLines(char bPrint, float x, float y, char *text);
     static short ProcessStringToDisplay(float x, float y, char *text);
     static void GetTextRect(CRect *rect, float x, float y, char *text);
 
