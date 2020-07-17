@@ -111,11 +111,12 @@ public:
     static void SetVehicleName(char* name);
     static void SetZoneName(char* name, unsigned char displayState);
     static void Shutdown();
-    static void DrawAmmo(CPed* ped, int x, int y, float alpha);
+    static void DrawAmmo(CPed* ped, float x, float y, float alpha);
     static void DrawPlayerInfo();
     static void DrawTripSkip();
     static void DrawWanted();
-    static void DrawWeaponIcon(CPed* ped, int x, int y, float alpha);
+	static void InjectHooks();
+	static void DrawWeaponIcon(CPed* ped, float x, float y, float alpha);
     static void RenderArmorBar(int playerId, int x, int y);
     static void RenderBreathBar(int playerId, int x, int y);
     static void RenderHealthBar(int playerId, int x, int y);

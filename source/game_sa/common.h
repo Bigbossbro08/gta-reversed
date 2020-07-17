@@ -18,6 +18,40 @@ Do not delete this comment block. Respect others' work!
 #include "CAnimBlendClumpData.h"
 
 const char gta_empty_string[4] = {0, 0, 0, 0};
+
+#define DEFAULT_SCREEN_WIDTH (640)
+#define DEFAULT_SCREEN_HEIGHT (448)
+#define DEFAULT_SCREEN_HEIGHT_PAL (512)
+#define DEFAULT_SCREEN_HEIGHT_NTSC (448)
+#define DEFAULT_ASPECT_RATIO (4.0f/3.0f)
+#define DEFAULT_VIEWWINDOW (0.7f)
+
+// game uses maximumWidth/Height, but this probably won't work
+// with RW windowed mode
+#define SCREEN_WIDTH ((float)RsGlobal.maximumWidth)
+#define SCREEN_HEIGHT ((float)RsGlobal.maximumHeight)
+#define SCREEN_ASPECT_RATIO (CDraw::ms_fAspectRatio)
+#define SCREEN_VIEWWINDOW (Tan(DEGTORAD(CDraw::GetScaledFOV() * 0.5f)))
+
+// This scales from PS2 pixel coordinates to the real resolution
+#define SCREEN_STRETCH_X(a)   ((a) * (float) SCREEN_WIDTH / DEFAULT_SCREEN_WIDTH)
+#define SCREEN_STRETCH_Y(a)   ((a) * (float) SCREEN_HEIGHT / DEFAULT_SCREEN_HEIGHT)
+#define SCREEN_STRETCH_FROM_RIGHT(a)  (SCREEN_WIDTH - SCREEN_STRETCH_X(a))
+#define SCREEN_STRETCH_FROM_BOTTOM(a) (SCREEN_HEIGHT - SCREEN_STRETCH_Y(a))
+
+// This scales from PS2 pixel coordinates while optionally maintaining the aspect ratio
+#define SCREEN_SCALE_X(a) SCREEN_SCALE_AR(SCREEN_STRETCH_X(a))
+#define SCREEN_SCALE_Y(a) SCREEN_STRETCH_Y(a)
+#define SCREEN_SCALE_FROM_RIGHT(a) (SCREEN_WIDTH - SCREEN_SCALE_X(a))
+#define SCREEN_SCALE_FROM_BOTTOM(a) (SCREEN_HEIGHT - SCREEN_SCALE_Y(a))
+
+#define ASPECT_RATIO_SCALE
+#ifdef ASPECT_RATIO_SCALE
+#define SCREEN_SCALE_AR(a) ((a) * DEFAULT_ASPECT_RATIO / SCREEN_ASPECT_RATIO)
+#else
+#define SCREEN_SCALE_AR(a) (a)
+#endif
+
 extern int gDefaultTaskTime;
 
 extern char *gString; // char gString[200]
